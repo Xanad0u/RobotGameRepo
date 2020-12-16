@@ -105,6 +105,8 @@ public class GridGraphics extends JFrame implements MouseListener {
 		frame.add(menu);
 		frame.add(robotPane);
 		frame.add(gridPane);
+		
+		moveRobot();
 	}
 
 	private void reImportLevel(int n) {
@@ -263,6 +265,8 @@ public class GridGraphics extends JFrame implements MouseListener {
 					g.drawImage(cardSlot, xCard, ySlot, size, (int) (size * cardRatio), null);
 				}
 				menu.repaint();
+				
+				robot.update();
 			}
 		};
 		
@@ -298,7 +302,6 @@ public class GridGraphics extends JFrame implements MouseListener {
 				
 				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 				
-				//robot.moveAnimated((Graphics2D) g, size, this);
 				robot.draw((Graphics2D) g);
 			}
 		};
@@ -457,6 +460,10 @@ public class GridGraphics extends JFrame implements MouseListener {
 	@Override
 	public void mouseExited(MouseEvent e) {
 		System.out.println("Mouse exited at " + e.getPoint());
+	}
+	
+	public void moveRobot() {
+		robot.moveAnimated(robotPane);
 	}
 
 }

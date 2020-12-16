@@ -11,6 +11,8 @@ public class Robot {
 	private byte[] pos = {0, 0};
 	private byte rot = 0;
 	
+	private int gap;
+	
 	private int size;
 	private int fullSize;
 	
@@ -47,7 +49,7 @@ public class Robot {
 		img = imgIn;
 		
 		host = hostIn;
-		
+
 		af = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
@@ -111,9 +113,11 @@ public class Robot {
 		return rot;
 	}
 	
-	public void moveAnimated(Graphics2D g2DmA, JPanel pane) {
+	public void moveAnimated(JPanel pane) {
 		
 		System.out.println("mA");
+		
+		af.setToTranslation(xNull + gap + size / 2, xNull + gap + size / 2);
 		
 		float x = 0;
 		float y = 0;
@@ -137,11 +141,10 @@ public class Robot {
 			System.out.println("loop " + i);
 			
 			af.translate(x * (size / substeps), y * (size / substeps));
-			draw(g2DmA);
+			
 			pane.repaint();
-			//draw(g2DmA);
+
 			try {
-				
 				Thread.sleep(breakTime);
 				System.out.println("sleep " + i);
 			} catch (InterruptedException e) {
@@ -157,6 +160,7 @@ public class Robot {
 	}
 	
 	public void update() {
+		gap = host.gap;
 		fullSize = host.fullSize;
 		size = host.size;
 		xNull = host.xNull;
