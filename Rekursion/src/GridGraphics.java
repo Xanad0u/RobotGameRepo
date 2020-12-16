@@ -29,11 +29,11 @@ public class GridGraphics extends JFrame implements MouseListener {
 	final int nTiles = 8;
 	int level;
 
-	int size;
-	int fullSize;
+	public int size;
+	public int fullSize;
 	
-	int xNull;
-	int yNull;
+	public int xNull;
+	public int yNull;
 	
 	byte[] tiles;
 	byte[] tileSelectionStatus = new byte[64];
@@ -89,14 +89,22 @@ public class GridGraphics extends JFrame implements MouseListener {
 
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
 
-		robot = new Robot(10, 10, robotImg);
+		robot = new Robot(10, 10, robotImg, this);
 		
 		reImportLevel(level);
 		frame = buildFrame();
-
-		initializeTileGridPanel();
+		
 		initializeRobotPanel();
-
+		initializeTileGridPanel();
+		
+		
+		gridPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
+		
+		frame.add(menu);
+		frame.add(robotPane);
+		frame.add(gridPane);
 	}
 
 	private void reImportLevel(int n) {
@@ -119,6 +127,8 @@ public class GridGraphics extends JFrame implements MouseListener {
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
+				
+				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 				
 				gMain = g;
 				
@@ -268,22 +278,16 @@ public class GridGraphics extends JFrame implements MouseListener {
 			}
 		};
 		
-		frame.add(menu);
-		frame.add(gridPane);
 		menu.setVisible(false);
-		
-		//frame.setComponentZOrder(pane, 1);
-		//frame.setComponentZOrder(menu, 0);
-		
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
-		gridPane.revalidate();
 		
 		gridPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
 		gridPane.getActionMap().put("trigger", new PopAction(menu));
-		
 	}
 	
 	private void initializeRobotPanel() {
+		
+		
 		robotPane = new JPanel() {
 
 			private static final long serialVersionUID = 1L;
@@ -292,9 +296,16 @@ public class GridGraphics extends JFrame implements MouseListener {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				
+				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 				
+				//robot.moveAnimated((Graphics2D) g, size, this);
+				robot.draw((Graphics2D) g);
 			}
 		};
+		
+		robotPane.setBackground(new Color(0,0,0,0));
+		robotPane.setOpaque(false);
+		robotPane.setVisible(true);
 	}
 
 	/*
@@ -338,6 +349,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setSize(1028, 1228);
+		frame.setLayout(null);
 		frame.setIconImage(img);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setTitle("Stage");
@@ -417,6 +429,14 @@ public class GridGraphics extends JFrame implements MouseListener {
 		*/
 
 		gridPane.repaint();
+	}
+	
+	public byte[] composeLoc(byte x, byte y) {
+		byte[] loc = new byte[2];
+		loc[0] = x;
+		loc[1] = y;
+		
+		return loc;
 	}
 
 	@Override

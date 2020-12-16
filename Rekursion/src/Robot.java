@@ -11,6 +11,12 @@ public class Robot {
 	private byte[] pos = {0, 0};
 	private byte rot = 0;
 	
+	private int size;
+	private int fullSize;
+	
+	private int xNull;
+	private int yNull;
+	
 	public AffineTransform af;
 	
 	private int substeps = 0;
@@ -18,12 +24,16 @@ public class Robot {
 	public BufferedImage img;
 	private Graphics2D g2D;
 	
-	public Robot(int ss, long bt, BufferedImage imgIn, Graphics2D g) {
+	GridGraphics host;
+	
+	public Robot(int ss, long bt, BufferedImage imgIn, Graphics2D g, GridGraphics hostIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
 		
 		g2D = g;
+		
+		host = hostIn;
 		
 		af = new AffineTransform();
 		
@@ -31,12 +41,12 @@ public class Robot {
 		af.setToRotation(Math.toRadians(rot));
 	}
 	
-	public Robot(int ss, long bt, BufferedImage imgIn) {
+	public Robot(int ss, long bt, BufferedImage imgIn, GridGraphics hostIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
 		
-		//g2D = g;
+		host = hostIn;
 		
 		af = new AffineTransform();
 		
@@ -101,7 +111,7 @@ public class Robot {
 		return rot;
 	}
 	
-	public void moveAnimated(Graphics2D g2DmA, int size, JPanel pane) {
+	public void moveAnimated(Graphics2D g2DmA, JPanel pane) {
 		
 		System.out.println("mA");
 		
@@ -127,6 +137,7 @@ public class Robot {
 			System.out.println("loop " + i);
 			
 			af.translate(x * (size / substeps), y * (size / substeps));
+			draw(g2DmA);
 			pane.repaint();
 			//draw(g2DmA);
 			try {
@@ -142,5 +153,13 @@ public class Robot {
 	
 	public void draw(Graphics2D g) {
 		g.drawImage(img, af, null);
+		System.out.println("drew robot");
+	}
+	
+	public void update() {
+		fullSize = host.fullSize;
+		size = host.size;
+		xNull = host.xNull;
+		yNull = host.yNull;
 	}
 }
