@@ -8,21 +8,25 @@ import javax.swing.JPanel;
 
 
 public class Robot {
-	private byte[] pos = {0, 0};
-	private byte rot = 0;
+	public byte[] pos = {0, 0};
+	public byte rot = 0;
 	
-	private int gap;
+	public int gap;
 	
-	private int size;
-	private int fullSize;
+	public int size;
+	public int fullSize;
 	
-	private int xNull;
-	private int yNull;
+	public int xNull;
+	public int yNull;
+	
+	public double xOrigin;
+	public double yOrigin;
 	
 	public AffineTransform af;
+	private AffineTransform composedTransform;
 	
-	private int substeps = 0;
-	private long breakTime = 0;
+	public int substeps = 0;
+	public long breakTime = 0;
 	public BufferedImage img;
 	private Graphics2D g2D;
 	
@@ -38,6 +42,7 @@ public class Robot {
 		host = hostIn;
 		
 		af = new AffineTransform();
+		composedTransform = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
@@ -51,6 +56,19 @@ public class Robot {
 		host = hostIn;
 
 		af = new AffineTransform();
+		composedTransform = new AffineTransform();
+		
+		af.setToTranslation(pos[0], pos[1]);
+		af.setToRotation(Math.toRadians(rot));
+	}
+	
+	public Robot(int ss, long bt, BufferedImage imgIn) {
+		substeps = ss;
+		breakTime = bt;
+		img = imgIn;
+		
+		af = new AffineTransform();
+		composedTransform = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
@@ -155,8 +173,11 @@ public class Robot {
 	}
 	
 	public void draw(Graphics2D g) {
-		g.drawImage(img, af, null);
-		System.out.println("drew robot");
+		//composedTransform.setToTranslation(af.getTranslateX(), af.getTranslateY());
+		composedTransform.setTransform(af);
+		composedTransform.translate(xOrigin, yOrigin);
+		g.drawImage(img, composedTransform, null);
+		//System.out.println("drew robot");
 	}
 	
 	public void update() {

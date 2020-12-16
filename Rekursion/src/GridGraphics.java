@@ -62,7 +62,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 
 	JFrame frame;
 	JPanel gridPane;
-	JPanel robotPane;
+	RobotPanel robotPane;
 	MenuPanel menu;
 	
 	Robot robot;
@@ -94,19 +94,30 @@ public class GridGraphics extends JFrame implements MouseListener {
 		reImportLevel(level);
 		frame = buildFrame();
 		
-		initializeRobotPanel();
+		//initializeRobotPanel();
 		initializeTileGridPanel();
 		
 		
 		gridPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
-		robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		//robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
+		
+		robotPane = new RobotPanel(10, 10, robotImg, frame, this);
+		
+		robotPane.setBackground(new Color(0,0,0,0));
+		robotPane.setOpaque(false);
+		robotPane.setVisible(true);
+		robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		
+		//robotPane.revalidate();
 		
 		frame.add(menu);
 		frame.add(robotPane);
 		frame.add(gridPane);
 		
-		moveRobot();
+		//moveRobot();
+		
+		//robotPane.moveAnimated();
 	}
 
 	private void reImportLevel(int n) {
@@ -289,6 +300,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		gridPane.getActionMap().put("trigger", new PopAction(menu));
 	}
 	
+	/*
 	private void initializeRobotPanel() {
 		
 		
@@ -310,6 +322,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		robotPane.setOpaque(false);
 		robotPane.setVisible(true);
 	}
+	*/
 
 	/*
 	 * public static void drawRobot(Graphics g, Image robotImg, int size, int w, int
