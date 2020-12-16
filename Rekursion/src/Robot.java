@@ -12,6 +12,7 @@ public class Robot {
 	public byte rot = 0;
 	
 	public double[] subPos = {0, 0};
+	public double subRot = 0;
 	
 	public int gap;
 	

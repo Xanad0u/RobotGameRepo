@@ -40,6 +40,9 @@ public class GridGraphics extends JFrame implements MouseListener {
 	byte cardAmount;
 	byte slotAmount;
 	byte[] realCards;
+	
+	final int substeps = 80;
+	final int time = 1000;
 
 	final StageFileManager fileManager = new StageFileManager();
 
@@ -64,8 +67,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 	JPanel gridPane;
 	RobotPanel robotPane;
 	MenuPanel menu;
-	
-	Robot robot;
+
 
 	Graphics gMain;
 
@@ -89,7 +91,6 @@ public class GridGraphics extends JFrame implements MouseListener {
 
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
 
-		robot = new Robot(10, 10, robotImg, this);
 		
 		reImportLevel(level);
 		frame = buildFrame();
@@ -102,7 +103,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		//robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
 		
-		robotPane = new RobotPanel(10, 10, robotImg, frame, this);
+		robotPane = new RobotPanel(substeps, time, robotImg, frame, this);
 		
 		robotPane.setBackground(new Color(0,0,0,0));
 		robotPane.setOpaque(false);
@@ -117,7 +118,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		
 		//moveRobot();
 		
-		robotPane.moveAnimated();
+		robotPane.turnAnimated(-1);
 		
 	}
 
@@ -277,12 +278,10 @@ public class GridGraphics extends JFrame implements MouseListener {
 					g.drawImage(cardSlot, xCard, ySlot, size, (int) (size * cardRatio), null);
 				}
 				menu.repaint();
-				
-				robot.update();
 			}
 		};
 		
-		gridPane.addMouseListener(this);
+		frame.addMouseListener(this);
 		gridPane.setBackground(Color.WHITE);
 		
 		menu = new MenuPanel(frame)  {
@@ -459,6 +458,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		System.out.println("Mouse " + e.getClickCount() + " times pressed at " + e.getPoint());
+		robotPane.moveAnimated();
 	}
 
 	@Override
@@ -475,9 +475,4 @@ public class GridGraphics extends JFrame implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		System.out.println("Mouse exited at " + e.getPoint());
 	}
-	
-	public void moveRobot() {
-		robot.moveAnimated(robotPane);
-	}
-
 }

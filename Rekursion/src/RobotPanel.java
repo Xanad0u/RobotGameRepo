@@ -25,16 +25,17 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int y = 0;
 	
 	int callMove = 0;
+	int callTurn = 0;
 	
-	public RobotPanel(int ssIn, int bt, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
-		robot = new Robot(ssIn, bt, imgIn);
+	public RobotPanel(int ssIn, int time, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
+		robot = new Robot(ssIn, time, imgIn);
 		frame = frameIn;
 		
 		host = hostIn;
 		
 		ss = ssIn;
 		
-		timer = new Timer(bt, this);
+		timer = new Timer(time / ss, this);
 		timer.start();
 	}
 	
@@ -65,6 +66,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 		callMove = 1;
 	}
 	
+	public void turnAnimated(int dir) {
+		callTurn = dir;
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -72,28 +77,24 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 		robot.af.setToIdentity();
 		
+		
 		robot.af.translate(robot.pos[0] * (host.size + host.gap) + robot.subPos[0], robot.pos[1] * (host.size + host.gap) + robot.subPos[1]);
 		robot.af.scale(host.size / (double) robot.img.getHeight(), host.size / (double) robot.img.getHeight());
+		robot.af.rotate(Math.toRadians(robot.subRot + robot.rot * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
+		
 		
 		robot.draw((Graphics2D) g);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		//System.out.println("tick");
-		//System.out.println("call = " + call);
-		
-		//System.out.println(call > 0 && call < (ss + 1));
-		
+
 		if(callMove > 0) {
-			System.out.println("in call");
-			
+
 			robot.subPos[0] += x * ((host.size + host.gap) / ss);
 			robot.subPos[1] += y * ((host.size + host.gap) / ss);
 			
-			//robot.af.translate(x * (host.size / ss), y * (host.size / ss));
-			
+
 			callMove++;
 			
 			if(callMove > ss + 1) {
@@ -104,6 +105,22 @@ public class RobotPanel extends JPanel implements ActionListener {
 				
 				robot.pos[0] += x;
 				robot.pos[1] += y;
+			}
+		}
+		
+		if(Math.abs(callTurn) > 0) {
+			robot.subRot += 90 / ss;
+			
+			callTurn += Math.signum(callTurn);
+			
+			if(Math.abs(callTurn) > ss + 1) {
+				robot.rot -= Math.signum(callTurn);
+				
+				callTurn = 0;
+				
+				robot.subRot = 0;
+				
+				System.out.println("rot: " + robot.rot);
 			}
 		}
 		
