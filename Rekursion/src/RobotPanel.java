@@ -24,7 +24,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int x = 0;
 	int y = 0;
 	
-	int call = 0;
+	int callMove = 0;
 	
 	public RobotPanel(int ssIn, int bt, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
 		robot = new Robot(ssIn, bt, imgIn);
@@ -62,23 +62,20 @@ public class RobotPanel extends JPanel implements ActionListener {
 			break;
 		}
 		
-		call = 1;
+		callMove = 1;
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		this.setBounds(host.xNull, host.yNull, host.fullSize - host.gap * 2, host.fullSize - host.gap * 2);
+		this.setBounds(host.xNull + host.gap, host.yNull + host.gap, host.fullSize - host.gap * 2, host.fullSize - host.gap * 2);
 		
-		robot.xOrigin = host.xNull + host.gap;
-		robot.yOrigin = 50;
+		robot.af.setToIdentity();
 		
-		System.out.println(host.xNull + host.gap);
-		System.out.println(host.yNull + host.gap);
+		robot.af.translate(robot.pos[0] * (host.size + host.gap) + robot.subPos[0], robot.pos[1] * (host.size + host.gap) + robot.subPos[1]);
+		robot.af.scale(host.size / (double) robot.img.getHeight(), host.size / (double) robot.img.getHeight());
 		
 		robot.draw((Graphics2D) g);
-		
-		robot.af.setToScale(host.size / (double) robot.img.getHeight(), host.size / (double) robot.img.getHeight());
 	}
 
 	@Override
@@ -89,11 +86,25 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 		//System.out.println(call > 0 && call < (ss + 1));
 		
-		if(call > 0 && call < (ss + 1)) {
-			//System.out.println("in call");
-			robot.af.translate(x * (host.size / ss), y * (host.size / ss));
+		if(callMove > 0) {
+			System.out.println("in call");
 			
-			call++;
+			robot.subPos[0] += x * ((host.size + host.gap) / ss);
+			robot.subPos[1] += y * ((host.size + host.gap) / ss);
+			
+			//robot.af.translate(x * (host.size / ss), y * (host.size / ss));
+			
+			callMove++;
+			
+			if(callMove > ss + 1) {
+				callMove = 0;
+				
+				robot.subPos[0] = 0;
+				robot.subPos[1] = 0;
+				
+				robot.pos[0] += x;
+				robot.pos[1] += y;
+			}
 		}
 		
 		repaint();

@@ -11,6 +11,8 @@ public class Robot {
 	public byte[] pos = {0, 0};
 	public byte rot = 0;
 	
+	public double[] subPos = {0, 0};
+	
 	public int gap;
 	
 	public int size;
@@ -23,7 +25,6 @@ public class Robot {
 	public double yOrigin;
 	
 	public AffineTransform af;
-	private AffineTransform composedTransform;
 	
 	public int substeps = 0;
 	public long breakTime = 0;
@@ -42,7 +43,6 @@ public class Robot {
 		host = hostIn;
 		
 		af = new AffineTransform();
-		composedTransform = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
@@ -56,7 +56,6 @@ public class Robot {
 		host = hostIn;
 
 		af = new AffineTransform();
-		composedTransform = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
@@ -68,7 +67,6 @@ public class Robot {
 		img = imgIn;
 		
 		af = new AffineTransform();
-		composedTransform = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
@@ -173,10 +171,8 @@ public class Robot {
 	}
 	
 	public void draw(Graphics2D g) {
-		//composedTransform.setToTranslation(af.getTranslateX(), af.getTranslateY());
-		composedTransform.setTransform(af);
-		composedTransform.translate(xOrigin, yOrigin);
-		g.drawImage(img, composedTransform, null);
+
+		g.drawImage(img, af, null);
 		//System.out.println("drew robot");
 	}
 	

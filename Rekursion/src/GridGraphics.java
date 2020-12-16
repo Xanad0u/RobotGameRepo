@@ -107,7 +107,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		robotPane.setBackground(new Color(0,0,0,0));
 		robotPane.setOpaque(false);
 		robotPane.setVisible(true);
-		robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
+		robotPane.setBounds(0, 0, 1, 1);
 		
 		//robotPane.revalidate();
 		
@@ -117,7 +117,8 @@ public class GridGraphics extends JFrame implements MouseListener {
 		
 		//moveRobot();
 		
-		//robotPane.moveAnimated();
+		robotPane.moveAnimated();
+		
 	}
 
 	private void reImportLevel(int n) {
