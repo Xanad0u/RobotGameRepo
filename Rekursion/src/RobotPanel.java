@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -14,7 +13,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	Robot robot;
 	JFrame frame;
 	RobotPanel panel = this;
-	GridGraphics host;
+	LevelFrame host;
 	
 	Timer timer;
 	
@@ -36,7 +35,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int executionElement = 0;
 	boolean executionReady = true;
 	
-	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
+	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, LevelFrame hostIn) {
 		robot = new Robot(ssIn, moveTimeIn, imgIn);
 		frame = frameIn;
 		
@@ -51,10 +50,6 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 	
 	public void moveAnimated(int steps) {
-		
-		System.out.println("mA");
-		
-		//robot.af.setToTranslation(robot.xNull + robot.gap, robot.xNull + robot.gap);
 
 		x = 0;
 		y = 0;
@@ -175,6 +170,5 @@ public class RobotPanel extends JPanel implements ActionListener {
 	public void execute(byte[] cmds) {
 		
 		executionOrder = cmds;
-
 	}
 }
