@@ -32,9 +32,9 @@ public class Robot {
 	public BufferedImage img;
 	private Graphics2D g2D;
 	
-	GridGraphics host;
+	LevelFrame host;
 	
-	public Robot(int ss, long bt, BufferedImage imgIn, Graphics2D g, GridGraphics hostIn) {
+	public Robot(int ss, long bt, BufferedImage imgIn, Graphics2D g, LevelFrame hostIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
@@ -49,7 +49,7 @@ public class Robot {
 		af.setToRotation(Math.toRadians(rot));
 	}
 	
-	public Robot(int ss, long bt, BufferedImage imgIn, GridGraphics hostIn) {
+	public Robot(int ss, long bt, BufferedImage imgIn, LevelFrame hostIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
