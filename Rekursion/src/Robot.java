@@ -17,7 +17,7 @@ public class Robot {
 	
 	public BufferedImage img;
 	
-	LevelFrame host;
+	StageFrame host;
 	
 	public Robot(int ss, long bt, BufferedImage imgIn) {
 		substeps = ss;

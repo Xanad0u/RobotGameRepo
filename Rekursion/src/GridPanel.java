@@ -9,11 +9,11 @@ import javax.swing.KeyStroke;
 public class GridPanel extends JPanel{
 
 	private JFrame hostFrame;
-	private LevelFrame host;
+	private StageFrame host;
 	
 	private byte[] tiles;
 
-	public GridPanel(JFrame hostFrameIn, LevelFrame hostIn, byte[] tilesIn) {
+	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, byte[] tilesIn) {
 		hostFrame = hostFrameIn;
 		host = hostIn;
 		
