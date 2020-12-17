@@ -13,7 +13,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	Robot robot;
 	JFrame frame;
 	RobotPanel panel = this;
-	LevelFrame host;
+	StageFrame host;
 	
 	Timer timer;
 	
@@ -35,7 +35,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int executionElement = 0;
 	boolean executionReady = true;
 	
-	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, LevelFrame hostIn) {
+	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn) {
 		robot = new Robot(ssIn, moveTimeIn, imgIn);
 		frame = frameIn;
 		

@@ -12,68 +12,66 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class LevelFrame extends JFrame implements MouseListener{
+public class StageFrame extends JFrame implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
-	final int menuWidth = 200;
-	final int menuHeight = 300;
+	final int menuWidth = 200;		//Width of the popup menu
+	final int menuHeight = 300;		//Height of the popup menu
 	
-	final int gap = 2;
-	final double ratio = 1.625;
-	final double cardRatio = 1.57;
-	final int nTiles = 8;
-	int level;
+	final int gap = 2;				//Size of the gap between tiles in pixels
+	final double ratio = 1.625;		//Optimal ratio of the playing field
+	final double cardRatio = 1.57;	//Ratio of the card images
+	final int nTiles = 8;			//Number of tiles in a row or column, hard coded as 8 !DO NOT CHANGE!
+	int stage;						//Holds the stage index
 
-	public int size;
-	public int fullSize;
+	public int size;				//Holds the tile size
+	public int fullSize;			//Holds the size of the board
 	
-	public int xNull;
-	public int yNull;
+	public int xNull;				//Holds the x component of the board origin
+	public int yNull;				//Holds the y component of the board origin
 	
-	byte[] tiles;
-	byte[] tileSelectionStatus = new byte[64];
-	byte cardAmount;
-	byte slotAmount;
-	byte[] realCards;
+	byte[] tiles;								//Holds the tiles of the stage
+	byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
+	byte cardAmount;							//Holds the amount of cards in the stage
+	byte slotAmount;							//Holds the amount of slots in the stage
+	byte[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
 	
-	final int substeps = 20;
-	final int moveTime = 100;
-	final int pauseTime = 50;
+	final int substeps = 20;		//Animation substeps of the robot
+	final int moveTime = 100;		//Time it takes the robot to do one action
+	final int pauseTime = 50;		//Pause time between two actions of the robot
 
-	final StageFileManager fileManager = new StageFileManager();
+	final StageFileManager fileManager = new StageFileManager();	//Creates a new StageFileManager for the stage
 
-	final BufferedImage blockTile;
-	final BufferedImage holeTile;
-	final BufferedImage startTile;
-	final BufferedImage flagTile;
+	final BufferedImage blockTile;	//Holds the block tile image
+	final BufferedImage holeTile;	//Holds the hole tile image
+	final BufferedImage startTile;	//Holds the start tile image
+	final BufferedImage flagTile;	//Holds the flag tile image
 
-	final BufferedImage robotImg;
+	final BufferedImage robotImg;	//Holds the robot image
 
-	final BufferedImage rTurnCard;
-	final BufferedImage lTurnCard;
-	final BufferedImage uTurnCard;
-	final BufferedImage forwardCard;
-	final BufferedImage fastForwardCard;
-	final BufferedImage backCard;
-	final BufferedImage RCard;
+	final BufferedImage rTurnCard;			//Holds the right turn card image
+	final BufferedImage lTurnCard;			//Holds the left turn card image
+	final BufferedImage uTurnCard;			//Holds the u-turn card image
+	final BufferedImage forwardCard;		//Holds the forward card image
+	final BufferedImage fastForwardCard;	//Holds the fast forward card image
+	final BufferedImage backCard;			//Holds the back card image
+	final BufferedImage RCard;				//Holds the R card image
 
-	final BufferedImage cardSlot;
+	final BufferedImage cardSlot;			//Holds the card slot image
 
-	JFrame frame;
-	RobotPanel robotPane;
-	GridPanel gridPane;
-	MenuPanel menu;
+	JFrame frame;			//Holds the frame
+	RobotPanel robotPane;	//Holds the pane containing the robot
+	GridPanel gridPane;		//Holds the pane containing the board
+	MenuPanel menu;			//Holds the popup menu
 
-	Graphics gMain;
-	
-	byte[] testExecute = {1,1,1,3,1,1,2,4,1,3,1,1,3,1,1};
+	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
 
 	
-	public LevelFrame(int levelIn) throws IOException {
-		level = levelIn;
+	public StageFrame(int stageIn) throws IOException {
+		stage = stageIn;
 		
-		blockTile = ImageIO.read(new File("./img/Block.png"));
+		blockTile = ImageIO.read(new File("./img/Block.png"));	//Loading the images from storage
 		holeTile = ImageIO.read(new File("./img/Hole.png"));
 		startTile = ImageIO.read(new File("./img/Start.png"));
 		flagTile = ImageIO.read(new File("./img/Flag.png"));
@@ -91,39 +89,40 @@ public class LevelFrame extends JFrame implements MouseListener{
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
 
 		
-		reImportLevel(level);
-		frame = buildFrame();
+		reImportStage(stage);		//Loading stage information from storage
+		frame = buildFrame();		//Constructing frame
 		
-		initializeTileGridPanel();
+		initializeTileGridPanel();	//Constructing popup Menu
 		
-		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this);
-		gridPane = new GridPanel(frame, this, tiles);
+		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this); //Constructing robot pane
 		
-		gridPane.setBounds(0, 0, 1, 1);
+		gridPane = new GridPanel(frame, this, tiles);	//Constructing board pane
+		
+		gridPane.setBounds(0, 0, 1, 1);		//Setting board size to more then zero, making it rescalable
 
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
 
-		robotPane.setBackground(new Color(0,0,0,0));
-		robotPane.setOpaque(false);
-		robotPane.setVisible(true);
-		robotPane.setBounds(0, 0, 1, 1);
+		robotPane.setBackground(new Color(0,0,0,0));	//Making robot pane background transparent
+		robotPane.setOpaque(false);						//Making robot pane transparent
+		robotPane.setVisible(true);				//Setting robot pane to visible
+		robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
 		
 		
-		frame.add(menu);
-		frame.add(robotPane);
-		frame.add(gridPane);
+		frame.add(menu);		//Add menu to frame
+		frame.add(robotPane);	//Add robot pane to frame
+		frame.add(gridPane);	//Add board pane to frame
 				
-		robotPane.execute(testExecute);
+		robotPane.execute(testExecute);		//Temporary robot movement testing
 		
 	}
 
-	private void reImportLevel(int n) {
-		tiles = fileManager.getTiles(n);
-		slotAmount = fileManager.getSlots(n);
-		cardAmount = fileManager.getCardAmount(n);
-		realCards = fileManager.getRealCards(n);
+	private void reImportStage(int n) {				//Loading stage information from storage
+		tiles = fileManager.getTiles(n);			//Loading tiles
+		slotAmount = fileManager.getSlots(n);		//Loading slot amount
+		cardAmount = fileManager.getCardAmount(n);	//Loading card amount
+		realCards = fileManager.getRealCards(n);	//Loading real cards, not the loop index of R cards
 
-		for (int i = 0; i < tiles.length; i++) {
+		for (int i = 0; i < tiles.length; i++) {	//Reset tile selection status
 			tileSelectionStatus[i] = 0;
 		}
 	}
@@ -280,44 +279,50 @@ public class LevelFrame extends JFrame implements MouseListener{
 		};
 		*/
 		
-		frame.addMouseListener(this);
+		frame.addMouseListener(this);	//Add mouse listening
 		
-		menu = new MenuPanel(frame)  {
+		menu = new MenuPanel(frame)  {	//Create popup menu
 			
 			@Override
 			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				this.setBounds(frame.getContentPane().getWidth() / 2 - menuWidth / 2, frame.getContentPane().getHeight() / 2 - menuHeight / 2, menuWidth, menuHeight);
+				
+				super.paintComponent(g);	//Clear
+				
+				this.setBounds(frame.getContentPane().getWidth() / 2 - menuWidth / 2, frame.getContentPane().getHeight() / 2 - menuHeight / 2, menuWidth, menuHeight);	//Set popup menu bounds
 			}
 		};
 		
-		menu.setVisible(false);
-		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
+		menu.setVisible(false);		//make popup menu invisible
 		
+		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);	//Set popup menu bounds
 		
 	}
 	
 	private JFrame buildFrame() {
-		File file = new File("./img/Icon.png");
-		Image img = null;
+		File file = new File("./img/Icon.png");	//Set icon file path
+		
+		Image img = null;	//Create local image container
 		try {
-			img = ImageIO.read(file);
+			img = ImageIO.read(file);	//Load icon from storage
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		JFrame frame = new JFrame();
+		JFrame frame = new JFrame();	//Create frame
 		
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.setSize(1028, 1228);
-		frame.setLayout(null);
-		frame.setIconImage(img);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setTitle("Stage");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);	//Make closing window exit the program
+		
+		frame.setSize(1028, 1228);	//Set the initial size of the window
+		frame.setLayout(null);		//Make frame layout null
+		frame.setIconImage(img);	//Set the icon image
+		
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);	//Extend window
+		
+		frame.setTitle("Stage");	//Set title to Stage
 
-		frame.setVisible(true);
+		frame.setVisible(true);		//make frame visible
 
-		return frame;
+		return frame;	//Output frame
 	}
 
 	/*
@@ -367,7 +372,7 @@ public class LevelFrame extends JFrame implements MouseListener{
 	*/
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {	//Temporary robot movement testing
 
 		switch(e.getButton()) {
 		case 1:
