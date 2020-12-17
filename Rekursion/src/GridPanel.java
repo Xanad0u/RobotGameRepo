@@ -19,8 +19,6 @@ public class GridPanel extends JPanel{
 		
 		tiles = tilesIn;
 		
-		//setBackground(Color.WHITE);
-		
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
 		getActionMap().put("trigger", new PopAction(host.menu));
 	}

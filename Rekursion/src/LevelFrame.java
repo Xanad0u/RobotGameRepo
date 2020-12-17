@@ -1,13 +1,9 @@
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -16,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class LevelFrame extends JFrame implements MouseListener {
+public class LevelFrame extends JFrame implements MouseListener{
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,11 +65,11 @@ public class LevelFrame extends JFrame implements MouseListener {
 	GridPanel gridPane;
 	MenuPanel menu;
 
-
 	Graphics gMain;
 	
 	byte[] testExecute = {1,1,1,3,1,1,2,4,1,3,1,1,3,1,1};
 
+	
 	public LevelFrame(int levelIn) throws IOException {
 		level = levelIn;
 		
@@ -98,7 +94,6 @@ public class LevelFrame extends JFrame implements MouseListener {
 		reImportLevel(level);
 		frame = buildFrame();
 		
-		//initializeRobotPanel();
 		initializeTileGridPanel();
 		
 		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this);
@@ -135,6 +130,7 @@ public class LevelFrame extends JFrame implements MouseListener {
 
 	
 	private void initializeTileGridPanel() {
+		
 		/*
 		gridPane = new JPanel() {
 
@@ -283,6 +279,7 @@ public class LevelFrame extends JFrame implements MouseListener {
 			}
 		};
 		*/
+		
 		frame.addMouseListener(this);
 		
 		menu = new MenuPanel(frame)  {
@@ -300,59 +297,6 @@ public class LevelFrame extends JFrame implements MouseListener {
 		
 	}
 	
-	
-	/*
-	private void initializeRobotPanel() {
-		
-		
-		robotPane = new JPanel() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				
-				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
-				
-				robot.draw((Graphics2D) g);
-			}
-		};
-		
-		robotPane.setBackground(new Color(0,0,0,0));
-		robotPane.setOpaque(false);
-		robotPane.setVisible(true);
-	}
-	*/
-
-	/*
-	 * public static void drawRobot(Graphics g, Image robotImg, int size, int w, int
-	 * h, float x, float y) {
-	 * 
-	 * AffineTransform at = new AffineTransform();
-	 * 
-	 * // 4. translate it to the center of the component
-	 * at.translate(robotImg.getWidth(null) / 2, robotImg.getHeight(null) / 2);
-	 * 
-	 * at.setToTranslation((x * size + ( x - 1 ) * l + w), ((8 - (y + 1)) * size - (
-	 * 2 + (y + 1) ) * l + h));
-	 * 
-	 * // 3. do the actual rotation at.rotate(Math.PI/4);
-	 * 
-	 * at.setToScale(1 / size, 1 / size);
-	 * 
-	 * // 2. just a scale because this image is big //at.scale( 1 /size, 1 / size);
-	 * 
-	 * // 1. translate the object so that you rotate it around the // center (easier
-	 * :)) at.translate(-robotImg.getWidth(null) / 2, -robotImg.getHeight(null) /
-	 * 2);
-	 * 
-	 * Graphics2D g2d = (Graphics2D) g; g2d.drawImage(robotImg, at, null);
-	 * 
-	 * g.drawImage(robotImg,(int) (x * size + ( x - 1 ) * l + w),(int) ((8 - (y +
-	 * 1)) * size - ( 2 + (y + 1) ) * l + h), size, size, null); }
-	 */
-
 	private JFrame buildFrame() {
 		File file = new File("./img/Icon.png");
 		Image img = null;
@@ -373,11 +317,10 @@ public class LevelFrame extends JFrame implements MouseListener {
 
 		frame.setVisible(true);
 
-		
-		
 		return frame;
 	}
 
+	/*
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("Mouse " + e.getClickCount() + " times clicked at " + e.getPoint());
@@ -419,48 +362,13 @@ public class LevelFrame extends JFrame implements MouseListener {
 			tileSelectionStatus[xTile + 8 * yTile] += 1;
 		}
 
-		/*
-		System.out.println("xPos:" + xPos);
-		System.out.println("xNull:" + xNull);
-		System.out.println("size:" + size);
-		System.out.println("gap:" + gap);
-		System.out.println("shift amount:" + (xNull + 0.5 * gap));
-		System.out.println("shiftet xPos:" + (xPos - (xNull + 0.5 * gap)));
-		System.out.println("detect size:" + (gap + size));
-		System.out.println("tile converted:" + (xPos - (xNull + 0.5 * gap)) / (gap + size));
-		System.out.println("floored:" + Math.floor((xPos - (xNull + 0.5 * gap)) / (gap + size)));
-		System.out.println("casted:" + (int) Math.floor((xPos - (xNull + 0.5 * gap)) / (gap + size)));
-		System.out.println("xTile:" + xTile);
-		System.out.println();
-		System.out.println("yPos:" + yPos);
-		System.out.println("yNull:" + yNull);
-		System.out.println("size:" + size);
-		System.out.println("gap:" + gap);
-		System.out.println("shift amount:" + (yNull + 0.5 * gap));
-		System.out.println("shiftet xPos:" + (yPos - (yNull + 0.5 * gap)));
-		System.out.println("detect size:" + (gap + size));
-		System.out.println("tile converted:" + (yPos - (yNull + 0.5 * gap)) / (gap + size));
-		System.out.println("floored:" + Math.floor((yPos - (yNull + 0.5 * gap)) / (gap + size)));
-		System.out.println("casted:" + (int) Math.floor((yPos - (yNull + 0.5 * gap)) / (gap + size)));
-		System.out.println("yTile:" + yTile);
-		*/
-
 		gridPane.repaint();
 	}
-	
-	public byte[] composeLoc(byte x, byte y) {
-		byte[] loc = new byte[2];
-		loc[0] = x;
-		loc[1] = y;
-		
-		return loc;
-	}
+	*/
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		//System.out.println("Mouse " + e.getClickCount() + " times pressed at " + e.getPoint());
-		
-		
+
 		switch(e.getButton()) {
 		case 1:
 			robotPane.turnAnimated(1);
@@ -476,16 +384,23 @@ public class LevelFrame extends JFrame implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		//System.out.println("Mouse " + e.getClickCount() + " times released at " + e.getPoint());
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		//System.out.println("Mouse entered at " + e.getPoint());
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		//System.out.println("Mouse exited at " + e.getPoint());
+
+	}
+	
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

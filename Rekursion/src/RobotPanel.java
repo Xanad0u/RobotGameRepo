@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -51,10 +50,6 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 	
 	public void moveAnimated(int steps) {
-		
-		System.out.println("mA");
-		
-		//robot.af.setToTranslation(robot.xNull + robot.gap, robot.xNull + robot.gap);
 
 		x = 0;
 		y = 0;
@@ -175,6 +170,5 @@ public class RobotPanel extends JPanel implements ActionListener {
 	public void execute(byte[] cmds) {
 		
 		executionOrder = cmds;
-
 	}
 }

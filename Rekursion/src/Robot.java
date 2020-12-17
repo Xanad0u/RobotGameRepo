@@ -1,10 +1,6 @@
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
-import javax.swing.JPanel;
 
 
 public class Robot {
@@ -13,54 +9,15 @@ public class Robot {
 	
 	public double[] subPos = {0, 0};
 	public double subRot = 0;
-	
-	public int gap;
-	
-	public int size;
-	public int fullSize;
-	
-	public int xNull;
-	public int yNull;
-	
-	public double xOrigin;
-	public double yOrigin;
-	
+
 	public AffineTransform af;
 	
 	public int substeps = 0;
 	public long breakTime = 0;
+	
 	public BufferedImage img;
-	private Graphics2D g2D;
 	
 	LevelFrame host;
-	
-	public Robot(int ss, long bt, BufferedImage imgIn, Graphics2D g, LevelFrame hostIn) {
-		substeps = ss;
-		breakTime = bt;
-		img = imgIn;
-		
-		g2D = g;
-		
-		host = hostIn;
-		
-		af = new AffineTransform();
-		
-		af.setToTranslation(pos[0], pos[1]);
-		af.setToRotation(Math.toRadians(rot));
-	}
-	
-	public Robot(int ss, long bt, BufferedImage imgIn, LevelFrame hostIn) {
-		substeps = ss;
-		breakTime = bt;
-		img = imgIn;
-		
-		host = hostIn;
-
-		af = new AffineTransform();
-		
-		af.setToTranslation(pos[0], pos[1]);
-		af.setToRotation(Math.toRadians(rot));
-	}
 	
 	public Robot(int ss, long bt, BufferedImage imgIn) {
 		substeps = ss;
@@ -71,11 +28,6 @@ public class Robot {
 		
 		af.setToTranslation(pos[0], pos[1]);
 		af.setToRotation(Math.toRadians(rot));
-	}
-
-
-	public void setGraphics(Graphics2D g) {
-		g2D = g;
 	}
 	
 	public void set(byte[] p, byte r) {
@@ -130,58 +82,7 @@ public class Robot {
 		return rot;
 	}
 	
-	public void moveAnimated(JPanel pane) {
-		
-		System.out.println("mA");
-		
-		af.setToTranslation(xNull + gap + size / 2, xNull + gap + size / 2);
-		
-		float x = 0;
-		float y = 0;
-		
-		switch(rot) {
-		case 0:
-			x = 1;
-			break;
-		case 1:
-			y = -1;
-			break;
-		case 2:
-			x = -1;
-			break;
-		case 3:
-			y = -1;
-			break;
-		}
-		
-		for(int i = 0; i < substeps; i++) {
-			System.out.println("loop " + i);
-			
-			af.translate(x * (size / substeps), y * (size / substeps));
-			
-			pane.repaint();
-
-			try {
-				Thread.sleep(breakTime);
-				System.out.println("sleep " + i);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void draw(Graphics2D g) {
-
+	public void draw(Graphics2D g) {	//Draw robot using set AffineTransform
 		g.drawImage(img, af, null);
-		//System.out.println("drew robot");
-	}
-	
-	public void update() {
-		gap = host.gap;
-		fullSize = host.fullSize;
-		size = host.size;
-		xNull = host.xNull;
-		yNull = host.yNull;
 	}
 }
