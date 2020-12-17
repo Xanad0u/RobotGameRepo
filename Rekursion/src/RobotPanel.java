@@ -18,6 +18,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	Timer timer;
 	
+	int moveTime;
+	int pauseTime;
+	int pauseCounter = 0;
 	
 	int ss;
 	
@@ -27,24 +30,32 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int callMove = 0;
 	int callTurn = 0;
 	
-	public RobotPanel(int ssIn, int time, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
-		robot = new Robot(ssIn, time, imgIn);
+	int moveDir = 0;
+	
+	byte[] executionOrder = null;
+	int executionElement = 0;
+	boolean executionReady = true;
+	
+	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, GridGraphics hostIn) {
+		robot = new Robot(ssIn, moveTimeIn, imgIn);
 		frame = frameIn;
 		
 		host = hostIn;
 		
 		ss = ssIn;
+		moveTime = moveTimeIn;
+		pauseTime = pauseTimeIn;
 		
-		timer = new Timer(time / ss, this);
+		timer = new Timer(moveTimeIn / ss, this);
 		timer.start();
 	}
 	
-	public void moveAnimated() {
+	public void moveAnimated(int steps) {
 		
 		System.out.println("mA");
 		
 		//robot.af.setToTranslation(robot.xNull + robot.gap, robot.xNull + robot.gap);
-		
+
 		x = 0;
 		y = 0;
 		
@@ -53,7 +64,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			x = 1;
 			break;
 		case 1:
-			y = -1;
+			y = 1;
 			break;
 		case 2:
 			x = -1;
@@ -63,6 +74,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			break;
 		}
 		
+		moveDir = steps;
 		callMove = 1;
 	}
 	
@@ -91,8 +103,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 		if(callMove > 0) {
 
-			robot.subPos[0] += x * ((host.size + host.gap) / ss);
-			robot.subPos[1] += y * ((host.size + host.gap) / ss);
+			robot.subPos[0] += (x * ((host.size + host.gap) / ss)) * moveDir;
+			robot.subPos[1] += (y * ((host.size + host.gap) / ss)) * moveDir;
 			
 
 			callMove++;
@@ -103,29 +115,66 @@ public class RobotPanel extends JPanel implements ActionListener {
 				robot.subPos[0] = 0;
 				robot.subPos[1] = 0;
 				
-				robot.pos[0] += x;
-				robot.pos[1] += y;
+				robot.pos[0] += x * moveDir;
+				robot.pos[1] += y * moveDir;
+				
+				pauseCounter = pauseTime;
+				executionReady = true;
 			}
 		}
 		
 		if(Math.abs(callTurn) > 0) {
-			robot.subRot += 90 / ss;
+			robot.subRot += 90 / ss * Math.signum(callTurn);
 			
 			callTurn += Math.signum(callTurn);
 			
+			System.out.println(Math.abs(callTurn));
+			System.out.println((int) Math.signum(callTurn));
+			System.out.println(callTurn);
+			
 			if(Math.abs(callTurn) > ss + 1) {
-				robot.rot -= Math.signum(callTurn);
+				robot.turn((byte) Math.signum(callTurn));
 				
 				callTurn = 0;
 				
 				robot.subRot = 0;
 				
 				System.out.println("rot: " + robot.rot);
+				
+				pauseCounter = pauseTime;
+				executionReady = true;
 			}
 		}
+		
+		if(executionOrder != null && executionReady && pauseCounter == 0) {
+			executionReady = false;
+			switch(executionOrder[executionElement]) {
+			case 1:
+				moveAnimated(1);
+				break;
+			case 2:
+				moveAnimated(-1);
+				break;
+			case 3:
+				turnAnimated(1);
+				break;
+			case 4:
+				turnAnimated(-1);
+				break;
+			}
+			executionElement++;
+			
+			if(executionElement == executionOrder.length) executionOrder = null;
+		}
+		
+		if(pauseCounter > 0) pauseCounter--;
 		
 		repaint();
 	}
 	
-	
+	public void execute(byte[] cmds) {
+		
+		executionOrder = cmds;
+
+	}
 }

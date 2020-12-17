@@ -41,8 +41,9 @@ public class GridGraphics extends JFrame implements MouseListener {
 	byte slotAmount;
 	byte[] realCards;
 	
-	final int substeps = 80;
-	final int time = 1000;
+	final int substeps = 20;
+	final int moveTime = 100;
+	final int pauseTime = 50;
 
 	final StageFileManager fileManager = new StageFileManager();
 
@@ -70,6 +71,8 @@ public class GridGraphics extends JFrame implements MouseListener {
 
 
 	Graphics gMain;
+	
+	byte[] testExecute = {1,1,1,3,1,1,2,4,1,3,1,1,3,1,1};
 
 	public GridGraphics(int levelIn) throws IOException {
 		level = levelIn;
@@ -103,7 +106,7 @@ public class GridGraphics extends JFrame implements MouseListener {
 		//robotPane.setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
 		
-		robotPane = new RobotPanel(substeps, time, robotImg, frame, this);
+		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this);
 		
 		robotPane.setBackground(new Color(0,0,0,0));
 		robotPane.setOpaque(false);
@@ -118,7 +121,9 @@ public class GridGraphics extends JFrame implements MouseListener {
 		
 		//moveRobot();
 		
-		robotPane.turnAnimated(-1);
+		//robotPane.turnAnimated(-1);
+		
+		robotPane.execute(testExecute);
 		
 	}
 
@@ -457,22 +462,34 @@ public class GridGraphics extends JFrame implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("Mouse " + e.getClickCount() + " times pressed at " + e.getPoint());
-		robotPane.moveAnimated();
+		//System.out.println("Mouse " + e.getClickCount() + " times pressed at " + e.getPoint());
+		
+		
+		switch(e.getButton()) {
+		case 1:
+			robotPane.turnAnimated(1);
+			break;
+		case 2:
+			robotPane.moveAnimated(1);
+			break;
+		case 3:
+			robotPane.turnAnimated(-1);
+			break;
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		System.out.println("Mouse " + e.getClickCount() + " times released at " + e.getPoint());
+		//System.out.println("Mouse " + e.getClickCount() + " times released at " + e.getPoint());
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		System.out.println("Mouse entered at " + e.getPoint());
+		//System.out.println("Mouse entered at " + e.getPoint());
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		System.out.println("Mouse exited at " + e.getPoint());
+		//System.out.println("Mouse exited at " + e.getPoint());
 	}
 }
