@@ -23,8 +23,6 @@ public class GridPanel extends JPanel{
 		
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
 		getActionMap().put("trigger", new PopAction(host.menu));
-		
-		testCard = new Card(host.RCard, 7, 9);
 	}
 	
 	@Override
@@ -67,8 +65,7 @@ public class GridPanel extends JPanel{
 				switch (tiles[host.nTiles * host.nTiles - (host.nTiles * (j + 1) - i)]) {
 
 				case 0:
-					//g.fillRect(xPos, yPos, host.size, host.size);
-					testCard.draw(g, xPos, yPos, host.size);
+					g.fillRect(xPos, yPos, host.size, host.size);
 					break;
 
 				case 1:
