@@ -10,7 +10,7 @@ public class Card {
 	
 	protected BufferedImage img;
 	private BufferedImage emptyImg;
-	private int type;
+	protected int type;
 	protected int rLoops;
 	
 	public int state = 0;

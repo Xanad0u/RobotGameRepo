@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class StageFrame extends JFrame implements MouseListener {
 
@@ -68,6 +70,8 @@ public class StageFrame extends JFrame implements MouseListener {
 
 	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
 
+	int[] testRCards = {7,2,2,1,2,4,3};
+	
 	CardPanel testCardPanel;
 	SlotPanel testSlotPanel;
 	
@@ -94,8 +98,9 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		reImportStage(stage);		//Loading stage information from storage
 		frame = buildFrame();		//Constructing frame
+		frame.addMouseListener(this);	//Add mouse listening
 		
-		initializeTileGridPanel();	//Constructing popup Menu
+		buildPopupMenu();	//Constructing popup Menu
 		
 		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this); //Constructing robot pane
 		
@@ -127,7 +132,9 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		testCardPanel.requestFocus();
 				
-		robotPane.execute(testExecute);		//Temporary robot movement testing
+		//robotPane.execute(testExecute);		//Temporary robot movement testing
+		
+		execute();
 		
 	}
 
@@ -144,164 +151,11 @@ public class StageFrame extends JFrame implements MouseListener {
 	}
 
 	
-	private void initializeTileGridPanel() {
-		
-		/*
-		gridPane = new JPanel() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				
-				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
-				
-				gMain = g;
-				
-				int w = frame.getContentPane().getWidth();
-				int h = frame.getContentPane().getHeight();
-
-				
-
-				int xPos;
-				int yPos;
-
-				int xCard;
-				int yCard;
-
-				int ySlot;
-
-				if (h < w * ratio) {
-					xNull = (int) ((w - (h / ratio)) / 2);
-					yNull = (int) ((h - (h / ratio)) / 2);
-					size = (int) (((h / ratio) - ((nTiles + 1) * gap)) / nTiles);
-				}
-
-				else {
-					xNull = 0;
-					yNull = (h - w) / 2;
-					size = (w - ((nTiles + 1) * gap)) / nTiles;
-				}
-
-				fullSize = (nTiles + 1) * gap + nTiles * size;
-
-				g.setColor(Color.BLACK);
-				g.fillRect(xNull, yNull, fullSize, fullSize);
-
-				g.setColor(Color.WHITE);
-
-				for (int j = 0; j < nTiles; j++) {
-					for (int i = 0; i < nTiles; i++) {
-
-						xPos = ((i + 1) * gap + i * size) + xNull;
-						yPos = ((j + 1) * gap + j * size) + yNull;
-
-						switch (tiles[nTiles * nTiles - (nTiles * (j + 1) - i)]) {
-
-						case 0:
-							g.fillRect(xPos, yPos, size, size);
-							break;
-
-						case 1:
-							g.drawImage(blockTile, xPos, yPos, size, size, null);
-							break;
-
-						case 2:
-							g.drawImage(holeTile, xPos, yPos, size, size, null);
-							break;
-
-						case 3:
-							g.drawImage(startTile, xPos, yPos, size, size, null);
-							break;
-
-						case 4:
-							g.drawImage(flagTile, xPos, yPos, size, size, null);
-							break;
-
-						}
-						
-						
-						if (tileSelectionStatus[i + 8 * j] != 0) {
-							switch (tileSelectionStatus[i + 8 * j]) {
-
-							case 1:
-								g.drawImage(blockTile, xPos, yPos, size, size, null);
-								break;
-
-							case 2:
-								g.drawImage(holeTile, xPos, yPos, size, size, null);
-								break;
-
-							case 3:
-								g.drawImage(startTile, xPos, yPos, size, size, null);
-								break;
-
-							case 4:
-								g.drawImage(flagTile, xPos, yPos, size, size, null);
-								break;
-							}
-						}
-						
-					}
-				}
-				
-
-				yCard = (int) (((h - fullSize) / 2) - 2 * size);
-
-				for (int i = 0; i < cardAmount; i++) {
-					xCard = (int) ((fullSize - cardAmount * size) / (cardAmount + 1) * (i + 1) + size * i + xNull);
-
-					switch (realCards[i]) {
-					case 1:
-						g.drawImage(backCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 2:
-						g.drawImage(forwardCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 3:
-						g.drawImage(fastForwardCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 4:
-						g.drawImage(rTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 5:
-						g.drawImage(lTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 6:
-						g.drawImage(uTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 7:
-						g.drawImage(RCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-					}
-				}
-
-				ySlot = (int) (((h + fullSize) / 2) + 0.5 * size);
-
-				for (int i = 0; i < slotAmount; i++) {
-					xCard = (int) ((fullSize - slotAmount * size) / (slotAmount + 1) * (i + 1) + size * i + xNull);
-
-					g.drawImage(cardSlot, xCard, ySlot, size, (int) (size * cardRatio), null);
-				}
-				menu.repaint();
-			}
-		};
-		*/
-		
-		frame.addMouseListener(this);	//Add mouse listening
-		
+	private void buildPopupMenu() {
 		menu = new MenuPanel(frame)  {	//Create popup menu
 			
 			@Override
 			public void paintComponent(Graphics g) {
-				
 				super.paintComponent(g);	//Clear
 				
 				this.setBounds(frame.getContentPane().getWidth() / 2 - menuWidth / 2, frame.getContentPane().getHeight() / 2 - menuHeight / 2, menuWidth, menuHeight);	//Set popup menu bounds
@@ -309,9 +163,7 @@ public class StageFrame extends JFrame implements MouseListener {
 		};
 		
 		menu.setVisible(false);		//make popup menu invisible
-		
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);	//Set popup menu bounds
-		
 	}
 	
 	private JFrame buildFrame() {
@@ -341,6 +193,172 @@ public class StageFrame extends JFrame implements MouseListener {
 		return frame;	//Output frame
 	}
 
+	
+	public void execute() {
+		//int[] rLoops = new int[testSlotPanel.types.length];
+		
+		int[] rLoops = testRCards;
+		int[] rLoopsR = new int[rLoops.length];
+		
+		for(int i = 0; i < rLoopsR.length; i++) {
+			rLoopsR[i] = rLoops[i];
+		}
+		
+		int maxLoop = 0;
+		
+		for(int i = 0; i < rLoops.length; i++) {
+			if(rLoops[i] > maxLoop) maxLoop = rLoops[i];
+		}
+		
+		System.out.println();
+		System.out.println("maxLoop: " + maxLoop);
+		System.out.println();
+		
+		int currentPaths = 1;
+		int totalPaths = 1;
+		int pathSplits;
+		
+		for(int i = 0; i < maxLoop; i++) {
+			pathSplits = 0;
+			
+			System.out.print("preArray: { ");
+			
+			for(int j = 0; j < rLoops.length; j++) {
+				if(rLoops[j] > 0) pathSplits++;
+				
+				System.out.print(rLoops[j] + " ");
+			}
+			
+			System.out.println("}");
+			
+			System.out.println("pathSplits: " + pathSplits);
+			
+			currentPaths = currentPaths * pathSplits;
+			
+			totalPaths += currentPaths;
+			
+			System.out.println("paths (temp): " + currentPaths);
+			
+			System.out.print("postArray: { ");
+			
+			for(int j = 0; j < rLoops.length; j++) {
+				if(rLoops[j] > 0) rLoops[j]--;
+				System.out.print(rLoops[j] + " ");
+			}
+			System.out.println("}");
+			System.out.println();
+		}
+		
+		System.out.println("paths: " + totalPaths);
+		
+		
+		int[] cmd;
+		int realCmd = 0;
+		
+		for(int i = 0; i < testSlotPanel.types.length; i++) {
+			if(testSlotPanel.types[i] == 3 || testSlotPanel.types[i] == 6) realCmd += 2;
+			else realCmd++;
+		}
+		
+		System.out.println("real cmd: " + realCmd);
+		
+		cmd = new int[realCmd];
+		
+		int shift = 0;
+		
+		for(int i = 0; i < testSlotPanel.types.length; i++) {
+			switch(testSlotPanel.types[i]) {
+				case 1:
+					cmd[i + shift] = 2;
+					break;
+				case 2:
+					cmd[i + shift] = 1;
+					break;
+				case 3:
+					cmd[i + shift] = 1;
+					shift++;
+					cmd[i + shift] = 1;
+					break;
+				case 4:
+					cmd[i + shift] = 4;
+					break;
+				case 5:
+					cmd[i + shift] = 3;
+					break;
+				case 6:
+					cmd[i + shift] = 4;
+					shift++;
+					cmd[i + shift] = 4;
+					break;
+				case 7:
+					cmd[i + shift] = 0;
+					break;
+			}
+		}
+		
+		int[] fullCmd = new int[totalPaths * realCmd];
+
+		ArrayList<Integer> commandList = new ArrayList<>();
+		
+		for(int i = 0; i < cmd.length; i++) {
+			commandList.add(cmd[i]);
+		}
+		
+		ListIterator<Integer> commandIterator2 = commandList.listIterator(0);
+		
+		System.out.println(commandIterator2.hasNext());
+		
+		do {
+			System.out.println("in cmd: " + commandIterator2.next());
+		}
+		while(commandIterator2.hasNext());
+		
+		
+		ArrayList<Integer> outputList = recursion(commandList, rLoopsR);
+		
+		ListIterator<Integer> commandIterator = outputList.listIterator(0);
+		
+		System.out.println(commandIterator.hasNext());
+		
+		do {
+			System.out.println(commandIterator.next());
+		}
+		while(commandIterator.hasNext());
+		
+		//robotPane.execute(testExecute);
+	}
+	
+	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {
+
+		System.out.println("recursion called");
+		
+		ArrayList<Integer> commandsOut = new ArrayList<>();
+		
+		for(int i = 0; i < loops.length; i++) {
+			System.out.println("loops pre: " + i + " ; " + loops[i]);
+			if(loops[i] > 0) loops[i]--;
+			System.out.println("loops post: " + i + " ; " + loops[i]);
+		}
+		
+		for(int i = 0; i < loops.length; i++) {
+			if(loops[i] != 0) {
+				commandsOut.add(commandsIn.get(i));
+				System.out.println("added " + commandsIn.get(i));
+			}
+			
+			else {
+				System.out.println("else called");
+				if(loops[i] > 0) {
+					System.out.println("else if called");
+					commandsOut.addAll(recursion(commandsIn, loops));
+				}
+			}
+		}
+		
+		return commandsOut;
+	}
+	
+	
 	/*
 	@Override
 	public void mouseClicked(MouseEvent e) {

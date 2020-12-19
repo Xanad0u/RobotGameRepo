@@ -5,9 +5,9 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 public class SlotPanel extends JPanel implements MouseListener {
-	int[] types;
-	int[] loops;
-	int slotAmount;
+	public int[] types;
+	public int[] loops;
+	public int slotAmount;
 	Slot[] slots;
 	int[] origin;
 	
@@ -27,6 +27,7 @@ public class SlotPanel extends JPanel implements MouseListener {
 		for(int i = 0; i < slotAmount; i++) {
 			types[i] = 0;
 			loops[i] = 0;
+			origin[i] = -1;
 			slots[i] = new Slot(host.cardSlot);
 		}
 		
@@ -61,6 +62,10 @@ public class SlotPanel extends JPanel implements MouseListener {
 		switch(slots[pos].state) {
 		case 0:
 			slots[pos].clear();
+			cardPanel.cards[origin[pos]].state = 0;
+			origin[pos] = -1;
+			types[pos] = 0;
+			loops[pos] = 0;
 			
 			repaint();
 			cardPanel.repaint();

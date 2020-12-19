@@ -58,7 +58,7 @@ public class StageFileManager {
 			File stageFile = new File("Stage_" + n + ".txt");
 			Scanner reader = new Scanner(stageFile);
 			String data = reader.nextLine();
-			//System.out.println("SFM: " + data);
+
 			reader.close();
 			
 			dataArray = new byte[data.length()];
@@ -107,9 +107,6 @@ public class StageFileManager {
 		byte[] data = new byte[getCardAmount(n)];
 		int shift = 0;
 		
-		//System.out.println("allCards: " + allCards.length);
-		//System.out.println("realCards: " + getCardAmount(n));
-		//System.out.println(allCards[0]);
 		if(getCardAmount(n) != 0) {
 		data[0] = allCards[0];
 		

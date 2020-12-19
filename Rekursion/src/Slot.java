@@ -8,8 +8,9 @@ public class Slot extends Card {
 		state = 2;
 	}
 	
-	public void makeCard(int type, StageFrame host) {
-		switch(type) {
+	public void makeCard(int typeIn, StageFrame host) {
+		type = typeIn;
+		switch(typeIn) {
 		case 1:
 			img = host.backCard;
 			break;
@@ -33,6 +34,7 @@ public class Slot extends Card {
 	}
 	
 	public void makeCard(StageFrame host, int loops) {
+		type = 7;
 		img = host.rCard;
 		rLoops = loops;
 		state = 0;
