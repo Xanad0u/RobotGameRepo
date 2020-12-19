@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-public class GridPanel extends JPanel{
+public class GridPanel extends JPanel {
 
 	private JFrame hostFrame;
 	private StageFrame host;

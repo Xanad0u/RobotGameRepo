@@ -123,9 +123,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 			
 			callTurn += Math.signum(callTurn);
 			
-			System.out.println(Math.abs(callTurn));
-			System.out.println((int) Math.signum(callTurn));
-			System.out.println(callTurn);
+			//System.out.println(Math.abs(callTurn));
+			//System.out.println((int) Math.signum(callTurn));
+			//System.out.println(callTurn);
 			
 			if(Math.abs(callTurn) > ss + 1) {
 				robot.turn((byte) Math.signum(callTurn));
@@ -134,7 +134,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				
 				robot.subRot = 0;
 				
-				System.out.println("rot: " + robot.rot);
+				//System.out.println("rot: " + robot.rot);
 				
 				pauseCounter = pauseTime;
 				executionReady = true;

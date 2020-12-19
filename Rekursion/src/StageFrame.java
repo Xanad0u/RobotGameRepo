@@ -36,6 +36,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	byte cardAmount;							//Holds the amount of cards in the stage
 	byte slotAmount;							//Holds the amount of slots in the stage
 	byte[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
+	byte[] cards;
 	
 	final int substeps = 20;		//Animation substeps of the robot
 	final int moveTime = 100;		//Time it takes the robot to do one action
@@ -56,7 +57,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	final BufferedImage forwardCard;		//Holds the forward card image
 	final BufferedImage fastForwardCard;	//Holds the fast forward card image
 	final BufferedImage backCard;			//Holds the back card image
-	final BufferedImage RCard;				//Holds the R card image
+	final BufferedImage rCard;				//Holds the R card image
 
 	final BufferedImage cardSlot;			//Holds the card slot image
 
@@ -67,6 +68,7 @@ public class StageFrame extends JFrame implements MouseListener {
 
 	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
 
+	CardPanel testCardPanel;
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -84,7 +86,7 @@ public class StageFrame extends JFrame implements MouseListener {
 		forwardCard = ImageIO.read(new File("./img/Card_Forward.png"));
 		fastForwardCard = ImageIO.read(new File("./img/Card_FastForward.png"));
 		backCard = ImageIO.read(new File("./img/Card_Back.png"));
-		RCard = ImageIO.read(new File("./img/Card_R.png"));
+		rCard = ImageIO.read(new File("./img/Card_R.png"));
 
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
 
@@ -107,10 +109,16 @@ public class StageFrame extends JFrame implements MouseListener {
 		robotPane.setVisible(true);				//Setting robot pane to visible
 		robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
 		
+		testCardPanel = new CardPanel(cards, cardAmount, this);
+		
+		testCardPanel.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
 		frame.add(menu);		//Add menu to frame
+		frame.add(testCardPanel);
 		frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
+		
+		testCardPanel.requestFocus();
 				
 		robotPane.execute(testExecute);		//Temporary robot movement testing
 		
@@ -121,7 +129,8 @@ public class StageFrame extends JFrame implements MouseListener {
 		slotAmount = fileManager.getSlots(n);		//Loading slot amount
 		cardAmount = fileManager.getCardAmount(n);	//Loading card amount
 		realCards = fileManager.getRealCards(n);	//Loading real cards, not the loop index of R cards
-
+		cards = fileManager.getCards(n);
+		
 		for (int i = 0; i < tiles.length; i++) {	//Reset tile selection status
 			tileSelectionStatus[i] = 0;
 		}
@@ -373,7 +382,7 @@ public class StageFrame extends JFrame implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {	//Temporary robot movement testing
-
+		/*
 		switch(e.getButton()) {
 		case 1:
 			robotPane.turnAnimated(1);
@@ -385,6 +394,7 @@ public class StageFrame extends JFrame implements MouseListener {
 			robotPane.turnAnimated(-1);
 			break;
 		}
+		*/
 	}
 
 	@Override
