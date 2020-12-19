@@ -12,6 +12,8 @@ public class CardPanel extends JPanel implements MouseListener {
 	Card[] cards;
 	StageFrame host;
 	
+	public int selected = -1;
+	
 	int gap = 0;
 	
 	public CardPanel(byte[] cardArray, int cardAmountIn, StageFrame hostIn) {
@@ -53,6 +55,10 @@ public class CardPanel extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
+	public Card getCard(int index) {
+		return cards[index];
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -74,24 +80,17 @@ public class CardPanel extends JPanel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int pos = e.getX() / (gap + host.size);
-		
-		System.out.println("pos: " + pos);
-	
 		if(pos <= cardAmount) {
-			switch(cards[pos].state) {
-			case 0:
-				for(int i = 0; i < cardAmount; i++) {
-					if(i == pos) cards[i].state = 1;
-					else {
-						if(cards[i].state == 1) cards[i].state = 0;
-					}
-				}
-				break;
-			case 1:
-				cards[pos].state = 0;
-				break;
+			if(cards[pos].state != 2) {
+				cards[pos].state = 1;
+			
+				if(selected != -1) cards[selected].state = 0;
+				
+				if(selected == pos) selected = -1;
+				else selected = pos;
+				
+				repaint();
 			}
-			repaint();
 		}
 	}
 

@@ -69,6 +69,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
 
 	CardPanel testCardPanel;
+	SlotPanel testSlotPanel;
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -113,8 +114,14 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		testCardPanel.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
+		testSlotPanel = new SlotPanel(slotAmount, testCardPanel, this);
+		
+		testSlotPanel.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		
+		
 		frame.add(menu);		//Add menu to frame
 		frame.add(testCardPanel);
+		frame.add(testSlotPanel);
 		frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
 		

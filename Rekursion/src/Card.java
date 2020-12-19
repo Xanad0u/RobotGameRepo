@@ -8,10 +8,10 @@ public class Card {
 	private final double cardRatio = 1.57;
 	private final int lineSize = 4;
 	
-	private BufferedImage img;
+	protected BufferedImage img;
 	private BufferedImage emptyImg;
 	private int type;
-	private int rLoops;
+	protected int rLoops;
 	
 	public int state = 0;
 	
@@ -26,6 +26,20 @@ public class Card {
 		type = typeIn;
 		emptyImg = emptyImgIn;
 		rLoops = rLoopsIn;
+	}
+	
+	public Card(BufferedImage emptyImgIn) {
+		type = 0;
+		emptyImg = emptyImgIn;
+	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	public int getLoops() {
+		if(type == 7) return rLoops;
+		else return 0;
 	}
 	
 	public void draw(Graphics g, int x, int y, int size) {
@@ -68,10 +82,5 @@ public class Card {
 			g.drawImage(emptyImg, x, y, size, (int) (size * cardRatio), null);
 			break;
 		}
-		
-		
-		
-		
-		
 	}
 }
