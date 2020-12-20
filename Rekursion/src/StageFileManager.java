@@ -159,26 +159,28 @@ public class StageFileManager {
 	public byte[] getInitLoc(int n) {
 		byte[] data = getTiles(n);
 		byte tile = 0;
-		byte[] loc = new byte[2];
 		
 		for(int i = 0; i < data.length; i++) {
 			if(data[i] == 3) tile = (byte) (i + 1);
 		}
-		
-		System.out.println("tile: " + tile);
 
+		return tileToPos(tile);
+	}
+	
+	public byte[] tileToPos(int tile) {
+		byte[] loc = new byte[2];
+		
 		loc[0] = (byte) ((tile - 1) % 8);
 		loc[1] = (byte) (7 - Math.floor((double) tile / 8));
 		
-		System.out.println("tile / 8: " + (double) tile / 8);
-		System.out.println("Math.floor: " + Math.floor((double) tile / 8));
-		System.out.println("7 -: " + (7 - Math.floor(tile / 8)));
-		
-		System.out.println("x: " + loc[0]);
-		System.out.println("y: " + loc[1]);
-		
 		return loc;
 	}
+	
+	public int posToTile(byte[] pos) {
+		return (pos[0] + 1 + 8 * (7 - pos[1]));
+	}
+	
+	
 	
 	public byte getSlots(int n) {
 		byte[] data = Read(n);

@@ -115,6 +115,11 @@ public class RobotPanel extends JPanel implements ActionListener {
 				robot.pos[0] += x * moveDir;
 				robot.pos[1] += y * moveDir;
 				
+				System.out.println("pos.x: " + robot.pos[0]);
+				System.out.println("pos.y: " + robot.pos[1]);
+				System.out.println();
+				System.out.println();
+				
 				pauseCounter = pauseTime;
 				executionReady = true;
 			}
@@ -147,10 +152,19 @@ public class RobotPanel extends JPanel implements ActionListener {
 			executionReady = false;
 			switch(executionOrder[executionElement]) {
 			case 1:
-				moveAnimated(1);
+				System.out.println("moveTile: " + host.fileManager.posToTile(robot.getMovePos((byte) 1)));
+				System.out.println("moveTileType: " + host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) 1)) - 1]);
+				System.out.println();
+				if(host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) 1)) - 1] != 1) 
+					moveAnimated(1);
+				else {
+					pauseCounter = pauseTime;
+					executionReady = true;
+				}
 				break;
 			case 2:
-				moveAnimated(-1);
+				if(host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) - 1)) - 1] != 1) 
+					moveAnimated(-1);
 				break;
 			case 3:
 				turnAnimated(1);

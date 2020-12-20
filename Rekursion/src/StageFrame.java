@@ -256,16 +256,11 @@ public class StageFrame extends JFrame implements MouseListener {
 		ArrayList<Integer> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
 		
 		executionBuffer = new int[outputList.size()];	//Initialize int array of the length of the List
-		
-		ListIterator<Integer> commandIterator = outputList.listIterator(0);	//Create Iterator for the List to read it
-		
-		int k = 0;	//Set the iteration counter k to 0
-		
-		do {
-			executionBuffer[k] = outputList.get(k);	//copy List to the executionBuffer int array
-			k++;
+
+		for(int i = 0; i < outputList.size(); i++) {
+			executionBuffer[i] = outputList.get(i);	//copy List to the executionBuffer int array
 		}
-		while(commandIterator.hasNext());	//condition: there is a next element
+
 
 		robotPane.execute(executionBuffer);	//run execution in the robot instance
 	}

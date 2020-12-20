@@ -48,20 +48,47 @@ public class Robot {
 		switch(rot) {
 		case 0:
 			pos[0] += step;
-		break;
+			break;
 		
 		case 1:
 			pos[1] += step;
-		break;
+			break;
 		
 		case 2:
 			pos[0] -= step;
-		break;
+			break;
 		
 		case 3:
 			pos[1] -= step;
-		break;
+			break;
 		}
+	}
+	
+	public byte[] getMovePos(byte step) {
+		
+		byte[] localPos = new byte[2];
+		localPos[0] = pos[0];
+		localPos[1] = pos[1];
+		
+		switch(rot) {
+		case 0:
+			localPos[0] += step;
+			break;
+		
+		case 1:
+			localPos[1] += step;
+			break;
+		
+		case 2:
+			localPos[0] -= step;
+			break;
+		
+		case 3:
+			localPos[1] -= step;
+			break;
+		}
+		
+		return localPos;
 	}
 	
 	public void turn(byte turn) {
