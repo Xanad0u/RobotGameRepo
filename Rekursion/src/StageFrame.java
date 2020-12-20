@@ -68,25 +68,13 @@ public class StageFrame extends JFrame implements MouseListener {
 	GridPanel gridPane;		//Holds the pane containing the board
 	MenuPanel menu;			//Holds the popup menu
 
-	int[] executionBuffer;
-	
-	
-	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
+	int[] executionBuffer;	//Temporary storage holding the execution commands
+		
+	CardPanel cardPane;		//Holds the pane containing the usable cards
+	SlotPanel slotPane;		//Holds the pane containing the slot and the cards placed in them
 
-	int[] testRCards = {7,2,2,1,2,4,3};
-	
-	int[] testInstructions = {4,2,5,7,4,1,7,4,5};
-	
-	int[] testLoops = {0,0,0,3,0,0,2,0,0};
-	
-	int[] testControl = {4,1,3,4,1,3,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,2,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,3,4,2,3,1,3,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,2,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,3,4,3};
-			
-	CardPanel testCardPanel;
-	SlotPanel testSlotPanel;
-
-	private byte[] initPos;
-
-	private byte initRot;
+	private byte[] initPos;	//Holds the initial position of the robot
+	private byte initRot;	//Holds the initial rotation of the robot
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -129,27 +117,20 @@ public class StageFrame extends JFrame implements MouseListener {
 		robotPane.setVisible(true);				//Setting robot pane to visible
 		robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
 		
-		testCardPanel = new CardPanel(cards, cardAmount, this);
+		cardPane = new CardPanel(cards, cardAmount, this);
 		
-		testCardPanel.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
-		testSlotPanel = new SlotPanel(slotAmount, testCardPanel, this);
+		slotPane = new SlotPanel(slotAmount, cardPane, this);
 		
-		testSlotPanel.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
 		
 		frame.add(menu);		//Add menu to frame
-		frame.add(testCardPanel);
-		frame.add(testSlotPanel);
+		frame.add(cardPane);
+		frame.add(slotPane);
 		frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
-		
-		testCardPanel.requestFocus();
-				
-		//robotPane.execute(testExecute);		//Temporary robot movement testing
-		
-		//execute();
-		
 	}
 
 	private void reImportStage(int n) {				//Loading stage information from storage
@@ -157,9 +138,9 @@ public class StageFrame extends JFrame implements MouseListener {
 		slotAmount = fileManager.getSlots(n);		//Loading slot amount
 		cardAmount = fileManager.getCardAmount(n);	//Loading card amount
 		realCards = fileManager.getRealCards(n);	//Loading real cards, not the loop index of R cards
-		cards = fileManager.getCards(n);
-		initPos = fileManager.getInitLoc(n);
-		initRot = fileManager.getInitRot(n);
+		cards = fileManager.getCards(n);			//Loading all cards
+		initPos = fileManager.getInitLoc(n);		//Loading the initial location of the robot
+		initRot = fileManager.getInitRot(n);		//Loading the initial rotation of the robot
 		
 		for (int i = 0; i < tiles.length; i++) {	//Reset tile selection status
 			tileSelectionStatus[i] = 0;
@@ -172,7 +153,7 @@ public class StageFrame extends JFrame implements MouseListener {
 			
 			@Override
 			public void paintComponent(Graphics g) {
-				super.paintComponent(g);	//Clear
+				super.paintComponent(g);	//Clear all drawn
 				
 				this.setBounds(frame.getContentPane().getWidth() / 2 - menuWidth / 2, frame.getContentPane().getHeight() / 2 - menuHeight / 2, menuWidth, menuHeight);	//Set popup menu bounds
 			}
@@ -210,200 +191,105 @@ public class StageFrame extends JFrame implements MouseListener {
 	}
 
 	
-	public void execute() {
-		//int[] rLoops = new int[testSlotPanel.types.length];
-		/*
-		int[] rLoops = testRCards;
-		int[] rLoopsR = new int[rLoops.length];
-		
-		for(int i = 0; i < rLoopsR.length; i++) {
-			rLoopsR[i] = rLoops[i];
-		}
-		
-		int maxLoop = 0;
-		
-		for(int i = 0; i < rLoops.length; i++) {
-			if(rLoops[i] > maxLoop) maxLoop = rLoops[i];
-		}
-		
-		System.out.println();
-		System.out.println("maxLoop: " + maxLoop);
-		System.out.println();
-		
-		int currentPaths = 1;
-		int totalPaths = 1;
-		int pathSplits;
-		
-		for(int i = 0; i < maxLoop; i++) {
-			pathSplits = 0;
-			
-			System.out.print("preArray: { ");
-			
-			for(int j = 0; j < rLoops.length; j++) {
-				if(rLoops[j] > 0) pathSplits++;
-				
-				System.out.print(rLoops[j] + " ");
-			}
-			
-			System.out.println("}");
-			
-			System.out.println("pathSplits: " + pathSplits);
-			
-			currentPaths = currentPaths * pathSplits;
-			
-			totalPaths += currentPaths;
-			
-			System.out.println("paths (temp): " + currentPaths);
-			
-			System.out.print("postArray: { ");
-			
-			for(int j = 0; j < rLoops.length; j++) {
-				if(rLoops[j] > 0) rLoops[j]--;
-				System.out.print(rLoops[j] + " ");
-			}
-			System.out.println("}");
-			System.out.println();
-		}
-		
-		System.out.println("paths: " + totalPaths);
-		*/
-		
-		int[] cmd;
-		int realCmd = 0;
-		
+	public void execute() {		//Method to read, convert, pass and execute the cards placed in the slots
 
-		for(int i = 0; i < testSlotPanel.types.length; i++) {
-			if(testSlotPanel.types[i] == 3 || testSlotPanel.types[i] == 6) realCmd += 2;
+		int[] cmd;			//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
+		int realCmd = 0;	//Stores the length of the split command string
+		int[] adjLoops;		//Stores the R loops adjusted for split cards
+
+		for(int i = 0; i < slotPane.types.length; i++) {	//Calculates the length of the split command string
+			if(slotPane.types[i] == 3 || slotPane.types[i] == 6) realCmd += 2;
 			else realCmd++;
 		}
 
+
+		cmd = new int[realCmd];			//Initialize cmd
+		adjLoops = new int[realCmd];	//Initialize adjLoops
 		
-		System.out.println("real cmd: " + realCmd);
+		int shift = 0;		//Setting up a shift counter (inital -> 0)
 		
-		cmd = new int[realCmd];
-		
-		int shift = 0;
-		
-		for(int i = 0; i < testSlotPanel.types.length; i++) {
-			switch(testSlotPanel.types[i]) {
+		for(int i = 0; i < slotPane.types.length; i++) {	//Converting command string with to without double cards, adjusting loops
+			switch(slotPane.types[i]) {
 				case 1:
-					cmd[i + shift] = 2;
+					cmd[i + shift] = 2;			//backward (1->2)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
-				case 2:
-					cmd[i + shift] = 1;
+				case 2:	
+					cmd[i + shift] = 1;			//forward (2->1)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
 				case 3:
+					cmd[i + shift] = 1;			//fastforward (3->1, 1)
+					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
+					shift++;					//double card -> shift++;
 					cmd[i + shift] = 1;
-					shift++;
-					cmd[i + shift] = 1;
+					adjLoops[i + shift] = 0;
 					break;
 				case 4:
-					cmd[i + shift] = 3;
+					cmd[i + shift] = 3;			//right turn (4->3)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
 				case 5:
-					cmd[i + shift] = 4;
+					cmd[i + shift] = 4;			//left turn (3->4)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
 				case 6:
+					cmd[i + shift] = 3;			//u turn (6->3, 3)
+					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
+					shift++;					//double card -> shift++;
 					cmd[i + shift] = 3;
-					shift++;
-					cmd[i + shift] = 3;
+					adjLoops[i + shift] = 0;
 					break;
 				case 7:
-					cmd[i + shift] = 0;
+					cmd[i + shift] = 0;							//R card (7->0)
+					adjLoops[i + shift] = slotPane.loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
 					break;
 			}
 		}
-		
-		//int[] fullCmd = new int[totalPaths * realCmd];
 
-		ArrayList<Integer> commandList = new ArrayList<>();
+		ArrayList<Integer> commandList = new ArrayList<>();		//Initialize List to hold commands
 		
-		for(int i = 0; i < cmd.length; i++) {
+		for(int i = 0; i < cmd.length; i++) {	//Set List to be equal to the cmd array
 			commandList.add(cmd[i]);
 		}
 		
-		ListIterator<Integer> commandIterator2 = commandList.listIterator(0);
+		ArrayList<Integer> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
 		
-		System.out.println(commandIterator2.hasNext());
+		executionBuffer = new int[outputList.size()];	//Initialize int array of the length of the List
 		
-		do {
-			System.out.println("in cmd: " + commandIterator2.next());
-		}
-		while(commandIterator2.hasNext());
+		ListIterator<Integer> commandIterator = outputList.listIterator(0);	//Create Iterator for the List to read it
 		
-
-		
-		ArrayList<Integer> outputList = recursion(commandList, testSlotPanel.loops);
-		
-		executionBuffer = new int[outputList.size()];
-		
-		ListIterator<Integer> commandIterator = outputList.listIterator(0);
-		
-		System.out.println();
-		System.out.println();
-		
-		System.out.println(commandIterator.hasNext());
-		
-		System.out.println();
-		
-		System.out.print("{ ");
-		
-		int k = 0;
+		int k = 0;	//Set the iteration counter k to 0
 		
 		do {
-			System.out.print(commandIterator.next() + " ");
-			executionBuffer[k] = outputList.get(k);
+			executionBuffer[k] = outputList.get(k);	//copy List to the executionBuffer int array
 			k++;
 		}
-		while(commandIterator.hasNext());
-		
-		System.out.println("}");
-		
-		System.out.print("{ ");
-		
-		for(int i = 0; i < testControl.length; i++) {
-			System.out.print(testControl[i] + " ");
-		}
-		
-		System.out.println("}");
-		
-		robotPane.execute(executionBuffer);
+		while(commandIterator.hasNext());	//condition: there is a next element
+
+		robotPane.execute(executionBuffer);	//run execution in the robot instance
 	}
 	
-	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {
+	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {	//Method to make R cards real cards
 		
-		System.out.println();
-		System.out.println();
-		System.out.println("recursion called");
+		ArrayList<Integer> commandsOut = new ArrayList<>();	//Create new local List containing the commands to be returned
 		
-		
-		ArrayList<Integer> commandsOut = new ArrayList<>();
-		
-		for(int i = 0; i < commandsIn.size(); i++) {
-			System.out.println();
+		for(int i = 0; i < commandsIn.size(); i++) {	//Loop over the input List
 			if(commandsIn.get(i) != 0) {
-				commandsOut.add(commandsIn.get(i));
-				System.out.println("added " + commandsIn.get(i));
+				commandsOut.add(commandsIn.get(i));		//Add the command of the input List to the output List, if it isn't a R command
 			}
-			
 			else {
-				
-				if(loops[i] > 0) {
-					System.out.println("else if called");
-					int[] loopsExe = new int[loops.length];
-						for(int j = 0; j < loops.length; j++) {
-							//System.out.println("loops pre: " + i + " ; " + loops[i]);
-							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;
-							//System.out.println("loops post: " + i + " ; " + loops[i]);
+				if(loops[i] > 0) {											//If the command is a R command test if there are iterations left
+					int[] loopsExe = new int[loops.length];					//Create new array to decrease the iterations left
+						for(int j = 0; j < loops.length; j++) {				//Loops over the array
+							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;	//If the iterations left is greater then zero decrease it by one
 						}
 					
-					commandsOut.addAll(recursion(commandsIn, loopsExe));
+					commandsOut.addAll(recursion(commandsIn, loopsExe));	//Run recursion with the input List and the decreased loop array
 				}
-				else System.out.println("else called");
 			}
 		}
-		
-		return commandsOut;
+		return commandsOut;		//return the local output List
 	}
 	
 	
