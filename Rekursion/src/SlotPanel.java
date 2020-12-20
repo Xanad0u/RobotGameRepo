@@ -80,6 +80,8 @@ public class SlotPanel extends JPanel implements MouseListener {
 				
 				types[pos] = movingCard.getType();
 				
+				System.out.println("moving card type: " + movingCard.getType());
+				
 				if(types[pos] == 7) loops[pos] = movingCard.getLoops();
 				
 				if(types[pos] != 7) slots[pos].makeCard(types[pos], host);
@@ -87,6 +89,14 @@ public class SlotPanel extends JPanel implements MouseListener {
 				
 				repaint();
 				cardPanel.repaint();
+				
+				boolean full = true;
+				for(int i = 0; i < slotAmount; i++) {
+					if(slots[i].state == 2) full = false;
+				}
+				
+				if(full == true) host.execute();
+				
 				break;
 			}
 		}

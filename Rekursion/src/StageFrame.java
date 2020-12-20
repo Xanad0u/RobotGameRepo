@@ -68,12 +68,25 @@ public class StageFrame extends JFrame implements MouseListener {
 	GridPanel gridPane;		//Holds the pane containing the board
 	MenuPanel menu;			//Holds the popup menu
 
+	int[] executionBuffer;
+	
+	
 	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
 
 	int[] testRCards = {7,2,2,1,2,4,3};
 	
+	int[] testInstructions = {4,2,5,7,4,1,7,4,5};
+	
+	int[] testLoops = {0,0,0,3,0,0,2,0,0};
+	
+	int[] testControl = {4,1,3,4,1,3,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,2,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,3,4,2,3,1,3,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,2,4,1,3,4,1,3,4,2,4,3,4,2,4,3,4,3,4,3};
+			
 	CardPanel testCardPanel;
 	SlotPanel testSlotPanel;
+
+	private byte[] initPos;
+
+	private byte initRot;
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -102,7 +115,8 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		buildPopupMenu();	//Constructing popup Menu
 		
-		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this); //Constructing robot pane
+		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this, initPos, initRot); //Constructing robot pane
+		
 		
 		gridPane = new GridPanel(frame, this, tiles);	//Constructing board pane
 		
@@ -134,7 +148,7 @@ public class StageFrame extends JFrame implements MouseListener {
 				
 		//robotPane.execute(testExecute);		//Temporary robot movement testing
 		
-		execute();
+		//execute();
 		
 	}
 
@@ -144,6 +158,8 @@ public class StageFrame extends JFrame implements MouseListener {
 		cardAmount = fileManager.getCardAmount(n);	//Loading card amount
 		realCards = fileManager.getRealCards(n);	//Loading real cards, not the loop index of R cards
 		cards = fileManager.getCards(n);
+		initPos = fileManager.getInitLoc(n);
+		initRot = fileManager.getInitRot(n);
 		
 		for (int i = 0; i < tiles.length; i++) {	//Reset tile selection status
 			tileSelectionStatus[i] = 0;
@@ -196,7 +212,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	
 	public void execute() {
 		//int[] rLoops = new int[testSlotPanel.types.length];
-		
+		/*
 		int[] rLoops = testRCards;
 		int[] rLoopsR = new int[rLoops.length];
 		
@@ -250,15 +266,17 @@ public class StageFrame extends JFrame implements MouseListener {
 		}
 		
 		System.out.println("paths: " + totalPaths);
-		
+		*/
 		
 		int[] cmd;
 		int realCmd = 0;
 		
+
 		for(int i = 0; i < testSlotPanel.types.length; i++) {
 			if(testSlotPanel.types[i] == 3 || testSlotPanel.types[i] == 6) realCmd += 2;
 			else realCmd++;
 		}
+
 		
 		System.out.println("real cmd: " + realCmd);
 		
@@ -280,15 +298,15 @@ public class StageFrame extends JFrame implements MouseListener {
 					cmd[i + shift] = 1;
 					break;
 				case 4:
-					cmd[i + shift] = 4;
-					break;
-				case 5:
 					cmd[i + shift] = 3;
 					break;
+				case 5:
+					cmd[i + shift] = 4;
+					break;
 				case 6:
-					cmd[i + shift] = 4;
+					cmd[i + shift] = 3;
 					shift++;
-					cmd[i + shift] = 4;
+					cmd[i + shift] = 3;
 					break;
 				case 7:
 					cmd[i + shift] = 0;
@@ -296,7 +314,7 @@ public class StageFrame extends JFrame implements MouseListener {
 			}
 		}
 		
-		int[] fullCmd = new int[totalPaths * realCmd];
+		//int[] fullCmd = new int[totalPaths * realCmd];
 
 		ArrayList<Integer> commandList = new ArrayList<>();
 		
@@ -313,45 +331,75 @@ public class StageFrame extends JFrame implements MouseListener {
 		}
 		while(commandIterator2.hasNext());
 		
+
 		
-		ArrayList<Integer> outputList = recursion(commandList, rLoopsR);
+		ArrayList<Integer> outputList = recursion(commandList, testSlotPanel.loops);
+		
+		executionBuffer = new int[outputList.size()];
 		
 		ListIterator<Integer> commandIterator = outputList.listIterator(0);
 		
+		System.out.println();
+		System.out.println();
+		
 		System.out.println(commandIterator.hasNext());
 		
+		System.out.println();
+		
+		System.out.print("{ ");
+		
+		int k = 0;
+		
 		do {
-			System.out.println(commandIterator.next());
+			System.out.print(commandIterator.next() + " ");
+			executionBuffer[k] = outputList.get(k);
+			k++;
 		}
 		while(commandIterator.hasNext());
 		
-		//robotPane.execute(testExecute);
+		System.out.println("}");
+		
+		System.out.print("{ ");
+		
+		for(int i = 0; i < testControl.length; i++) {
+			System.out.print(testControl[i] + " ");
+		}
+		
+		System.out.println("}");
+		
+		robotPane.execute(executionBuffer);
 	}
 	
 	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {
-
+		
+		System.out.println();
+		System.out.println();
 		System.out.println("recursion called");
+		
 		
 		ArrayList<Integer> commandsOut = new ArrayList<>();
 		
-		for(int i = 0; i < loops.length; i++) {
-			System.out.println("loops pre: " + i + " ; " + loops[i]);
-			if(loops[i] > 0) loops[i]--;
-			System.out.println("loops post: " + i + " ; " + loops[i]);
-		}
-		
-		for(int i = 0; i < loops.length; i++) {
-			if(loops[i] != 0) {
+		for(int i = 0; i < commandsIn.size(); i++) {
+			System.out.println();
+			if(commandsIn.get(i) != 0) {
 				commandsOut.add(commandsIn.get(i));
 				System.out.println("added " + commandsIn.get(i));
 			}
 			
 			else {
-				System.out.println("else called");
+				
 				if(loops[i] > 0) {
 					System.out.println("else if called");
-					commandsOut.addAll(recursion(commandsIn, loops));
+					int[] loopsExe = new int[loops.length];
+						for(int j = 0; j < loops.length; j++) {
+							//System.out.println("loops pre: " + i + " ; " + loops[i]);
+							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;
+							//System.out.println("loops post: " + i + " ; " + loops[i]);
+						}
+					
+					commandsOut.addAll(recursion(commandsIn, loopsExe));
 				}
+				else System.out.println("else called");
 			}
 		}
 		

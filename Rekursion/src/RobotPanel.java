@@ -31,12 +31,14 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	int moveDir = 0;
 	
-	byte[] executionOrder = null;
+	int[] executionOrder = null;
 	int executionElement = 0;
 	boolean executionReady = true;
 	
-	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn) {
+	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn, byte[] initLoc, byte initRot) {
 		robot = new Robot(ssIn, moveTimeIn, imgIn);
+		robot.setLoc(initLoc);
+		robot.setRot(initRot);
 		frame = frameIn;
 		
 		host = hostIn;
@@ -167,8 +169,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 		repaint();
 	}
 	
-	public void execute(byte[] cmds) {
+	public void execute(int[] executionBuffer) {
 		
-		executionOrder = cmds;
+		executionOrder = executionBuffer;
 	}
 }
