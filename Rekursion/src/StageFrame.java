@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class StageFrame extends JFrame implements MouseListener {
 
@@ -36,6 +38,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	byte cardAmount;							//Holds the amount of cards in the stage
 	byte slotAmount;							//Holds the amount of slots in the stage
 	byte[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
+	byte[] cards;
 	
 	final int substeps = 20;		//Animation substeps of the robot
 	final int moveTime = 100;		//Time it takes the robot to do one action
@@ -56,7 +59,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	final BufferedImage forwardCard;		//Holds the forward card image
 	final BufferedImage fastForwardCard;	//Holds the fast forward card image
 	final BufferedImage backCard;			//Holds the back card image
-	final BufferedImage RCard;				//Holds the R card image
+	final BufferedImage rCard;				//Holds the R card image
 
 	final BufferedImage cardSlot;			//Holds the card slot image
 
@@ -65,8 +68,13 @@ public class StageFrame extends JFrame implements MouseListener {
 	GridPanel gridPane;		//Holds the pane containing the board
 	MenuPanel menu;			//Holds the popup menu
 
-	byte[] testExecute = {1, 1, 1, 3, 1, 1, 2, 4, 1, 3, 1, 1, 3, 1, 1};		//Temporary instruction for robot movement testing
+	int[] executionBuffer;	//Temporary storage holding the execution commands
+		
+	CardPanel cardPane;		//Holds the pane containing the usable cards
+	SlotPanel slotPane;		//Holds the pane containing the slot and the cards placed in them
 
+	private byte[] initPos;	//Holds the initial position of the robot
+	private byte initRot;	//Holds the initial rotation of the robot
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -84,17 +92,19 @@ public class StageFrame extends JFrame implements MouseListener {
 		forwardCard = ImageIO.read(new File("./img/Card_Forward.png"));
 		fastForwardCard = ImageIO.read(new File("./img/Card_FastForward.png"));
 		backCard = ImageIO.read(new File("./img/Card_Back.png"));
-		RCard = ImageIO.read(new File("./img/Card_R.png"));
+		rCard = ImageIO.read(new File("./img/Card_R.png"));
 
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
 
 		
 		reImportStage(stage);		//Loading stage information from storage
 		frame = buildFrame();		//Constructing frame
+		frame.addMouseListener(this);	//Add mouse listening
 		
-		initializeTileGridPanel();	//Constructing popup Menu
+		buildPopupMenu();	//Constructing popup Menu
 		
-		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this); //Constructing robot pane
+		robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this, initPos, initRot); //Constructing robot pane
+		
 		
 		gridPane = new GridPanel(frame, this, tiles);	//Constructing board pane
 		
@@ -107,13 +117,20 @@ public class StageFrame extends JFrame implements MouseListener {
 		robotPane.setVisible(true);				//Setting robot pane to visible
 		robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
 		
+		cardPane = new CardPanel(cards, cardAmount, this);
+		
+		cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		
+		slotPane = new SlotPanel(slotAmount, cardPane, this);
+		
+		slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		
 		
 		frame.add(menu);		//Add menu to frame
+		frame.add(cardPane);
+		frame.add(slotPane);
 		frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
-				
-		robotPane.execute(testExecute);		//Temporary robot movement testing
-		
 	}
 
 	private void reImportStage(int n) {				//Loading stage information from storage
@@ -121,181 +138,29 @@ public class StageFrame extends JFrame implements MouseListener {
 		slotAmount = fileManager.getSlots(n);		//Loading slot amount
 		cardAmount = fileManager.getCardAmount(n);	//Loading card amount
 		realCards = fileManager.getRealCards(n);	//Loading real cards, not the loop index of R cards
-
+		cards = fileManager.getCards(n);			//Loading all cards
+		initPos = fileManager.getInitLoc(n);		//Loading the initial location of the robot
+		initRot = fileManager.getInitRot(n);		//Loading the initial rotation of the robot
+		
 		for (int i = 0; i < tiles.length; i++) {	//Reset tile selection status
 			tileSelectionStatus[i] = 0;
 		}
 	}
 
 	
-	private void initializeTileGridPanel() {
-		
-		/*
-		gridPane = new JPanel() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				
-				setBounds(0, 0, frame.getContentPane().getWidth(), frame.getContentPane().getHeight());
-				
-				gMain = g;
-				
-				int w = frame.getContentPane().getWidth();
-				int h = frame.getContentPane().getHeight();
-
-				
-
-				int xPos;
-				int yPos;
-
-				int xCard;
-				int yCard;
-
-				int ySlot;
-
-				if (h < w * ratio) {
-					xNull = (int) ((w - (h / ratio)) / 2);
-					yNull = (int) ((h - (h / ratio)) / 2);
-					size = (int) (((h / ratio) - ((nTiles + 1) * gap)) / nTiles);
-				}
-
-				else {
-					xNull = 0;
-					yNull = (h - w) / 2;
-					size = (w - ((nTiles + 1) * gap)) / nTiles;
-				}
-
-				fullSize = (nTiles + 1) * gap + nTiles * size;
-
-				g.setColor(Color.BLACK);
-				g.fillRect(xNull, yNull, fullSize, fullSize);
-
-				g.setColor(Color.WHITE);
-
-				for (int j = 0; j < nTiles; j++) {
-					for (int i = 0; i < nTiles; i++) {
-
-						xPos = ((i + 1) * gap + i * size) + xNull;
-						yPos = ((j + 1) * gap + j * size) + yNull;
-
-						switch (tiles[nTiles * nTiles - (nTiles * (j + 1) - i)]) {
-
-						case 0:
-							g.fillRect(xPos, yPos, size, size);
-							break;
-
-						case 1:
-							g.drawImage(blockTile, xPos, yPos, size, size, null);
-							break;
-
-						case 2:
-							g.drawImage(holeTile, xPos, yPos, size, size, null);
-							break;
-
-						case 3:
-							g.drawImage(startTile, xPos, yPos, size, size, null);
-							break;
-
-						case 4:
-							g.drawImage(flagTile, xPos, yPos, size, size, null);
-							break;
-
-						}
-						
-						
-						if (tileSelectionStatus[i + 8 * j] != 0) {
-							switch (tileSelectionStatus[i + 8 * j]) {
-
-							case 1:
-								g.drawImage(blockTile, xPos, yPos, size, size, null);
-								break;
-
-							case 2:
-								g.drawImage(holeTile, xPos, yPos, size, size, null);
-								break;
-
-							case 3:
-								g.drawImage(startTile, xPos, yPos, size, size, null);
-								break;
-
-							case 4:
-								g.drawImage(flagTile, xPos, yPos, size, size, null);
-								break;
-							}
-						}
-						
-					}
-				}
-				
-
-				yCard = (int) (((h - fullSize) / 2) - 2 * size);
-
-				for (int i = 0; i < cardAmount; i++) {
-					xCard = (int) ((fullSize - cardAmount * size) / (cardAmount + 1) * (i + 1) + size * i + xNull);
-
-					switch (realCards[i]) {
-					case 1:
-						g.drawImage(backCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 2:
-						g.drawImage(forwardCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 3:
-						g.drawImage(fastForwardCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 4:
-						g.drawImage(rTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 5:
-						g.drawImage(lTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 6:
-						g.drawImage(uTurnCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-
-					case 7:
-						g.drawImage(RCard, xCard, yCard, size, (int) (size * cardRatio), null);
-						break;
-					}
-				}
-
-				ySlot = (int) (((h + fullSize) / 2) + 0.5 * size);
-
-				for (int i = 0; i < slotAmount; i++) {
-					xCard = (int) ((fullSize - slotAmount * size) / (slotAmount + 1) * (i + 1) + size * i + xNull);
-
-					g.drawImage(cardSlot, xCard, ySlot, size, (int) (size * cardRatio), null);
-				}
-				menu.repaint();
-			}
-		};
-		*/
-		
-		frame.addMouseListener(this);	//Add mouse listening
-		
+	private void buildPopupMenu() {
 		menu = new MenuPanel(frame)  {	//Create popup menu
 			
 			@Override
 			public void paintComponent(Graphics g) {
-				
-				super.paintComponent(g);	//Clear
+				super.paintComponent(g);	//Clear all drawn
 				
 				this.setBounds(frame.getContentPane().getWidth() / 2 - menuWidth / 2, frame.getContentPane().getHeight() / 2 - menuHeight / 2, menuWidth, menuHeight);	//Set popup menu bounds
 			}
 		};
 		
 		menu.setVisible(false);		//make popup menu invisible
-		
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);	//Set popup menu bounds
-		
 	}
 	
 	private JFrame buildFrame() {
@@ -325,6 +190,109 @@ public class StageFrame extends JFrame implements MouseListener {
 		return frame;	//Output frame
 	}
 
+	
+	public void execute() {		//Method to read, convert, pass and execute the cards placed in the slots
+
+		int[] cmd;			//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
+		int realCmd = 0;	//Stores the length of the split command string
+		int[] adjLoops;		//Stores the R loops adjusted for split cards
+
+		for(int i = 0; i < slotPane.types.length; i++) {	//Calculates the length of the split command string
+			if(slotPane.types[i] == 3 || slotPane.types[i] == 6) realCmd += 2;
+			else realCmd++;
+		}
+
+
+		cmd = new int[realCmd];			//Initialize cmd
+		adjLoops = new int[realCmd];	//Initialize adjLoops
+		
+		int shift = 0;		//Setting up a shift counter (inital -> 0)
+		
+		for(int i = 0; i < slotPane.types.length; i++) {	//Converting command string with to without double cards, adjusting loops
+			switch(slotPane.types[i]) {
+				case 1:
+					cmd[i + shift] = 2;			//backward (1->2)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					break;
+				case 2:	
+					cmd[i + shift] = 1;			//forward (2->1)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					break;
+				case 3:
+					cmd[i + shift] = 1;			//fastforward (3->1, 1)
+					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
+					shift++;					//double card -> shift++;
+					cmd[i + shift] = 1;
+					adjLoops[i + shift] = 0;
+					break;
+				case 4:
+					cmd[i + shift] = 3;			//right turn (4->3)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					break;
+				case 5:
+					cmd[i + shift] = 4;			//left turn (3->4)
+					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					break;
+				case 6:
+					cmd[i + shift] = 3;			//u turn (6->3, 3)
+					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
+					shift++;					//double card -> shift++;
+					cmd[i + shift] = 3;
+					adjLoops[i + shift] = 0;
+					break;
+				case 7:
+					cmd[i + shift] = 0;							//R card (7->0)
+					adjLoops[i + shift] = slotPane.loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
+					break;
+			}
+		}
+
+		ArrayList<Integer> commandList = new ArrayList<>();		//Initialize List to hold commands
+		
+		for(int i = 0; i < cmd.length; i++) {	//Set List to be equal to the cmd array
+			commandList.add(cmd[i]);
+		}
+		
+		ArrayList<Integer> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
+		
+		executionBuffer = new int[outputList.size()];	//Initialize int array of the length of the List
+		
+		ListIterator<Integer> commandIterator = outputList.listIterator(0);	//Create Iterator for the List to read it
+		
+		int k = 0;	//Set the iteration counter k to 0
+		
+		do {
+			executionBuffer[k] = outputList.get(k);	//copy List to the executionBuffer int array
+			k++;
+		}
+		while(commandIterator.hasNext());	//condition: there is a next element
+
+		robotPane.execute(executionBuffer);	//run execution in the robot instance
+	}
+	
+	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {	//Method to make R cards real cards
+		
+		ArrayList<Integer> commandsOut = new ArrayList<>();	//Create new local List containing the commands to be returned
+		
+		for(int i = 0; i < commandsIn.size(); i++) {	//Loop over the input List
+			if(commandsIn.get(i) != 0) {
+				commandsOut.add(commandsIn.get(i));		//Add the command of the input List to the output List, if it isn't a R command
+			}
+			else {
+				if(loops[i] > 0) {											//If the command is a R command test if there are iterations left
+					int[] loopsExe = new int[loops.length];					//Create new array to decrease the iterations left
+						for(int j = 0; j < loops.length; j++) {				//Loops over the array
+							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;	//If the iterations left is greater then zero decrease it by one
+						}
+					
+					commandsOut.addAll(recursion(commandsIn, loopsExe));	//Run recursion with the input List and the decreased loop array
+				}
+			}
+		}
+		return commandsOut;		//return the local output List
+	}
+	
+	
 	/*
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -373,7 +341,7 @@ public class StageFrame extends JFrame implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {	//Temporary robot movement testing
-
+		/*
 		switch(e.getButton()) {
 		case 1:
 			robotPane.turnAnimated(1);
@@ -385,6 +353,7 @@ public class StageFrame extends JFrame implements MouseListener {
 			robotPane.turnAnimated(-1);
 			break;
 		}
+		*/
 	}
 
 	@Override

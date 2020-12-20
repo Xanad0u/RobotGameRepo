@@ -6,12 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-public class GridPanel extends JPanel{
+public class GridPanel extends JPanel {
 
 	private JFrame hostFrame;
 	private StageFrame host;
 	
 	private byte[] tiles;
+	
+	private Card testCard;
 
 	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, byte[] tilesIn) {
 		hostFrame = hostFrameIn;
