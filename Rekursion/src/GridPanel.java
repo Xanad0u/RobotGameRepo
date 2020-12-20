@@ -112,7 +112,7 @@ public class GridPanel extends JPanel {
 			}
 		}
 		
-		host.menu.repaint();
+		host.menu.repaint();	//Draws the menu over the grid
 	}
 
 }
