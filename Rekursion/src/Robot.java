@@ -64,7 +64,7 @@ public class Robot {
 		}
 	}
 	
-	public byte[] getMovePos(Move step) {
+	public byte[] getMovePos(byte step) {
 		
 		byte[] localPos = new byte[2];
 		localPos[0] = pos[0];
@@ -72,29 +72,23 @@ public class Robot {
 		
 		switch(rot) {
 		case NORTH:
-			localPos[1] -= step.step();
+			localPos[1] -= step;
 			break;
 		
 		case EAST:
-			localPos[0] += step.step();
+			localPos[0] += step;
 			break;
 		
 		case SOUTH:
-			localPos[1] += step.step();
+			localPos[1] += step;
 			break;
 		
 		case WEST:
-			localPos[0] -= step.step();
+			localPos[0] -= step;
 			break;
 		}
 		
 		return localPos;
-	}
-	
-	public boolean getMovePosNotOutOfGrid(Move step) {
-		
-		if(getMovePos(step)[0] < 0 || getMovePos(step)[0] > 7 || getMovePos(step)[1] < 0 || getMovePos(step)[1] > 7) return false;
-		else return true;
 	}
 	
 	public void turn(Turn turn) {
