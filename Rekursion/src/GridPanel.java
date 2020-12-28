@@ -13,7 +13,7 @@ public class GridPanel extends JPanel {
 	
 	private byte[] tiles;
 	
-	private Card testCard;
+	private CardObject testCard;
 
 	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, byte[] tilesIn) {
 		hostFrame = hostFrameIn;

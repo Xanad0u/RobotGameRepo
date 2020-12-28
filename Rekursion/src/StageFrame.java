@@ -37,8 +37,8 @@ public class StageFrame extends JFrame implements MouseListener {
 	byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
 	byte cardAmount;							//Holds the amount of cards in the stage
 	byte slotAmount;							//Holds the amount of slots in the stage
-	byte[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
-	byte[] cards;
+	Card[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
+	Card[] cards;
 	
 	final int substeps = 20;		//Animation substeps of the robot
 	final int moveTime = 100;		//Time it takes the robot to do one action
@@ -74,7 +74,9 @@ public class StageFrame extends JFrame implements MouseListener {
 	SlotPanel slotPane;		//Holds the pane containing the slot and the cards placed in them
 
 	private byte[] initPos;	//Holds the initial position of the robot
-	private byte initRot;	//Holds the initial rotation of the robot
+	//private byte initRot;	//Holds the initial rotation of the robot
+	
+	private Rotation initRot;
 	
 	public StageFrame(int stageIn) throws IOException {
 		stage = stageIn;
@@ -198,7 +200,7 @@ public class StageFrame extends JFrame implements MouseListener {
 		int[] adjLoops;		//Stores the R loops adjusted for split cards
 
 		for(int i = 0; i < slotPane.types.length; i++) {	//Calculates the length of the split command string
-			if(slotPane.types[i] == 3 || slotPane.types[i] == 6) realCmd += 2;
+			if(slotPane.types[i] == Card.FASTFORWARDCARD || slotPane.types[i] == Card.UTURNCARD) realCmd += 2;
 			else realCmd++;
 		}
 
@@ -210,37 +212,37 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		for(int i = 0; i < slotPane.types.length; i++) {	//Converting command string with to without double cards, adjusting loops
 			switch(slotPane.types[i]) {
-				case 1:
+				case BACKCARD:
 					cmd[i + shift] = 2;			//backward (1->2)
 					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
-				case 2:	
+				case FORWARDCARD:	
 					cmd[i + shift] = 1;			//forward (2->1)
 					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
-				case 3:
+				case FASTFORWARDCARD:
 					cmd[i + shift] = 1;			//fastforward (3->1, 1)
 					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
 					shift++;					//double card -> shift++;
 					cmd[i + shift] = 1;
 					adjLoops[i + shift] = 0;
 					break;
-				case 4:
+				case RTURNCARD:
 					cmd[i + shift] = 3;			//right turn (4->3)
 					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
-				case 5:
+				case LTURNCARD:
 					cmd[i + shift] = 4;			//left turn (3->4)
 					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
 					break;
-				case 6:
+				case UTURNCARD:
 					cmd[i + shift] = 3;			//u turn (6->3, 3)
 					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
 					shift++;					//double card -> shift++;
 					cmd[i + shift] = 3;
 					adjLoops[i + shift] = 0;
 					break;
-				case 7:
+				case RCARD:
 					cmd[i + shift] = 0;							//R card (7->0)
 					adjLoops[i + shift] = slotPane.loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
 					break;

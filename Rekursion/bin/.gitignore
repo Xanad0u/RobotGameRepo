@@ -37,3 +37,14 @@
 /SlotPanel.class
 /Slot.class
 /Command.class
+/Rotation.class
+/ExtendedCommand.class
+/MoveCommand.class
+/RecursionCommand.class
+/TurnCommand.class
+/EnumTest.class
+/Move.class
+/Turn.class
+/CommandMain.class
+/CardObject.class
+/State.class

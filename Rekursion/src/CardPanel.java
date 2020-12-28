@@ -9,44 +9,44 @@ public class CardPanel extends JPanel implements MouseListener {
 	private final int lineSize = 4;
 	
 	int cardAmount;
-	Card[] cards;
+	CardObject[] cards;
 	StageFrame host;
 	
 	public int selected = -1;
 	
 	int gap = 0;
 	
-	public CardPanel(byte[] cardArray, int cardAmountIn, StageFrame hostIn) {
+	public CardPanel(Card[] cardArray, int cardAmountIn, StageFrame hostIn) {
 		host = hostIn;
 		cardAmount = cardAmountIn;
 		
-		cards = new Card[cardAmount];
+		cards = new CardObject[cardAmount];
 		
 		int j = 0;
 		for(int i = 0; i < cardAmount; i++) {
 
 			switch(cardArray[j]) {
-			case 1:
-				cards[i] = new Card(host.backCard, host.cardSlot, 1);
+			case BACKCARD:
+				cards[i] = new CardObject(host.backCard, host.cardSlot, Card.BACKCARD);
 				break;
-			case 2:
-				cards[i] = new Card(host.forwardCard, host.cardSlot, 2);
+			case FORWARDCARD:
+				cards[i] = new CardObject(host.forwardCard, host.cardSlot, Card.FORWARDCARD);
 				break;
-			case 3:
-				cards[i] = new Card(host.fastForwardCard, host.cardSlot, 3);
+			case FASTFORWARDCARD:
+				cards[i] = new CardObject(host.fastForwardCard, host.cardSlot, Card.FASTFORWARDCARD);
 				break;
-			case 4:
-				cards[i] = new Card(host.rTurnCard, host.cardSlot, 4);
+			case RTURNCARD:
+				cards[i] = new CardObject(host.rTurnCard, host.cardSlot, Card.RTURNCARD);
 				break;
-			case 5:
-				cards[i] = new Card(host.lTurnCard, host.cardSlot, 5);
+			case LTURNCARD:
+				cards[i] = new CardObject(host.lTurnCard, host.cardSlot, Card.LTURNCARD);
 				break;
-			case 6:
-				cards[i] = new Card(host.uTurnCard, host.cardSlot, 6);
+			case UTURNCARD:
+				cards[i] = new CardObject(host.uTurnCard, host.cardSlot, Card.UTURNCARD);
 				break;
-			case 7:
+			case RCARD:
 				j++;
-				cards[i] = new Card(host.rCard, host.cardSlot, 7, cardArray[j]);
+				cards[i] = new CardObject(host.rCard, host.cardSlot, Card.RCARD, cardArray[j].ordinal() + 1);
 				break;
 			}
 			j++;
@@ -55,7 +55,7 @@ public class CardPanel extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
-	public Card getCard(int index) {
+	public CardObject getCard(int index) {
 		return cards[index];
 	}
 	
@@ -81,10 +81,10 @@ public class CardPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		int pos = e.getX() / (gap + host.size);
 		if(pos <= cardAmount) {
-			if(cards[pos].state != 2) {
-				cards[pos].state = 1;
+			if(cards[pos].state != State.EMPTY) {
+				cards[pos].state = State.SELECTED;
 			
-				if(selected != -1) cards[selected].state = 0;
+				if(selected != -1) cards[selected].state = State.SET;
 				
 				if(selected == pos) selected = -1;
 				else selected = pos;

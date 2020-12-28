@@ -90,31 +90,59 @@ public class StageFileManager {
 		return error;
 	}
 	
-	public byte[] getCards(int n) {
+	public Card[] getCards(int n) {
 		byte[] data = Read(n);
 		byte[] dataTrim = new byte[data.length - 66];
+		
+		Card[] cardsData = new Card[data.length - 66];
 		
 		for(int i = 0; i < data.length - 66; i++) {
 			dataTrim[i] = data[i + 65];
 		}
 		
-		return dataTrim;
+		for(int i = 0; i < cardsData.length; i++) {
+			switch (dataTrim[i]) {
+			case 1:
+				cardsData[i] = Card.BACKCARD;
+				break;
+			case 2:
+				cardsData[i] = Card.FORWARDCARD;
+				break;
+			case 3:
+				cardsData[i] = Card.FASTFORWARDCARD;
+				break;
+			case 4:
+				cardsData[i] = Card.RTURNCARD;
+				break;
+			case 5:
+				cardsData[i] = Card.LTURNCARD;
+				break;
+			case 6:
+				cardsData[i] = Card.UTURNCARD;
+				break;
+			case 7:
+				cardsData[i] = Card.RCARD;
+				break;
+			}
+		}
+		
+		return cardsData;
 	}
 	
-	public byte[] getRealCards(int n) {
+	public Card[] getRealCards(int n) {
 		System.out.println("called getRealCards");
-		byte[] allCards = getCards(n);
-		byte[] data = new byte[getCardAmount(n)];
+		Card[] allCards = getCards(n);
+		Card[] data = new Card[getCardAmount(n)];
 		int shift = 0;
 		
 		if(getCardAmount(n) != 0) {
 		data[0] = allCards[0];
 		
 		for(int i = 1; i < getCardAmount(n) + 1; i++) {
-			if(allCards[i - 1] != 7) data[i - shift] = allCards[i];
+			if(allCards[i - 1] != Card.RCARD) data[i - shift] = allCards[i];
 			else shift++;
 			
-			if(allCards[i - 1] != 7) System.out.println(allCards[i]);
+			if(allCards[i - 1] != Card.RCARD) System.out.println(allCards[i]);
 			else System.out.println("shift: " + shift);
 		}
 		return data;
@@ -123,11 +151,11 @@ public class StageFileManager {
 	}
 	
 	public byte getCardAmount(int n) {
-		byte[] cards = getCards(n);
+		Card[] cards = getCards(n);
 		int r = 0;
 		
 		for(int i = 0; i < cards.length; i++) {
-			if(cards[i] == 7) r++;
+			if(cards[i] == Card.RCARD) r++;
 		}
 		
 		return (byte) (cards.length - r);
@@ -150,10 +178,24 @@ public class StageFileManager {
 		return data[j + 1];
 	}
 	
-	public byte getInitRot(int n) {
+	public Rotation getInitRot(int n) {
 		byte[] data = Read(n);
 
-		return data[0];
+		Rotation rot = null;
+		
+		switch ((data[0] + 1) % 4) {
+		case 0:
+			return rot.NORTH;
+		case 1:
+			return rot.EAST;
+		case 2:
+			return rot.SOUTH;
+		case 3:
+			return rot.WEST;
+			
+		default:
+			return null;
+		}
 	}
 	
 	public byte[] getInitLoc(int n) {

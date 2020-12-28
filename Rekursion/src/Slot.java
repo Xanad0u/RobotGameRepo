@@ -1,46 +1,46 @@
 import java.awt.image.BufferedImage;
 
-public class Slot extends Card {
+public class Slot extends CardObject {
 
 	public Slot(BufferedImage emptyImgIn) {
 		super(emptyImgIn);
 
-		state = 2;
+		state = State.EMPTY;
 	}
 	
-	public void makeCard(int typeIn, StageFrame host) {
+	public void makeCard(Card typeIn, StageFrame host) {
 		type = typeIn;
 		switch(typeIn) {
-		case 1:
+		case BACKCARD:
 			img = host.backCard;
 			break;
-		case 2:
+		case FORWARDCARD:
 			img = host.forwardCard;
 			break;
-		case 3:
+		case FASTFORWARDCARD:
 			img = host.fastForwardCard;
 			break;
-		case 4:
+		case RTURNCARD:
 			img = host.rTurnCard;
 			break;
-		case 5:
+		case LTURNCARD:
 			img = host.lTurnCard;
 			break;
-		case 6:
+		case UTURNCARD:
 			img = host.uTurnCard;
 			break;
 		}
-		state = 0;
+		state = State.SET;
 	}
 	
 	public void makeCard(StageFrame host, int loops) {
-		type = 7;
+		type = Card.RCARD;
 		img = host.rCard;
 		rLoops = loops;
-		state = 0;
+		state = State.SET;
 	}
 	
 	public void clear() {
-		state = 2;
+		state = State.EMPTY;
 	}
 }

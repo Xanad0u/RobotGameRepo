@@ -28,6 +28,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	int callMove = 0;
 	int callTurn = 0;
+	Turn callTurnFull = null;
 	
 	int moveDir = 0;
 	
@@ -35,7 +36,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int executionElement = 0;
 	boolean executionReady = true;
 	
-	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn, byte[] initLoc, byte initRot) {
+	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn, byte[] initLoc, Rotation initRot) {
 		robot = new Robot(ssIn, moveTimeIn, imgIn);
 		robot.setLoc(initLoc);
 		robot.setRot(initRot);
@@ -57,17 +58,17 @@ public class RobotPanel extends JPanel implements ActionListener {
 		y = 0;
 		
 		switch(robot.rot) {
-		case 0:
+		case NORTH:
+			y = -1;
+			break;
+		case EAST:
 			x = 1;
 			break;
-		case 1:
+		case SOUTH:
 			y = 1;
 			break;
-		case 2:
+		case WEST:
 			x = -1;
-			break;
-		case 3:
-			y = -1;
 			break;
 		}
 		
@@ -75,8 +76,9 @@ public class RobotPanel extends JPanel implements ActionListener {
 		callMove = 1;
 	}
 	
-	public void turnAnimated(int dir) {
-		callTurn = dir;
+	public void turnAnimated(Turn dir) {
+		callTurn = dir.dir();
+		callTurnFull = dir;
 	}
 	
 	@Override
@@ -89,7 +91,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 		robot.af.translate(robot.pos[0] * (host.size + host.gap) + robot.subPos[0], robot.pos[1] * (host.size + host.gap) + robot.subPos[1]);
 		robot.af.scale(host.size / (double) robot.img.getHeight(), host.size / (double) robot.img.getHeight());
-		robot.af.rotate(Math.toRadians(robot.subRot + robot.rot * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
+		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
 		robot.draw((Graphics2D) g);
@@ -130,19 +132,15 @@ public class RobotPanel extends JPanel implements ActionListener {
 			
 			callTurn += Math.signum(callTurn);
 			
-			//System.out.println(Math.abs(callTurn));
-			//System.out.println((int) Math.signum(callTurn));
-			//System.out.println(callTurn);
 			
 			if(Math.abs(callTurn) > ss + 1) {
-				robot.turn((byte) Math.signum(callTurn));
+				robot.turn(callTurnFull);
 				
 				callTurn = 0;
 				
 				robot.subRot = 0;
 				
-				//System.out.println("rot: " + robot.rot);
-				
+
 				pauseCounter = pauseTime;
 				executionReady = true;
 			}
@@ -167,10 +165,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 					moveAnimated(-1);
 				break;
 			case 3:
-				turnAnimated(1);
+				turnAnimated(Turn.CLOCKWISE);
 				break;
 			case 4:
-				turnAnimated(-1);
+				turnAnimated(Turn.COUNTERCLOCKWISE);
 				break;
 			}
 			executionElement++;
