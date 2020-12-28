@@ -100,7 +100,6 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		reImportStage(stage);		//Loading stage information from storage
 		frame = buildFrame();		//Constructing frame
-		frame.addMouseListener(this);	//Add mouse listening
 		
 		buildPopupMenu();	//Constructing popup Menu
 		
@@ -131,6 +130,59 @@ public class StageFrame extends JFrame implements MouseListener {
 		frame.add(cardPane);
 		frame.add(slotPane);
 		frame.add(robotPane);	//Add robot pane to frame
+		frame.add(gridPane);	//Add board pane to frame
+	}
+
+	public StageFrame() throws IOException {	//constructor used by StageEditorFrame
+		blockTile = ImageIO.read(new File("./img/Block.png"));	//Loading the images from storage
+		holeTile = ImageIO.read(new File("./img/Hole.png"));
+		startTile = ImageIO.read(new File("./img/Start.png"));
+		flagTile = ImageIO.read(new File("./img/Flag.png"));
+
+		robotImg = ImageIO.read(new File("./img/Robot.png"));
+
+		rTurnCard = ImageIO.read(new File("./img/Card_TurnR.png"));
+		lTurnCard = ImageIO.read(new File("./img/Card_TurnL.png"));
+		uTurnCard = ImageIO.read(new File("./img/Card_UTurn.png"));
+		forwardCard = ImageIO.read(new File("./img/Card_Forward.png"));
+		fastForwardCard = ImageIO.read(new File("./img/Card_FastForward.png"));
+		backCard = ImageIO.read(new File("./img/Card_Back.png"));
+		rCard = ImageIO.read(new File("./img/Card_R.png"));
+
+		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
+
+		
+		//reImportStage(stage);		//Loading stage information from storage
+		frame = buildFrame();		//Constructing frame
+		
+		buildPopupMenu();	//Constructing popup Menu
+		
+		//robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this, initPos, initRot); //Constructing robot pane
+		
+		gridPane = new GridPanel(frame, this);	//Constructing board pane
+		
+		gridPane.setBounds(0, 0, 1, 1);		//Setting board size to more then zero, making it rescalable
+
+		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
+
+		//robotPane.setBackground(new Color(0,0,0,0));	//Making robot pane background transparent
+		//robotPane.setOpaque(false);						//Making robot pane transparent
+		//robotPane.setVisible(true);				//Setting robot pane to visible
+		//robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
+		
+		//cardPane = new CardPanel(this);
+		
+		//cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		
+		//slotPane = new SlotPanel(this);
+		
+		//slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		
+		
+		frame.add(menu);		//Add menu to frame
+		//frame.add(cardPane);
+		//frame.add(slotPane);
+		//frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
 	}
 

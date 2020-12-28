@@ -1,6 +1,7 @@
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -11,6 +12,8 @@ public class CardPanel extends JPanel implements MouseListener {
 	int cardAmount;
 	CardObject[] cards;
 	StageFrame host;
+	
+	private boolean isEditor = false;
 	
 	public int selected = -1;
 	
@@ -59,6 +62,14 @@ public class CardPanel extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
+	public CardPanel(StageFrame hostIn) {
+		isEditor = true;
+		host = hostIn;
+		
+		ArrayList<Card> cardList = new ArrayList<>();
+		cardList.add(Card.EMPTY);
+	}
+
 	public CardObject getCard(int index) {
 		return cards[index];
 	}

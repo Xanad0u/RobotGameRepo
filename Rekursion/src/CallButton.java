@@ -29,6 +29,15 @@ public class CallButton extends JButton implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (call) {
+		case "SEF":
+			try {
+				StageEditorFrame SEF = new StageEditorFrame();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			break;
+			
 		case "SSF":
 			StageSelectionFrame SSF = new StageSelectionFrame();			
 			break;

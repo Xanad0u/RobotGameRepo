@@ -236,7 +236,9 @@ public class StageFileManager {
 		return (pos[0] + 1 + 8 * (7 - pos[1]));
 	}
 	
-	
+	public int posToTileIndex(byte[] pos) {
+		return (pos[0] + 8 * (7 - pos[1]));
+	}
 	
 	public byte getSlots(int n) {
 		byte[] data = Read(n);

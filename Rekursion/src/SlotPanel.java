@@ -13,6 +13,8 @@ public class SlotPanel extends JPanel implements MouseListener {
 	
 	private int gap;
 	
+	private boolean isEditor = false;
+	
 	CardPanel cardPanel;
 	StageFrame host;
 	
@@ -36,6 +38,12 @@ public class SlotPanel extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
+	public SlotPanel(StageFrame hostIn) {
+		isEditor = true;
+		host = hostIn;
+		slotAmount = 1;
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);

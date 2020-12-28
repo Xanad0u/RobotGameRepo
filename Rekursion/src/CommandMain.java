@@ -110,4 +110,23 @@ enum State {
 
 enum Tile {
 	EMPTY, BLOCK, HOLE, START, FLAG;
+	
+	public Tile change(int dir) {
+		int newPos = ordinal() + dir;
+		newPos = (newPos + 5) % 5;
+
+        switch (newPos) {
+        case 0:
+        	return EMPTY;
+        case 1:
+        	return BLOCK;
+        case 2:
+        	return HOLE;
+        case 3:
+        	return START;
+        case 4:
+        	return FLAG;
+        }
+		return null;     
+	}
 }

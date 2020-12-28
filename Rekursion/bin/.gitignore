@@ -49,3 +49,5 @@
 /CardObject.class
 /State.class
 /Tile.class
+/StageEditorFrame.class
+/putTileAction.class
