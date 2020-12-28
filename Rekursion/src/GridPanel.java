@@ -11,11 +11,9 @@ public class GridPanel extends JPanel {
 	private JFrame hostFrame;
 	private StageFrame host;
 	
-	private byte[] tiles;
-	
-	private Card testCard;
+	private Tile[] tiles;
 
-	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, byte[] tilesIn) {
+	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, Tile[] tilesIn) {
 		hostFrame = hostFrameIn;
 		host = hostIn;
 		
@@ -64,23 +62,23 @@ public class GridPanel extends JPanel {
 
 				switch (tiles[host.nTiles * host.nTiles - (host.nTiles * (j + 1) - i)]) {
 
-				case 0:
+				case EMPTY:
 					g.fillRect(xPos, yPos, host.size, host.size);
 					break;
 
-				case 1:
+				case BLOCK:
 					g.drawImage(host.blockTile, xPos, yPos, host.size, host.size, null);
 					break;
 
-				case 2:
+				case HOLE:
 					g.drawImage(host.holeTile, xPos, yPos, host.size, host.size, null);
 					break;
 
-				case 3:
+				case START:
 					g.drawImage(host.startTile, xPos, yPos, host.size, host.size, null);
 					break;
 
-				case 4:
+				case FLAG:
 					g.drawImage(host.flagTile, xPos, yPos, host.size, host.size, null);
 					break;
 
@@ -112,7 +110,7 @@ public class GridPanel extends JPanel {
 			}
 		}
 		
-		host.menu.repaint();
+		host.menu.repaint();	//Draws the menu over the grid
 	}
 
 }

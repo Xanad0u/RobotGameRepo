@@ -1,7 +1,5 @@
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import java.awt.event.ActionListener;

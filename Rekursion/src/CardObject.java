@@ -3,52 +3,52 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-public class Card {
+public class CardObject {
 	
 	private final double cardRatio = 1.57;
 	private final int lineSize = 4;
 	
 	protected BufferedImage img;
 	private BufferedImage emptyImg;
-	protected int type;
+	protected Card type;
 	protected int rLoops;
 	
-	public int state = 0;
+	public State state = State.SET;
 	
-	public Card(BufferedImage imgIn, BufferedImage emptyImgIn, int typeIn) {
+	public CardObject(BufferedImage imgIn, BufferedImage emptyImgIn, Card typeIn) {
 		img = imgIn;
 		type = typeIn;
 		emptyImg = emptyImgIn;
 	}
 	
-	public Card(BufferedImage imgIn, BufferedImage emptyImgIn, int typeIn, int rLoopsIn) {
+	public CardObject(BufferedImage imgIn, BufferedImage emptyImgIn, Card typeIn, int rLoopsIn) {
 		img = imgIn;
 		type = typeIn;
 		emptyImg = emptyImgIn;
 		rLoops = rLoopsIn;
 	}
 	
-	public Card(BufferedImage emptyImgIn) {
-		type = 0;
+	public CardObject(BufferedImage emptyImgIn) {
+		type = Card.EMPTY;
 		emptyImg = emptyImgIn;
 	}
 	
-	public int getType() {
+	public Card getType() {
 		return type;
 	}
 	
 	public int getLoops() {
-		if(type == 7) return rLoops;
+		if(type == Card.RCARD) return rLoops;
 		else return 0;
 	}
 	
 	public void draw(Graphics g, int x, int y, int size) {
 		
 		switch(state) {
-		case 0:
+		case SET:
 			g.drawImage(img, x, y, size, (int) (size * cardRatio), null);
 			
-			if(type == 7) {
+			if(type == Card.RCARD) {
 				int fontSize = size / 4;
 				
 				g.setFont(new Font("Consolas", Font.PLAIN, fontSize));
@@ -60,13 +60,13 @@ public class Card {
 			}
 			break;
 			
-		case 1:
+		case SELECTED:
 			g.setColor(new Color(200, 50, 50));
-			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), 25, 25);
+			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), size / 4, size / 4);
 			
 			g.drawImage(img, x, y, size, (int) (size * cardRatio), null);
 			
-			if(type == 7) {
+			if(type == Card.RCARD) {
 				int fontSize = size / 4;
 				
 				g.setFont(new Font("Consolas", Font.PLAIN, fontSize));
@@ -78,7 +78,7 @@ public class Card {
 			}
 			break;
 			
-		case 2:
+		case EMPTY:
 			g.drawImage(emptyImg, x, y, size, (int) (size * cardRatio), null);
 			break;
 		}

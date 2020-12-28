@@ -90,31 +90,59 @@ public class StageFileManager {
 		return error;
 	}
 	
-	public byte[] getCards(int n) {
+	public Card[] getCards(int n) {
 		byte[] data = Read(n);
 		byte[] dataTrim = new byte[data.length - 66];
+		
+		Card[] cardsData = new Card[data.length - 66];
 		
 		for(int i = 0; i < data.length - 66; i++) {
 			dataTrim[i] = data[i + 65];
 		}
 		
-		return dataTrim;
+		for(int i = 0; i < cardsData.length; i++) {
+			switch (dataTrim[i]) {
+			case 1:
+				cardsData[i] = Card.BACKCARD;
+				break;
+			case 2:
+				cardsData[i] = Card.FORWARDCARD;
+				break;
+			case 3:
+				cardsData[i] = Card.FASTFORWARDCARD;
+				break;
+			case 4:
+				cardsData[i] = Card.RTURNCARD;
+				break;
+			case 5:
+				cardsData[i] = Card.LTURNCARD;
+				break;
+			case 6:
+				cardsData[i] = Card.UTURNCARD;
+				break;
+			case 7:
+				cardsData[i] = Card.RCARD;
+				break;
+			}
+		}
+		
+		return cardsData;
 	}
 	
-	public byte[] getRealCards(int n) {
+	public Card[] getRealCards(int n) {
 		System.out.println("called getRealCards");
-		byte[] allCards = getCards(n);
-		byte[] data = new byte[getCardAmount(n)];
+		Card[] allCards = getCards(n);
+		Card[] data = new Card[getCardAmount(n)];
 		int shift = 0;
 		
 		if(getCardAmount(n) != 0) {
 		data[0] = allCards[0];
 		
 		for(int i = 1; i < getCardAmount(n) + 1; i++) {
-			if(allCards[i - 1] != 7) data[i - shift] = allCards[i];
+			if(allCards[i - 1] != Card.RCARD) data[i - shift] = allCards[i];
 			else shift++;
 			
-			if(allCards[i - 1] != 7) System.out.println(allCards[i]);
+			if(allCards[i - 1] != Card.RCARD) System.out.println(allCards[i]);
 			else System.out.println("shift: " + shift);
 		}
 		return data;
@@ -123,25 +151,41 @@ public class StageFileManager {
 	}
 	
 	public byte getCardAmount(int n) {
-		byte[] cards = getCards(n);
+		Card[] cards = getCards(n);
 		int r = 0;
 		
 		for(int i = 0; i < cards.length; i++) {
-			if(cards[i] == 7) r++;
+			if(cards[i] == Card.RCARD) r++;
 		}
 		
 		return (byte) (cards.length - r);
 	}
 	
-	public byte[] getTiles(int n) {
+	public Tile[] getTiles(int n) {
 		byte[] data = Read(n);
-		byte[] dataTrim = new byte[64];
+		Tile[] dataTiles = new Tile[64];
 		
 		for(int i = 0; i < 64; i++) {
-			dataTrim[i] = data[i + 1];
+			switch(data[i + 1]) {
+			case 0:
+				dataTiles[i] = Tile.EMPTY;
+				break;
+			case 1:
+				dataTiles[i] = Tile.BLOCK;
+				break;
+			case 2:
+				dataTiles[i] = Tile.HOLE;
+				break;
+			case 3:
+				dataTiles[i] = Tile.START;
+				break;
+			case 4:
+				dataTiles[i] = Tile.FLAG;
+				break;
+			}
 		}
-		
-		return dataTrim;
+
+		return dataTiles;
 	}
 	
 	public byte getTile(int n, int j) {
@@ -150,35 +194,49 @@ public class StageFileManager {
 		return data[j + 1];
 	}
 	
-	public byte getInitRot(int n) {
+	public Rotation getInitRot(int n) {
 		byte[] data = Read(n);
 
-		return data[0];
+		switch ((data[0] + 1) % 4) {
+		case 0:
+			return Rotation.NORTH;
+		case 1:
+			return Rotation.EAST;
+		case 2:
+			return Rotation.SOUTH;
+		case 3:
+			return Rotation.WEST;
+			
+		default:
+			return null;
+		}
 	}
 	
 	public byte[] getInitLoc(int n) {
-		byte[] data = getTiles(n);
+		Tile[] data = getTiles(n);
 		byte tile = 0;
-		byte[] loc = new byte[2];
 		
 		for(int i = 0; i < data.length; i++) {
-			if(data[i] == 3) tile = (byte) (i + 1);
+			if(data[i] == Tile.START) tile = (byte) (i + 1);
 		}
-		
-		System.out.println("tile: " + tile);
 
+		return tileToPos(tile);
+	}
+	
+	public byte[] tileToPos(int tile) {
+		byte[] loc = new byte[2];
+		
 		loc[0] = (byte) ((tile - 1) % 8);
 		loc[1] = (byte) (7 - Math.floor((double) tile / 8));
 		
-		System.out.println("tile / 8: " + (double) tile / 8);
-		System.out.println("Math.floor: " + Math.floor((double) tile / 8));
-		System.out.println("7 -: " + (7 - Math.floor(tile / 8)));
-		
-		System.out.println("x: " + loc[0]);
-		System.out.println("y: " + loc[1]);
-		
 		return loc;
 	}
+	
+	public int posToTile(byte[] pos) {
+		return (pos[0] + 1 + 8 * (7 - pos[1]));
+	}
+	
+	
 	
 	public byte getSlots(int n) {
 		byte[] data = Read(n);

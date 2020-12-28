@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 public class Robot {
 	public byte[] pos = {0, 0};
-	public byte rot = 0;
+	public Rotation rot = Rotation.NORTH;
 	
 	public double[] subPos = {0, 0};
 	public double subRot = 0;
@@ -27,10 +27,10 @@ public class Robot {
 		af = new AffineTransform();
 		
 		af.setToTranslation(pos[0], pos[1]);
-		af.setToRotation(Math.toRadians(rot));
+		af.setToRotation(Math.toRadians((rot.ordinal() - 1) * 90));
 	}
 	
-	public void set(byte[] p, byte r) {
+	public void set(byte[] p, Rotation r) {
 		pos = p;
 		rot = r;
 	}
@@ -39,46 +39,67 @@ public class Robot {
 		pos = p;
 	}
 	
-	public void setRot(byte r) {
-		rot = r;
+	public void setRot(Rotation initRot) {
+		rot = initRot;
 	}
 	
 	public void move(byte step) {
 		
 		switch(rot) {
-		case 0:
-			pos[0] += step;
-		break;
-		
-		case 1:
-			pos[1] += step;
-		break;
-		
-		case 2:
-			pos[0] -= step;
-		break;
-		
-		case 3:
+		case NORTH:
 			pos[1] -= step;
-		break;
+			break;
+		
+		case EAST:
+			pos[0] += step;
+			break;
+		
+		case SOUTH:
+			pos[1] += step;
+			break;
+		
+		case WEST:
+			pos[0] -= step;
+			break;
 		}
 	}
 	
-	public void turn(byte turn) {
-		byte r = rot;
-		r += turn;
+	public byte[] getMovePos(byte step) {
 		
-		if(r < 0) r += 4;
-		if(r > 3) r -= 4;
+		byte[] localPos = new byte[2];
+		localPos[0] = pos[0];
+		localPos[1] = pos[1];
 		
-		rot = r;
+		switch(rot) {
+		case NORTH:
+			localPos[1] -= step;
+			break;
+		
+		case EAST:
+			localPos[0] += step;
+			break;
+		
+		case SOUTH:
+			localPos[1] += step;
+			break;
+		
+		case WEST:
+			localPos[0] -= step;
+			break;
+		}
+		
+		return localPos;
+	}
+	
+	public void turn(Turn turn) {
+		rot = rot.add(turn);
 	}
 	
 	public byte[] getLoc() {
 		return pos;
 	}
 	
-	public byte getRot() {
+	public Rotation getRot() {
 		return rot;
 	}
 	

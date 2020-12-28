@@ -6,3 +6,4 @@ public class Main {
 		MenuFrame menu = new MenuFrame();
 	}
 }
+
