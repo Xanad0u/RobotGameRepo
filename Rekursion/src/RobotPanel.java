@@ -148,25 +148,30 @@ public class RobotPanel extends JPanel implements ActionListener {
 		
 		if(executionOrder != null && executionReady && pauseCounter == 0) {
 			executionReady = false;
+			
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
-				System.out.println("moveTile: " + host.fileManager.posToTile(robot.getMovePos((byte) 1)));
-				System.out.println("moveTileType: " + host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) 1)) - 1]);
-				System.out.println();
-				if(host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) 1)) - 1] != Tile.BLOCK) 
+				if(host.tiles[host.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
 					moveAnimated(Move.FORWARD);
 				else {
 					pauseCounter = pauseTime;
 					executionReady = true;
 				}
 				break;
+				
 			case MOVEBACKWARD:
-				if(host.tiles[host.fileManager.posToTile(robot.getMovePos((byte) - 1)) - 1] != Tile.BLOCK) 
+				if(host.tiles[host.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
 					moveAnimated(Move.BACKWARD);
+				else {
+					pauseCounter = pauseTime;
+					executionReady = true;
+				}
 				break;
+				
 			case TURNRIGHT:
 				turnAnimated(Turn.CLOCKWISE);
 				break;
+				
 			case TURNLEFT:
 				turnAnimated(Turn.COUNTERCLOCKWISE);
 				break;
