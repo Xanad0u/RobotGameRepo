@@ -265,18 +265,10 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		executionBuffer = new Command[outputList.size()];	//Initialize Command array of the length of the List
 
-		System.out.println();
-		System.out.print("{ ");
-		
 		for(int i = 0; i < outputList.size(); i++) {
-			
-			System.out.print(outputList.get(i) + " ");
-			
 			executionBuffer[i] = outputList.get(i);		//copy List to the executionBuffer Command array
 		}
-		
-		System.out.println("}");
-		System.out.println();
+
 
 		robotPane.execute(executionBuffer);	//run execution in the robot instance
 	}
