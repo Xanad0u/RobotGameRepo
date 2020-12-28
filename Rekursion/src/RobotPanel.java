@@ -170,6 +170,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 			case TURNLEFT:
 				turnAnimated(Turn.COUNTERCLOCKWISE);
 				break;
+				
+			default:	//should not be called
+				System.out.println("ERROR - Could not execute command");
+				break;
 			}
 			executionElement++;
 			

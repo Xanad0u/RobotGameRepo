@@ -29,6 +29,9 @@ public class Slot extends CardObject {
 		case UTURNCARD:
 			img = host.uTurnCard;
 			break;
+			
+		default:	//should not be called
+			break;
 		}
 		state = State.SET;
 	}

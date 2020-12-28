@@ -48,6 +48,10 @@ public class CardPanel extends JPanel implements MouseListener {
 				j++;
 				cards[i] = new CardObject(host.rCard, host.cardSlot, Card.RCARD, cardArray[j].ordinal() + 1);
 				break;
+
+			default:		//should not be called
+				cards[i] = new CardObject(host.cardSlot);
+				break;
 			}
 			j++;
 		}

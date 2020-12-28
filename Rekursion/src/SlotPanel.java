@@ -100,6 +100,10 @@ public class SlotPanel extends JPanel implements MouseListener {
 				
 				break;
 			}
+			
+		default:	//should not be called
+			System.out.println("ERROR - Corrupted slot, pos: " + pos);
+			break;
 		}
 	}
 

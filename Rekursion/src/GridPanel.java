@@ -12,8 +12,6 @@ public class GridPanel extends JPanel {
 	private StageFrame host;
 	
 	private Tile[] tiles;
-	
-	private CardObject testCard;
 
 	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, Tile[] tilesIn) {
 		hostFrame = hostFrameIn;

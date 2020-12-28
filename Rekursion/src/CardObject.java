@@ -62,7 +62,7 @@ public class CardObject {
 			
 		case SELECTED:
 			g.setColor(new Color(200, 50, 50));
-			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), 25, 25);
+			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), size / 4, size / 4);
 			
 			g.drawImage(img, x, y, size, (int) (size * cardRatio), null);
 			

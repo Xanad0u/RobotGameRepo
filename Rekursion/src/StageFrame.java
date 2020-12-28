@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 public class StageFrame extends JFrame implements MouseListener {
 
@@ -246,6 +245,13 @@ public class StageFrame extends JFrame implements MouseListener {
 					cmd[i + shift] = Command.INSERTRECUSION;	//R card
 					adjLoops[i + shift] = slotPane.loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
 					break;
+					
+				default:	//should not be called
+					System.out.println("ERROR - Could not convert card to command");
+					break;
+					
+					//TODO Visualize current executing card
+					//TODO Debugging command output
 			}
 		}
 

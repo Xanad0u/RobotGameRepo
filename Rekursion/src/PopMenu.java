@@ -3,7 +3,6 @@ import java.awt.EventQueue;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.Component;

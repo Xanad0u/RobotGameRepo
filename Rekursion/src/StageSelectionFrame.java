@@ -1,6 +1,3 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -8,37 +5,17 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 
 import java.awt.FlowLayout;
-import java.awt.CardLayout;
-import javax.swing.BoxLayout;
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import net.miginfocom.swing.MigLayout;
 import javax.swing.SpringLayout;
 import java.awt.Color;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 
 import java.awt.Component;
 import javax.swing.SwingConstants;
 import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.awt.event.ActionEvent;
-import javax.swing.JPopupMenu;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JLabel;
-import java.awt.Dimension;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
 
 public class StageSelectionFrame extends JFrame{
 	
