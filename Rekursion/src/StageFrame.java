@@ -33,7 +33,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	public int xNull;				//Holds the x component of the board origin
 	public int yNull;				//Holds the y component of the board origin
 	
-	byte[] tiles;								//Holds the tiles of the stage
+	Tile[] tiles;								//Holds the tiles of the stage
 	byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
 	byte cardAmount;							//Holds the amount of cards in the stage
 	byte slotAmount;							//Holds the amount of slots in the stage
@@ -68,7 +68,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	GridPanel gridPane;		//Holds the pane containing the board
 	MenuPanel menu;			//Holds the popup menu
 
-	int[] executionBuffer;	//Temporary storage holding the execution commands
+	Command[] executionBuffer;	//Temporary storage holding the execution commands
 		
 	CardPanel cardPane;		//Holds the pane containing the usable cards
 	SlotPanel slotPane;		//Holds the pane containing the slot and the cards placed in them
@@ -195,7 +195,7 @@ public class StageFrame extends JFrame implements MouseListener {
 	
 	public void execute() {		//Method to read, convert, pass and execute the cards placed in the slots
 
-		int[] cmd;			//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
+		Command[] cmd;			//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
 		int realCmd = 0;	//Stores the length of the split command string
 		int[] adjLoops;		//Stores the R loops adjusted for split cards
 
@@ -205,7 +205,7 @@ public class StageFrame extends JFrame implements MouseListener {
 		}
 
 
-		cmd = new int[realCmd];			//Initialize cmd
+		cmd = new Command[realCmd];			//Initialize cmd
 		adjLoops = new int[realCmd];	//Initialize adjLoops
 		
 		int shift = 0;		//Setting up a shift counter (inital -> 0)
@@ -213,67 +213,67 @@ public class StageFrame extends JFrame implements MouseListener {
 		for(int i = 0; i < slotPane.types.length; i++) {	//Converting command string with to without double cards, adjusting loops
 			switch(slotPane.types[i]) {
 				case BACKCARD:
-					cmd[i + shift] = 2;			//backward (1->2)
-					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					cmd[i + shift] = Command.MOVEBACKWARD;		//backward
+					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
 					break;
 				case FORWARDCARD:	
-					cmd[i + shift] = 1;			//forward (2->1)
-					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					cmd[i + shift] = Command.MOVEFORWARD;		//forward
+					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
 					break;
 				case FASTFORWARDCARD:
-					cmd[i + shift] = 1;			//fastforward (3->1, 1)
-					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
-					shift++;					//double card -> shift++;
-					cmd[i + shift] = 1;
+					cmd[i + shift] = Command.MOVEFORWARD;		//fastforward
+					adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+					shift++;									//double card -> shift++;
+					cmd[i + shift] = Command.MOVEFORWARD;
 					adjLoops[i + shift] = 0;
 					break;
 				case RTURNCARD:
-					cmd[i + shift] = 3;			//right turn (4->3)
-					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					cmd[i + shift] = Command.TURNRIGHT;			//right turn
+					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
 					break;
 				case LTURNCARD:
-					cmd[i + shift] = 4;			//left turn (3->4)
-					adjLoops[i + shift] = 0;	//single card -> ajdLoops (+1)
+					cmd[i + shift] = Command.TURNLEFT;			//left turn
+					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
 					break;
 				case UTURNCARD:
-					cmd[i + shift] = 3;			//u turn (6->3, 3)
-					adjLoops[i + shift] = 0;	//double card -> ajdLoops (+2)
-					shift++;					//double card -> shift++;
-					cmd[i + shift] = 3;
+					cmd[i + shift] = Command.TURNRIGHT;			//u turn
+					adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+					shift++;									//double card -> shift++;
+					cmd[i + shift] = Command.TURNRIGHT;
 					adjLoops[i + shift] = 0;
 					break;
 				case RCARD:
-					cmd[i + shift] = 0;							//R card (7->0)
+					cmd[i + shift] = Command.INSERTRECUSION;	//R card
 					adjLoops[i + shift] = slotPane.loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
 					break;
 			}
 		}
 
-		ArrayList<Integer> commandList = new ArrayList<>();		//Initialize List to hold commands
+		ArrayList<Command> commandList = new ArrayList<>();		//Initialize List to hold commands
 		
 		for(int i = 0; i < cmd.length; i++) {	//Set List to be equal to the cmd array
 			commandList.add(cmd[i]);
 		}
 		
-		ArrayList<Integer> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
+		ArrayList<Command> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
 		
-		executionBuffer = new int[outputList.size()];	//Initialize int array of the length of the List
+		executionBuffer = new Command[outputList.size()];	//Initialize Command array of the length of the List
 
 		for(int i = 0; i < outputList.size(); i++) {
-			executionBuffer[i] = outputList.get(i);	//copy List to the executionBuffer int array
+			executionBuffer[i] = outputList.get(i);		//copy List to the executionBuffer Command array
 		}
 
 
 		robotPane.execute(executionBuffer);	//run execution in the robot instance
 	}
 	
-	private ArrayList<Integer> recursion(ArrayList<Integer> commandsIn, int[] loops) {	//Method to make R cards real cards
+	private ArrayList<Command> recursion(ArrayList<Command> commandList, int[] loops) {	//Method to make R cards real cards
 		
-		ArrayList<Integer> commandsOut = new ArrayList<>();	//Create new local List containing the commands to be returned
+		ArrayList<Command> commandsOut = new ArrayList<>();	//Create new local List containing the commands to be returned
 		
-		for(int i = 0; i < commandsIn.size(); i++) {	//Loop over the input List
-			if(commandsIn.get(i) != 0) {
-				commandsOut.add(commandsIn.get(i));		//Add the command of the input List to the output List, if it isn't a R command
+		for(int i = 0; i < commandList.size(); i++) {	//Loop over the input List
+			if(commandList.get(i) != Command.INSERTRECUSION) {
+				commandsOut.add(commandList.get(i));		//Add the command of the input List to the output List, if it isn't a R command
 			}
 			else {
 				if(loops[i] > 0) {											//If the command is a R command test if there are iterations left
@@ -282,7 +282,7 @@ public class StageFrame extends JFrame implements MouseListener {
 							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;	//If the iterations left is greater then zero decrease it by one
 						}
 					
-					commandsOut.addAll(recursion(commandsIn, loopsExe));	//Run recursion with the input List and the decreased loop array
+					commandsOut.addAll(recursion(commandList, loopsExe));	//Run recursion with the input List and the decreased loop array
 				}
 			}
 		}

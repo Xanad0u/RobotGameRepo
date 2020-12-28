@@ -161,15 +161,31 @@ public class StageFileManager {
 		return (byte) (cards.length - r);
 	}
 	
-	public byte[] getTiles(int n) {
+	public Tile[] getTiles(int n) {
 		byte[] data = Read(n);
-		byte[] dataTrim = new byte[64];
+		Tile[] dataTiles = new Tile[64];
 		
 		for(int i = 0; i < 64; i++) {
-			dataTrim[i] = data[i + 1];
+			switch(data[i + 1]) {
+			case 0:
+				dataTiles[i] = Tile.EMPTY;
+				break;
+			case 1:
+				dataTiles[i] = Tile.BLOCK;
+				break;
+			case 2:
+				dataTiles[i] = Tile.HOLE;
+				break;
+			case 3:
+				dataTiles[i] = Tile.START;
+				break;
+			case 4:
+				dataTiles[i] = Tile.FLAG;
+				break;
+			}
 		}
-		
-		return dataTrim;
+
+		return dataTiles;
 	}
 	
 	public byte getTile(int n, int j) {
@@ -181,17 +197,15 @@ public class StageFileManager {
 	public Rotation getInitRot(int n) {
 		byte[] data = Read(n);
 
-		Rotation rot = null;
-		
 		switch ((data[0] + 1) % 4) {
 		case 0:
-			return rot.NORTH;
+			return Rotation.NORTH;
 		case 1:
-			return rot.EAST;
+			return Rotation.EAST;
 		case 2:
-			return rot.SOUTH;
+			return Rotation.SOUTH;
 		case 3:
-			return rot.WEST;
+			return Rotation.WEST;
 			
 		default:
 			return null;
@@ -199,11 +213,11 @@ public class StageFileManager {
 	}
 	
 	public byte[] getInitLoc(int n) {
-		byte[] data = getTiles(n);
+		Tile[] data = getTiles(n);
 		byte tile = 0;
 		
 		for(int i = 0; i < data.length; i++) {
-			if(data[i] == 3) tile = (byte) (i + 1);
+			if(data[i] == Tile.START) tile = (byte) (i + 1);
 		}
 
 		return tileToPos(tile);
