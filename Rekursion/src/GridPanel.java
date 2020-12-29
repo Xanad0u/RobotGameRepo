@@ -14,7 +14,7 @@ import javax.swing.KeyStroke;
 public class GridPanel extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener{
 
 	private JFrame hostFrame;
-	private StageFrame host;
+	public StageFrame host;
 	
 	public int[] mousePos = new int[2];
 	public int focusedTile;
@@ -22,7 +22,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	Tile[] tiles;
 	
 	private boolean isEditor = false;
-	boolean mouseInFrame = true;
+	boolean mouseInFrame = false;
 	int startTile = -1;
 	int flagTile = -1;
 
@@ -54,16 +54,21 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
 		getActionMap().put("trigger", new PopAction(host.menu));
 		
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "turnRobotClockwise");
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F"), "turnRobotCounterclockwise");
+		getActionMap().put("turnRobotClockwise", new TurnRobotAction(this, Turn.CLOCKWISE));
+		getActionMap().put("turnRobotCounterclockwise", new TurnRobotAction(this, Turn.COUNTERCLOCKWISE));
+		
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("1"), "putEmpty");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("2"), "putBlock");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("3"), "putHole");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("4"), "putStart");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("5"), "putFlag");
-		getActionMap().put("putEmpty", new putTileAction(this, Tile.EMPTY));
-		getActionMap().put("putBlock", new putTileAction(this, Tile.BLOCK));
-		getActionMap().put("putHole", new putTileAction(this, Tile.HOLE));
-		getActionMap().put("putStart", new putTileAction(this, Tile.START));
-		getActionMap().put("putFlag", new putTileAction(this, Tile.FLAG));
+		getActionMap().put("putEmpty", new PutTileAction(this, Tile.EMPTY));
+		getActionMap().put("putBlock", new PutTileAction(this, Tile.BLOCK));
+		getActionMap().put("putHole", new PutTileAction(this, Tile.HOLE));
+		getActionMap().put("putStart", new PutTileAction(this, Tile.START));
+		getActionMap().put("putFlag", new PutTileAction(this, Tile.FLAG));
 	}
 	
 
@@ -186,6 +191,9 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			if(startTile != -1) tiles[startTile] = Tile.EMPTY;
 			startTile = focusedTile;
 			
+			host.robotPane.moveTo(focusedTile);
+			host.robotPane.setRobotVisible(true);
+			
 			tiles[focusedTile] = Tile.START;
 			break;
 
@@ -194,6 +202,8 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			
 			if(flagTile != -1) tiles[flagTile] = Tile.EMPTY;
 			flagTile = focusedTile;
+			
+			host.robotPane.setRobotVisible(false);
 			
 			tiles[focusedTile] = Tile.FLAG;
 			break;
@@ -206,6 +216,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		}
 		
 		repaint();
+		host.robotPane.repaint();
 	}
 
 	@Override
@@ -239,21 +250,21 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		
 		if(focusedTile == startTile) {
 			startTile = -1;
-			host.robotPane.setVisible(false);
+			host.robotPane.setRobotVisible(false);
 		}
 		if(focusedTile == flagTile) flagTile = -1;
 		
 		if(tiles[focusedTile] == Tile.START && startTile != -1) tiles[startTile] = Tile.EMPTY;
 		if(tiles[focusedTile] == Tile.START) {
 			startTile = focusedTile;
-			host.robotPane.moveToWithRotation(focusedTile, Rotation.NORTH);
-			host.robotPane.setVisible(true);
+			host.robotPane.moveTo(focusedTile);
+			host.robotPane.setRobotVisible(true);
 		}
 		
 		if(tiles[focusedTile] == Tile.FLAG && flagTile != -1) tiles[flagTile] = Tile.EMPTY;
 		if(tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
 		
-		repaint();
+		host.robotPane.repaint();
 	}
 
 	@Override

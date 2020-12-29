@@ -125,3 +125,21 @@ enum Tile {
 		return values()[newPos];     
 	}
 }
+
+enum Link {
+	MASTER(-1), SLAVE(-1);
+
+	private int linkedTo;
+	
+	Link(int linkedTo) {
+		this.linkedTo = linkedTo;
+	}
+	
+	public void linkTo(int linkTo) {
+		linkedTo = linkTo;
+	}
+	
+	public int getLinkedTo(Link link) {
+		return linkedTo;
+	}
+}

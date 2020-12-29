@@ -53,3 +53,7 @@
 /putTileAction.class
 /putCardAction.class
 /changeRIterations.class
+/PutTileAction.class
+/PutCardAction.class
+/TurnRobotAction.class
+/Link.class

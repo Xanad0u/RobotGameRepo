@@ -232,6 +232,16 @@ public class StageFileManager {
 		return loc;
 	}
 	
+	public byte[] tileIndexToPos(int tile) {
+		byte[] loc = new byte[2];
+		tile++;
+		
+		loc[0] = (byte) ((tile - 1) % 8);
+		loc[1] = (byte) (7 - Math.floor((double) (tile - 1) / 8));
+		
+		return loc;
+	}
+	
 	public int posToTile(byte[] pos) {
 		return (pos[0] + 1 + 8 * (7 - pos[1]));
 	}

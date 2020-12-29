@@ -13,7 +13,6 @@ public class changeRIterations extends AbstractAction {
 		putCard = Card.RCARD;
 		this.host = host;
 		this.change = change;
-		this.loops = host.cardList.get(host.focusedCard).rLoops;
 	}
 
 	@Override
@@ -26,9 +25,9 @@ public class changeRIterations extends AbstractAction {
 			System.out.println("change: " + change);
 			System.out.println("updated loops " + (loops + change));
 			
-			if(loops + change < 0) host.cardList.get(host.focusedCard).makeCard(host.host, 9);
-			else if (loops + change > 9) host.cardList.get(host.focusedCard).makeCard(host.host, 0);
-			else host.cardList.get(host.focusedCard).makeCard(host.host, loops + change);
+			if(loops + change < 0) host.cardList.get(host.focusedCard).makeCard(9);
+			else if (loops + change > 9) host.cardList.get(host.focusedCard).makeCard(0);
+			else host.cardList.get(host.focusedCard).makeCard(loops + change);
 			host.repaint();
 		}
 	}

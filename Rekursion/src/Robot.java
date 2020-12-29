@@ -20,7 +20,7 @@ public class Robot {
 	StageFrame host;
 	
 	private boolean isEditor = false;
-	boolean isVisible = true;
+	public boolean isVisible = true;
 	
 	public Robot(int ss, long bt, BufferedImage imgIn) {
 		substeps = ss;
@@ -31,8 +31,8 @@ public class Robot {
 	}
 	
 	public Robot(BufferedImage imgIn) {
-		isEditor = true;
 		isVisible = false;
+		isEditor = true;
 		img = imgIn;
 		af = new AffineTransform();
 	}
@@ -119,6 +119,6 @@ public class Robot {
 	}
 	
 	public void draw(Graphics2D g) {	//Draw robot using set AffineTransform
-		g.drawImage(img, af, null);
+		if(isVisible) g.drawImage(img, af, null);
 	}
 }

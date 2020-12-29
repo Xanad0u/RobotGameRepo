@@ -20,7 +20,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	
 	private boolean isEditor = false;
 	
-	boolean mouseInFrame = true;
+	boolean mouseInFrame = false;
 	
 	ArrayList<Slot> cardList;
 	
@@ -81,7 +81,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		host = hostIn;
 		
 		cardList = new ArrayList<>();
-		cardList.add(new Slot(host.cardSlot));
+		cardList.add(new Slot(host.cardSlot, host));
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -99,16 +99,17 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("MINUS"), "decreaseRIterations");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "increaseRIterations");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("S"), "decreaseRIterations");
-		getActionMap().put("putBackward", new putCardAction(this, Card.BACKCARD));
-		getActionMap().put("putForward", new putCardAction(this, Card.FORWARDCARD));
-		getActionMap().put("putFastforward", new putCardAction(this, Card.FASTFORWARDCARD));
-		getActionMap().put("putRTurn", new putCardAction(this, Card.RTURNCARD));
-		getActionMap().put("putLTurn", new putCardAction(this, Card.LTURNCARD));
-		getActionMap().put("putUTurn", new putCardAction(this, Card.UTURNCARD));
-		getActionMap().put("putRCard", new putCardAction(this, 0));
-		getActionMap().put("clearCard", new putCardAction(this, Card.EMPTY));
+		getActionMap().put("putBackward", new PutCardAction(this, Card.BACKCARD));
+		getActionMap().put("putForward", new PutCardAction(this, Card.FORWARDCARD));
+		getActionMap().put("putFastforward", new PutCardAction(this, Card.FASTFORWARDCARD));
+		getActionMap().put("putRTurn", new PutCardAction(this, Card.RTURNCARD));
+		getActionMap().put("putLTurn", new PutCardAction(this, Card.LTURNCARD));
+		getActionMap().put("putUTurn", new PutCardAction(this, Card.UTURNCARD));
+		getActionMap().put("putRCard", new PutCardAction(this, 0));
+		getActionMap().put("clearCard", new PutCardAction(this, Card.EMPTY));
 		getActionMap().put("increaseRIterations", new changeRIterations(this, 1));
 		getActionMap().put("decreaseRIterations", new changeRIterations(this, -1));
+		
 		
 	}
 
@@ -164,8 +165,8 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		}
 		else {
 			if(focusedCard <= cardList.size()) {
-				if(cardList.get(focusedCard).type.change(1) != Card.RCARD) cardList.get(focusedCard).makeCard(cardList.get(focusedCard).type.change(1), host);
-				else cardList.get(focusedCard).makeCard(host, 0);
+				if(cardList.get(focusedCard).type.change(1) != Card.RCARD) cardList.get(focusedCard).makeCard(cardList.get(focusedCard).type.change(1));
+				else cardList.get(focusedCard).makeCard(0);
 			}
 		}
 		repaint();
@@ -195,7 +196,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation() == -1) cardList.add(new Slot(host.cardSlot));
+		if(e.getWheelRotation() == -1) cardList.add(new Slot(host.cardSlot, host));
 		else if(cardList.size() > 0) cardList.remove(cardList.size() - 1);
 		
 		focusedCard = (int) ((mousePos - 0.5 * gap) / (gap + host.size));

@@ -60,17 +60,26 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 	
 	public void moveToWithRotation(int tile, Rotation rot) {
-		robot.set(host.fileManager.tileToPos(tile), rot);
+		robot.set(host.fileManager.tileIndexToPos(tile), rot);
+	}
+	
+	public void moveTo(int tile) {
+		robot.setLoc(host.fileManager.tileIndexToPos(tile));
+	}
+	
+	public void turn(Turn turn) {
+		robot.setRot(robot.getRot().add(turn));
 		repaint();
 	}
+	
 	
 	public void toggleVisible() {
-		if(robot.isVisible) robot.isVisible = false;
-		else robot.isVisible = true;
+		if(robot.isVisible) setRobotVisible(false);
+		else setRobotVisible(true);
 		repaint();
 	}
 	
-	public void setVisible(boolean visible) {
+	public void setRobotVisible(boolean visible) {
 		robot.isVisible = visible;
 		repaint();
 	}
@@ -117,7 +126,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
-		if(robot.isVisible) robot.draw((Graphics2D) g);
+		robot.draw((Graphics2D) g);
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 			types[i] = Card.EMPTY;
 			loops[i] = 0;
 			origin[i] = -1;
-			slots[i] = new Slot(host.cardSlot);
+			slots[i] = new Slot(host.cardSlot, host);
 		}
 		
 		cardPanel = cardPanelIn;
@@ -52,7 +52,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 		slotAmount = 1;
 		
 		slotList = new ArrayList<>();
-		slotList.add(new Slot(host.cardSlot));
+		slotList.add(new Slot(host.cardSlot, host));
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -93,54 +93,55 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
-		int pos = e.getX() / (gap + host.size);
-				
-		switch(slots[pos].state) {
-		case SET:
-			slots[pos].clear();
-			cardPanel.cards[origin[pos]].state = State.SET;
-			origin[pos] = -1;
-			types[pos] = Card.EMPTY;
-			loops[pos] = 0;
-			
-			repaint();
-			cardPanel.repaint();
-			break;
-			
-		case EMPTY:
-			if(cardPanel.selected != -1) {
-				origin[pos] = cardPanel.selected;
-				cardPanel.selected = -1;
-				cardPanel.cards[origin[pos]].state = State.EMPTY;
-				
-				CardObject movingCard = cardPanel.getCard(origin[pos]);
-				
-				types[pos] = movingCard.getType();
-				
-				System.out.println("moving card type: " + movingCard.getType().toString());
-				
-				if(types[pos] == Card.RCARD) loops[pos] = movingCard.getLoops();
-				
-				if(types[pos] != Card.RCARD) slots[pos].makeCard(types[pos], host);
-				else slots[pos].makeCard(host, loops[pos]);
+		if(!isEditor) {
+			int pos = e.getX() / (gap + host.size);
+					
+			switch(slots[pos].state) {
+			case SET:
+				slots[pos].clear();
+				cardPanel.cards[origin[pos]].state = State.SET;
+				origin[pos] = -1;
+				types[pos] = Card.EMPTY;
+				loops[pos] = 0;
 				
 				repaint();
 				cardPanel.repaint();
+				break;
 				
-				boolean full = true;
-				for(int i = 0; i < slotAmount; i++) {
-					if(slots[i].state == State.EMPTY) full = false;
+			case EMPTY:
+				if(cardPanel.selected != -1) {
+					origin[pos] = cardPanel.selected;
+					cardPanel.selected = -1;
+					cardPanel.cards[origin[pos]].state = State.EMPTY;
+					
+					CardObject movingCard = cardPanel.getCard(origin[pos]);
+					
+					types[pos] = movingCard.getType();
+					
+					System.out.println("moving card type: " + movingCard.getType().toString());
+					
+					if(types[pos] == Card.RCARD) loops[pos] = movingCard.getLoops();
+					
+					if(types[pos] != Card.RCARD) slots[pos].makeCard(types[pos]);
+					else slots[pos].makeCard(loops[pos]);
+					
+					repaint();
+					cardPanel.repaint();
+					
+					boolean full = true;
+					for(int i = 0; i < slotAmount; i++) {
+						if(slots[i].state == State.EMPTY) full = false;
+					}
+					
+					if(full == true) host.execute();
+					
+					break;
 				}
 				
-				if(full == true) host.execute();
-				
+			default:	//should not be called
+				System.out.println("ERROR - Corrupted slot, pos: " + pos);
 				break;
 			}
-			
-		default:	//should not be called
-			System.out.println("ERROR - Corrupted slot, pos: " + pos);
-			break;
 		}
 	}
 
@@ -171,7 +172,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation() == -1) {
-			if (slotList.size() < host.cardPane.cardList.size()) slotList.add(new Slot(host.cardSlot));
+			if (slotList.size() < host.cardPane.cardList.size()) slotList.add(new Slot(host.cardSlot, host, slotList.size()));
 		}
 		else if(slotList.size() > 0) slotList.remove(slotList.size() - 1);
 		
