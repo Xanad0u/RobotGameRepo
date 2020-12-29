@@ -157,7 +157,7 @@ public class StageFrame extends JFrame implements MouseListener {
 		
 		buildPopupMenu();	//Constructing popup Menu
 		
-		//robotPane = new RobotPanel(substeps, moveTime, pauseTime, robotImg, frame, this, initPos, initRot); //Constructing robot pane
+		robotPane = new RobotPanel(robotImg, frame, this); //Constructing robot pane
 		
 		gridPane = new GridPanel(frame, this);	//Constructing board pane
 		
@@ -165,24 +165,24 @@ public class StageFrame extends JFrame implements MouseListener {
 
 		menu.setBounds((int) (frame.getContentPane().getWidth() / 2 - menuWidth / 2), (int) (frame.getContentPane().getHeight() / 2 - menuHeight / 2), menuWidth, menuHeight);
 
-		//robotPane.setBackground(new Color(0,0,0,0));	//Making robot pane background transparent
-		//robotPane.setOpaque(false);						//Making robot pane transparent
-		//robotPane.setVisible(true);				//Setting robot pane to visible
-		//robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
+		robotPane.setBackground(new Color(0,0,0,0));	//Making robot pane background transparent
+		robotPane.setOpaque(false);						//Making robot pane transparent
+		robotPane.setVisible(true);				//Setting robot pane to visible
+		robotPane.setBounds(0, 0, 1, 1);		//Setting robot pane size to more then zero, making it rescalable
 		
-		//cardPane = new CardPanel(this);
+		cardPane = new CardPanel(this);
 		
-		//cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
-		//slotPane = new SlotPanel(this);
+		slotPane = new SlotPanel(this);
 		
-		//slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
+		slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
 		
 		frame.add(menu);		//Add menu to frame
-		//frame.add(cardPane);
-		//frame.add(slotPane);
-		//frame.add(robotPane);	//Add robot pane to frame
+		frame.add(cardPane);
+		frame.add(slotPane);
+		frame.add(robotPane);	//Add robot pane to frame
 		frame.add(gridPane);	//Add board pane to frame
 	}
 

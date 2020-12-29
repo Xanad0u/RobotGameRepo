@@ -52,6 +52,29 @@ public class RobotPanel extends JPanel implements ActionListener {
 		timer.start();
 	}
 	
+	public RobotPanel(BufferedImage imgIn, JFrame frameIn, StageFrame hostIn) {
+		robot = new Robot(imgIn);
+		frame = frameIn;
+		
+		host = hostIn;
+	}
+	
+	public void moveToWithRotation(int tile, Rotation rot) {
+		robot.set(host.fileManager.tileToPos(tile), rot);
+		repaint();
+	}
+	
+	public void toggleVisible() {
+		if(robot.isVisible) robot.isVisible = false;
+		else robot.isVisible = true;
+		repaint();
+	}
+	
+	public void setVisible(boolean visible) {
+		robot.isVisible = visible;
+		repaint();
+	}
+
 	public void moveAnimated(Move move) {
 
 		x = 0;
@@ -94,7 +117,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
-		robot.draw((Graphics2D) g);
+		if(robot.isVisible) robot.draw((Graphics2D) g);
 	}
 
 	@Override

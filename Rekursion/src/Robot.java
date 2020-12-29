@@ -19,17 +19,24 @@ public class Robot {
 	
 	StageFrame host;
 	
+	private boolean isEditor = false;
+	boolean isVisible = true;
+	
 	public Robot(int ss, long bt, BufferedImage imgIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
 		
 		af = new AffineTransform();
-		
-		af.setToTranslation(pos[0], pos[1]);
-		af.setToRotation(Math.toRadians((rot.ordinal() - 1) * 90));
 	}
 	
+	public Robot(BufferedImage imgIn) {
+		isEditor = true;
+		isVisible = false;
+		img = imgIn;
+		af = new AffineTransform();
+	}
+
 	public void set(byte[] p, Rotation r) {
 		pos = p;
 		rot = r;

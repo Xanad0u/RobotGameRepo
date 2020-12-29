@@ -30,6 +30,10 @@ public class Slot extends CardObject {
 			img = host.uTurnCard;
 			break;
 			
+		case EMPTY:		//called by isEditor == true CardPanel
+			img = host.cardSlot;
+			break;
+			
 		default:	//should not be called
 			break;
 		}

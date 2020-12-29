@@ -21,9 +21,10 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			
 	Tile[] tiles;
 	
-	private boolean[] toggleTile;
-	
 	private boolean isEditor = false;
+	boolean mouseInFrame = true;
+	int startTile = -1;
+	int flagTile = -1;
 
 	public GridPanel(JFrame hostFrameIn, StageFrame hostIn, Tile[] tilesIn) {
 		hostFrame = hostFrameIn;
@@ -182,14 +183,24 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			break;
 
 		case HOLE:
+			if(startTile != -1) tiles[startTile] = Tile.EMPTY;
+			startTile = focusedTile;
+			
 			tiles[focusedTile] = Tile.START;
 			break;
 
 		case START:
+			startTile = -1;
+			
+			if(flagTile != -1) tiles[flagTile] = Tile.EMPTY;
+			flagTile = focusedTile;
+			
 			tiles[focusedTile] = Tile.FLAG;
 			break;
 			
 		case FLAG:
+			flagTile = -1;
+			
 			tiles[focusedTile] = Tile.EMPTY;
 			break;
 		}
@@ -211,21 +222,36 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		mouseInFrame = true;
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		mouseInFrame = false;
 	}
 	
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
+		
 		tiles[focusedTile] = tiles[focusedTile].change(e.getWheelRotation());
+		
+		if(focusedTile == startTile) {
+			startTile = -1;
+			host.robotPane.setVisible(false);
+		}
+		if(focusedTile == flagTile) flagTile = -1;
+		
+		if(tiles[focusedTile] == Tile.START && startTile != -1) tiles[startTile] = Tile.EMPTY;
+		if(tiles[focusedTile] == Tile.START) {
+			startTile = focusedTile;
+			host.robotPane.moveToWithRotation(focusedTile, Rotation.NORTH);
+			host.robotPane.setVisible(true);
+		}
+		
+		if(tiles[focusedTile] == Tile.FLAG && flagTile != -1) tiles[flagTile] = Tile.EMPTY;
+		if(tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
 		
 		repaint();
 	}

@@ -10,8 +10,8 @@ public class CardObject {
 	
 	protected BufferedImage img;
 	private BufferedImage emptyImg;
-	protected Card type;
-	protected int rLoops;
+	Card type;
+	int rLoops;
 	
 	public State state = State.SET;
 	
@@ -31,6 +31,7 @@ public class CardObject {
 	public CardObject(BufferedImage emptyImgIn) {
 		type = Card.EMPTY;
 		emptyImg = emptyImgIn;
+		state = State.EMPTY;
 	}
 	
 	public Card getType() {
