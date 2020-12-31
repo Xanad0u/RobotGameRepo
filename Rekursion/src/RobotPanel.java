@@ -69,19 +69,16 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	public void turn(Turn turn) {
 		robot.setRot(robot.getRot().add(turn));
-		repaint();
 	}
 	
 	
 	public void toggleVisible() {
 		if(robot.isVisible) setRobotVisible(false);
 		else setRobotVisible(true);
-		repaint();
 	}
 	
 	public void setRobotVisible(boolean visible) {
 		robot.isVisible = visible;
-		repaint();
 	}
 
 	public void moveAnimated(Move move) {

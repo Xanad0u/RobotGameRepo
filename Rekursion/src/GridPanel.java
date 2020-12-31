@@ -199,11 +199,10 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 
 		case START:
 			startTile = -1;
+			host.robotPane.setRobotVisible(false);
 			
 			if(flagTile != -1) tiles[flagTile] = Tile.EMPTY;
 			flagTile = focusedTile;
-			
-			host.robotPane.setRobotVisible(false);
 			
 			tiles[focusedTile] = Tile.FLAG;
 			break;
@@ -215,7 +214,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			break;
 		}
 		
-		repaint();
+		this.repaint();
 		host.robotPane.repaint();
 	}
 
@@ -264,6 +263,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		if(tiles[focusedTile] == Tile.FLAG && flagTile != -1) tiles[flagTile] = Tile.EMPTY;
 		if(tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
 		
+		repaint();
 		host.robotPane.repaint();
 	}
 

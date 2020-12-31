@@ -17,6 +17,7 @@ public class TurnRobotAction extends AbstractAction {
 		if(host.mouseInFrame) {
 			
 			host.host.robotPane.turn(turn);
+			host.host.robotPane.repaint();
 		}
 	}
 }

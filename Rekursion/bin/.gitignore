@@ -57,3 +57,7 @@
 /PutCardAction.class
 /TurnRobotAction.class
 /Link.class
+/LinkObject.class
+/Linkage.class
+/EditorSlot.class
+/Position.class

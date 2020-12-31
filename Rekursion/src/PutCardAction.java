@@ -22,9 +22,10 @@ public class PutCardAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(host.mouseInFrame) {
-			if(loops == -1) host.cardList.get(host.focusedCard).makeCard(putCard);
+			if(loops == -1) host.cardList.get(host.focusedCard).makeCardAndUpdate(putCard);
 			else host.cardList.get(host.focusedCard).makeCard(loops);
 			host.repaint();
+			host.host.slotPane.repaint();
 		}
 	}
 

@@ -16,13 +16,15 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	Slot[] slots;
 	int[] origin;
 	
+	private final int lineSize = 4;
+	
 	private int gap;
 	
 	private boolean isEditor = false;
 	
 	CardPanel cardPanel;
 	StageFrame host;
-	public ArrayList<Slot> slotList;
+	public ArrayList<EditorSlot> slotList;
 	private int mousePos;
 	private int focusedSlot;
 	
@@ -52,7 +54,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 		slotAmount = 1;
 		
 		slotList = new ArrayList<>();
-		slotList.add(new Slot(host.cardSlot, host));
+		slotList.add(new EditorSlot(host.cardSlot, host, 0, Position.SLAVE));
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -63,7 +65,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		this.setBounds(host.xNull, host.yNull  + host.fullSize + host.size / 2, host.fullSize, (int) (host.size * host.cardRatio));
+		this.setBounds(host.xNull, host.yNull  + host.fullSize + host.size / 2, host.fullSize + 2 * lineSize, (int) (host.size * host.cardRatio) + 2 * lineSize);
 		
 		if(!isEditor) {
 			gap = (host.fullSize - slotAmount * host.size) / (slotAmount + 1);
@@ -74,7 +76,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 				
 				xPos = (gap * (i + 1) + host.size * i);
 				
-				slots[i].draw(g, xPos, 0, host.size);
+				slots[i].draw(g, xPos, lineSize, host.size);
 			}
 		}
 		else {
@@ -86,16 +88,15 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 				
 				xPos = (gap * (i + 1) + host.size * i);
 				
-				slotList.get(i).draw(g, xPos, 0, host.size);
+				slotList.get(i).draw(g, xPos, lineSize, host.size);
 			}
 		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(!isEditor) {
-			int pos = e.getX() / (gap + host.size);
-					
+		int pos = e.getX() / (gap + host.size);
+		if(!isEditor) {	
 			switch(slots[pos].state) {
 			case SET:
 				slots[pos].clear();
@@ -143,6 +144,25 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 				break;
 			}
 		}
+		else {
+			if(pos < slotList.size()) {
+				EditorSlot active = slotList.get(pos);
+				if(!active.isLinked()) {
+					if(host.cardPane.linkToNext != active) {
+						host.cardPane.linkToNext = active;
+						host.cardPane.inLinkAction = true;
+						active.state = State.SELECTEDEMPTY;
+						repaint();
+					}
+					else {
+						host.cardPane.linkToNext = null;
+						host.cardPane.inLinkAction = false;
+						active.state = State.EMPTY;
+						repaint();
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -172,7 +192,10 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation() == -1) {
-			if (slotList.size() < host.cardPane.cardList.size()) slotList.add(new Slot(host.cardSlot, host, slotList.size()));
+			if (slotList.size() < host.cardPane.cardList.size()) {
+				System.out.println(slotList.size());
+				slotList.add(new EditorSlot(host.cardSlot, host, slotList.size(), Position.SLAVE));
+			}
 		}
 		else if(slotList.size() > 0) slotList.remove(slotList.size() - 1);
 		

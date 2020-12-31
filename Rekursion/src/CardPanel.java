@@ -22,7 +22,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	
 	boolean mouseInFrame = false;
 	
-	ArrayList<Slot> cardList;
+	ArrayList<EditorSlot> cardList;
 	
 	public int selected = -1;
 	
@@ -31,6 +31,9 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	private int mousePos;
 
 	int focusedCard;
+
+	public boolean inLinkAction = false;
+	public EditorSlot linkToNext = null;
 	
 	public CardPanel(Card[] cardArray, int cardAmountIn, StageFrame hostIn) {
 		host = hostIn;
@@ -81,7 +84,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		host = hostIn;
 		
 		cardList = new ArrayList<>();
-		cardList.add(new Slot(host.cardSlot, host));
+		cardList.add(new EditorSlot(host.cardSlot, host, cardList.size(), Position.MASTER));
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -116,6 +119,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	public CardObject getCard(int index) {
 		return cards[index];
 	}
+	
 	
 	@Override
 	public void paintComponent(Graphics g) {
@@ -164,12 +168,25 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 			}
 		}
 		else {
-			if(focusedCard <= cardList.size()) {
-				if(cardList.get(focusedCard).type.change(1) != Card.RCARD) cardList.get(focusedCard).makeCard(cardList.get(focusedCard).type.change(1));
-				else cardList.get(focusedCard).makeCard(0);
+			if (inLinkAction) {
+				
+				cardList.get(focusedCard).LinkTo(linkToNext);
+				
+				//linkToNext.linkToAsSlave(cardList.get(focusedCard));
+				linkToNext = null;
+				inLinkAction = false;
+			}
+			else {
+				if (focusedCard <= cardList.size()) {
+					if (cardList.get(focusedCard).type.change(1) != Card.RCARD)
+						cardList.get(focusedCard).makeCardAndUpdate(cardList.get(focusedCard).type.change(1));
+					else
+						cardList.get(focusedCard).makeCardAndUpdate(0);
+				} 
 			}
 		}
 		repaint();
+		host.slotPane.repaint();
 	}
 
 	@Override
@@ -196,7 +213,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation() == -1) cardList.add(new Slot(host.cardSlot, host));
+		if(e.getWheelRotation() == -1) cardList.add(new EditorSlot(host.cardSlot, host, cardList.size(), Position.MASTER));
 		else if(cardList.size() > 0) cardList.remove(cardList.size() - 1);
 		
 		focusedCard = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
@@ -204,6 +221,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		host.slotPane.cutSlotsTo(cardList.size());
 		
 		repaint();
+		host.slotPane.repaint();
 	}
 
 	@Override

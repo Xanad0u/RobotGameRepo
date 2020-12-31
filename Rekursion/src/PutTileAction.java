@@ -33,6 +33,7 @@ public class PutTileAction extends AbstractAction {
 			if(putTile == Tile.FLAG) host.flagTile = host.focusedTile;
 			
 			host.tiles[host.focusedTile] = putTile;
+			
 			host.repaint();
 			host.host.robotPane.repaint();
 		}

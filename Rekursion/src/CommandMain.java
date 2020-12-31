@@ -8,7 +8,7 @@ public enum CommandMain {
 
 	/**
 	 * No Command should be a rotation and a movement
-	 * 
+	 *
 	 * @param rot
 	 * @param steps
 	 */
@@ -112,7 +112,7 @@ enum Command {
 }
 
 enum State {
-	SET, SELECTED, EMPTY;
+	SET, SELECTED, EMPTY, SELECTEDEMPTY;
 }
 
 enum Tile {
@@ -127,19 +127,46 @@ enum Tile {
 }
 
 enum Link {
-	MASTER(-1), SLAVE(-1);
+	MASTER(null, null), SLAVE(null, null), UNLINKED(null, null);
 
-	private int linkedTo;
 	
-	Link(int linkedTo) {
-		this.linkedTo = linkedTo;
+	private EditorSlot master;
+	private EditorSlot slave;
+	
+	Link(EditorSlot master, EditorSlot slave) {
+		this.master = master;
+		this.slave = slave;
 	}
 	
-	public void linkTo(int linkTo) {
-		linkedTo = linkTo;
+	public void setMaster(EditorSlot master) {
+		this.master = master;
 	}
 	
-	public int getLinkedTo(Link link) {
-		return linkedTo;
+	public void setSlave(EditorSlot slave) {
+		this.slave = slave;
 	}
+	
+	public EditorSlot getMaster() {
+		return master;
+	}
+	
+	public EditorSlot getSlave() {
+		return slave;
+	}
+	
+	public int getMasterIndex() {
+		return master.index;
+	}
+	
+	public int getSlaveIndex() {
+		return slave.index;
+	}
+	
+	public void updateSlave() {
+		slave.updateSlave();
+	}
+}
+
+enum Position {
+	MASTER, SLAVE;
 }

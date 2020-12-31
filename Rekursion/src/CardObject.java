@@ -15,6 +15,9 @@ public class CardObject {
 	
 	public State state = State.SET;
 	
+	public Position position;
+	public EditorSlot linkingPartner = null;
+	
 	public CardObject(BufferedImage imgIn, BufferedImage emptyImgIn, Card typeIn) {
 		img = imgIn;
 		type = typeIn;
@@ -59,6 +62,21 @@ public class CardObject {
 				rLoopLabel[0] = Integer.toString(rLoops).charAt(0);
 				g.drawChars(rLoopLabel, 0, 1, x + (int) (size / 1.7), y + fontSize + (int) (size / 55));
 			}
+			
+			
+			if(position == Position.SLAVE) {
+				int fontSize = (size / 2);
+				
+				g.setFont(new Font("Consolas", Font.PLAIN, fontSize));
+				g.setColor(new Color(235, 64, 52, 255));
+				
+				char[] masterIndexChar = new char[1];
+				masterIndexChar[0] = Integer.toString(linkingPartner.index).charAt(0);
+				g.drawChars(masterIndexChar, 0, 1, x + (int) (size / 12), y + fontSize - (int) (size / 12));
+				
+			}
+			
+			
 			break;
 			
 		case SELECTED:
@@ -82,6 +100,17 @@ public class CardObject {
 		case EMPTY:
 			g.drawImage(emptyImg, x, y, size, (int) (size * cardRatio), null);
 			break;
+			
+		case SELECTEDEMPTY:
+			g.setColor(new Color(200, 50, 50));
+			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), size / 4, size / 4);
+			
+			g.drawImage(emptyImg, x, y, size, (int) (size * cardRatio), null);
+			break;
 		}
 	}
+	
+	public void updateLinked() {}	//@Override in EditorSlot
+	
+	public void LinkTo(EditorSlot linkingPartner) {}	//@Override in EditorSlot
 }
