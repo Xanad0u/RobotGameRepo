@@ -20,16 +20,13 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	
 	private boolean isEditor = false;
 	
-	CardPanel cardPanel;
-	StageFrame host;
 	public ArrayList<Slot> slotList;
 	private int mousePos;
 	private int focusedSlot;
 	
 	
-	public SlotPanel(int slotAmountIn, CardPanel cardPanelIn, StageFrame hostIn) {
+	public SlotPanel(int slotAmountIn) {
 		slotAmount = slotAmountIn;
-		host = hostIn;
 		types = new Card[slotAmount];
 		loops = new int[slotAmount];
 		origin = new int[slotAmount];
@@ -38,21 +35,18 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 			types[i] = Card.EMPTY;
 			loops[i] = 0;
 			origin[i] = -1;
-			slots[i] = new Slot(host.cardSlot, host);
+			slots[i] = new Slot();
 		}
-		
-		cardPanel = cardPanelIn;
 		
 		addMouseListener(this);
 	}
 	
-	public SlotPanel(StageFrame hostIn) {
+	public SlotPanel() {
 		isEditor = true;
-		host = hostIn;
 		slotAmount = 1;
 		
 		slotList = new ArrayList<>();
-		slotList.add(new Slot(host.cardSlot, host));
+		slotList.add(new Slot());
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -63,30 +57,30 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		this.setBounds(host.xNull, host.yNull  + host.fullSize + host.size / 2, host.fullSize, (int) (host.size * host.cardRatio));
+		this.setBounds(Main.xNull, Main.yNull  + Main.fullSize + Main.size / 2, Main.fullSize, (int) (Main.size * Main.cardRatio));
 		
 		if(!isEditor) {
-			gap = (host.fullSize - slotAmount * host.size) / (slotAmount + 1);
+			gap = (Main.fullSize - slotAmount * Main.size) / (slotAmount + 1);
 					
 			int xPos;
 			
 			for(int i = 0; i < slotAmount; i++) {
 				
-				xPos = (gap * (i + 1) + host.size * i);
+				xPos = (gap * (i + 1) + Main.size * i);
 				
-				slots[i].draw(g, xPos, 0, host.size);
+				slots[i].draw(g, xPos, 0);
 			}
 		}
 		else {
-			gap = (host.fullSize - slotList.size() * host.size) / (slotList.size() + 1);
+			gap = (Main.fullSize - slotList.size() * Main.size) / (slotList.size() + 1);
 			
 			int xPos;
 			
 			for(int i = 0; i < slotList.size(); i++) {
 				
-				xPos = (gap * (i + 1) + host.size * i);
+				xPos = (gap * (i + 1) + Main.size * i);
 				
-				slotList.get(i).draw(g, xPos, 0, host.size);
+				slotList.get(i).draw(g, xPos, 0);
 			}
 		}
 	}
@@ -94,27 +88,27 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(!isEditor) {
-			int pos = e.getX() / (gap + host.size);
+			int pos = e.getX() / (gap + Main.size);
 					
 			switch(slots[pos].state) {
 			case SET:
 				slots[pos].clear();
-				cardPanel.cards[origin[pos]].state = State.SET;
+				Main.cardPane.cards[origin[pos]].state = State.SET;
 				origin[pos] = -1;
 				types[pos] = Card.EMPTY;
 				loops[pos] = 0;
 				
 				repaint();
-				cardPanel.repaint();
+				Main.cardPane.repaint();
 				break;
 				
 			case EMPTY:
-				if(cardPanel.selected != -1) {
-					origin[pos] = cardPanel.selected;
-					cardPanel.selected = -1;
-					cardPanel.cards[origin[pos]].state = State.EMPTY;
+				if(Main.cardPane.selected != -1) {
+					origin[pos] = Main.cardPane.selected;
+					Main.cardPane.selected = -1;
+					Main.cardPane.cards[origin[pos]].state = State.EMPTY;
 					
-					CardObject movingCard = cardPanel.getCard(origin[pos]);
+					CardObject movingCard = Main.cardPane.getCard(origin[pos]);
 					
 					types[pos] = movingCard.getType();
 					
@@ -126,14 +120,14 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 					else slots[pos].makeCard(loops[pos]);
 					
 					repaint();
-					cardPanel.repaint();
+					Main.cardPane.repaint();
 					
 					boolean full = true;
 					for(int i = 0; i < slotAmount; i++) {
 						if(slots[i].state == State.EMPTY) full = false;
 					}
 					
-					if(full == true) host.execute();
+					if(full == true) Main.robotPane.execute(Main.makeCommandsReal(Main.slotPane.types, Main.slotPane.loops));
 					
 					break;
 				}
@@ -172,11 +166,11 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation() == -1) {
-			if (slotList.size() < host.cardPane.cardList.size()) slotList.add(new Slot(host.cardSlot, host, slotList.size()));
+			if (slotList.size() < Main.cardPane.cardList.size()) slotList.add(new Slot(slotList.size()));
 		}
 		else if(slotList.size() > 0) slotList.remove(slotList.size() - 1);
 		
-		focusedSlot = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
+		focusedSlot = (int) ((mousePos - 0.5 * gap) / (gap + Main.size));
 		
 		repaint();
 	}
@@ -190,8 +184,8 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		mousePos = e.getX();
-		gap = (host.fullSize - slotList.size() * host.size) / (slotList.size() + 1);
-		focusedSlot = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
+		gap = (Main.fullSize - slotList.size() * Main.size) / (slotList.size() + 1);
+		focusedSlot = (int) ((mousePos - 0.5 * gap) / (gap + Main.size));
 	}
 	
 	public void cutSlotsTo(int nSlots) {

@@ -5,18 +5,24 @@ import javax.swing.AbstractAction;
 public class TurnRobotAction extends AbstractAction {
 
 	Turn turn;
-	GridPanel host;
 	
-	public TurnRobotAction(GridPanel host, Turn turn) {
+	public TurnRobotAction(Turn turn) {
 		this.turn = turn;
-		this.host = host;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(host.mouseInFrame) {
+		
+		System.out.println("Turn action called");
+		
+		if(Main.gridPane.mouseInFrame) {
 			
-			host.host.robotPane.turn(turn);
+			System.out.println("condition passed");
+			System.out.println(Main.gridPane.rot);
+			
+			Main.gridPane.rot = Main.gridPane.rot.add(turn);
+			System.out.println(Main.gridPane.rot);
+			Main.gridPane.repaint();
 		}
 	}
 }

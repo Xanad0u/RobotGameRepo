@@ -16,7 +16,6 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	
 	int cardAmount;
 	CardObject[] cards;
-	StageFrame host;
 	
 	private boolean isEditor = false;
 	
@@ -26,14 +25,13 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	
 	public int selected = -1;
 	
-	int gap = 0;
+	int cardGap = 0;
 
 	private int mousePos;
 
 	int focusedCard;
 	
-	public CardPanel(Card[] cardArray, int cardAmountIn, StageFrame hostIn) {
-		host = hostIn;
+	public CardPanel(Card[] cardArray, int cardAmountIn) {
 		cardAmount = cardAmountIn;
 		
 		cards = new CardObject[cardAmount];
@@ -43,30 +41,30 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 
 			switch(cardArray[j]) {
 			case BACKCARD:
-				cards[i] = new CardObject(host.backCard, host.cardSlot, Card.BACKCARD);
+				cards[i] = new CardObject(Card.BACKCARD);
 				break;
 			case FORWARDCARD:
-				cards[i] = new CardObject(host.forwardCard, host.cardSlot, Card.FORWARDCARD);
+				cards[i] = new CardObject(Card.FORWARDCARD);
 				break;
 			case FASTFORWARDCARD:
-				cards[i] = new CardObject(host.fastForwardCard, host.cardSlot, Card.FASTFORWARDCARD);
+				cards[i] = new CardObject(Card.FASTFORWARDCARD);
 				break;
 			case RTURNCARD:
-				cards[i] = new CardObject(host.rTurnCard, host.cardSlot, Card.RTURNCARD);
+				cards[i] = new CardObject(Card.RTURNCARD);
 				break;
 			case LTURNCARD:
-				cards[i] = new CardObject(host.lTurnCard, host.cardSlot, Card.LTURNCARD);
+				cards[i] = new CardObject(Card.LTURNCARD);
 				break;
 			case UTURNCARD:
-				cards[i] = new CardObject(host.uTurnCard, host.cardSlot, Card.UTURNCARD);
+				cards[i] = new CardObject(Card.UTURNCARD);
 				break;
 			case RCARD:
 				j++;
-				cards[i] = new CardObject(host.rCard, host.cardSlot, Card.RCARD, cardArray[j].ordinal() + 1);
+				cards[i] = new CardObject(Card.RCARD, cardArray[j].ordinal() + 1);
 				break;
 
 			default:		//should not be called
-				cards[i] = new CardObject(host.cardSlot);
+				cards[i] = new CardObject();
 				break;
 			}
 			j++;
@@ -76,12 +74,12 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		addMouseMotionListener(this);
 	}
 	
-	public CardPanel(StageFrame hostIn) {
+	
+	public CardPanel() {
 		isEditor = true;
-		host = hostIn;
 		
 		cardList = new ArrayList<>();
-		cardList.add(new Slot(host.cardSlot, host));
+		cardList.add(new Slot());
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -99,18 +97,16 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("MINUS"), "decreaseRIterations");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("A"), "increaseRIterations");
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("S"), "decreaseRIterations");
-		getActionMap().put("putBackward", new PutCardAction(this, Card.BACKCARD));
-		getActionMap().put("putForward", new PutCardAction(this, Card.FORWARDCARD));
-		getActionMap().put("putFastforward", new PutCardAction(this, Card.FASTFORWARDCARD));
-		getActionMap().put("putRTurn", new PutCardAction(this, Card.RTURNCARD));
-		getActionMap().put("putLTurn", new PutCardAction(this, Card.LTURNCARD));
-		getActionMap().put("putUTurn", new PutCardAction(this, Card.UTURNCARD));
-		getActionMap().put("putRCard", new PutCardAction(this, 0));
-		getActionMap().put("clearCard", new PutCardAction(this, Card.EMPTY));
-		getActionMap().put("increaseRIterations", new changeRIterations(this, 1));
-		getActionMap().put("decreaseRIterations", new changeRIterations(this, -1));
-		
-		
+		getActionMap().put("putBackward", new PutCardAction(Card.BACKCARD));
+		getActionMap().put("putForward", new PutCardAction(Card.FORWARDCARD));
+		getActionMap().put("putFastforward", new PutCardAction(Card.FASTFORWARDCARD));
+		getActionMap().put("putRTurn", new PutCardAction(Card.RTURNCARD));
+		getActionMap().put("putLTurn", new PutCardAction(Card.LTURNCARD));
+		getActionMap().put("putUTurn", new PutCardAction(Card.UTURNCARD));
+		getActionMap().put("putRCard", new PutCardAction(0));
+		getActionMap().put("clearCard", new PutCardAction(Card.EMPTY));
+		getActionMap().put("increaseRIterations", new changeRIterations(1));
+		getActionMap().put("decreaseRIterations", new changeRIterations(-1));
 	}
 
 	public CardObject getCard(int index) {
@@ -121,30 +117,30 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		this.setBounds(host.xNull - lineSize, host.yNull - 2 * host.size - lineSize, host.fullSize + 2 * lineSize, (int) (host.size * host.cardRatio) + 2 * lineSize);
+		this.setBounds(Main.xNull - lineSize, Main.yNull - 2 * Main.size - lineSize, Main.fullSize + 2 * lineSize, (int) (Main.size * Main.cardRatio) + 2 * lineSize);
 		
 		int xPos;
 		
 		if(!isEditor) {
-			gap = (host.fullSize - cardAmount * host.size) / (cardAmount + 1);
+			cardGap = (Main.fullSize - cardAmount * Main.size) / (cardAmount + 1);
 
 			for(int i = 0; i < cardAmount; i++) {
 				
-				xPos = (gap * (i + 1) + host.size * i);
+				xPos = (cardGap * (i + 1) + Main.size * i);
 				
-				cards[i].draw(g, xPos, lineSize, host.size);
+				cards[i].draw(g, xPos, lineSize);
 	
 			}
 		}
 		
 		else {
-			gap = (host.fullSize - cardList.size() * host.size) / (cardList.size() + 1);
+			cardGap = (Main.fullSize - cardList.size() * Main.size) / (cardList.size() + 1);
 			
 			for(int i = 0; i < cardList.size(); i++) {
 				
-				xPos = (gap * (i + 1) + host.size * i);
+				xPos = (cardGap * (i + 1) + Main.size * i);
 
-				cardList.get(i).draw(g, xPos, lineSize, host.size);
+				cardList.get(i).draw(g, xPos, lineSize);
 			}
 		}
 	}
@@ -196,12 +192,12 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation() == -1) cardList.add(new Slot(host.cardSlot, host));
+		if(e.getWheelRotation() == -1) cardList.add(new Slot());
 		else if(cardList.size() > 0) cardList.remove(cardList.size() - 1);
 		
-		focusedCard = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
+		focusedCard = (int) ((mousePos - 0.5 * cardGap) / (cardGap + Main.size));
 		
-		host.slotPane.cutSlotsTo(cardList.size());
+		Main.slotPane.cutSlotsTo(cardList.size());
 		
 		repaint();
 	}
@@ -217,13 +213,13 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		
 		if(!isEditor) {
 			mousePos = e.getX();
-			gap = (host.fullSize - cardAmount * host.size) / (cardAmount + 1);
-			focusedCard = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
+			cardGap = (Main.fullSize - cardAmount * Main.size) / (cardAmount + 1);
+			focusedCard = (int) ((mousePos - 0.5 * cardGap) / (cardGap + Main.size));
 		}
 		else {
 			mousePos = e.getX();
-			gap = (host.fullSize - cardList.size() * host.size) / (cardList.size() + 1);
-			focusedCard = (int) ((mousePos - 0.5 * gap) / (gap + host.size));
+			cardGap = (Main.fullSize - cardList.size() * Main.size) / (cardList.size() + 1);
+			focusedCard = (int) ((mousePos - 0.5 * cardGap) / (cardGap + Main.size));
 		}
 	}
 }

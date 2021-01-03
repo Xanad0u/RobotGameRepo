@@ -49,7 +49,7 @@ public class CallButton extends JButton implements ActionListener {
 		case "PF":
 			if (level != 0) {
 				try {
-					StageFrame PF = new StageFrame(level);
+					Main.frame = new StageFrame(level);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

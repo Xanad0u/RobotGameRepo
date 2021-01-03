@@ -5,36 +5,29 @@ import javax.swing.AbstractAction;
 public class PutTileAction extends AbstractAction {
 
 	Tile putTile;
-	GridPanel host;
 	
-	public PutTileAction(GridPanel host, Tile tile) {
+	public PutTileAction(Tile tile) {
 		putTile = tile;
-		this.host = host;
-		host.revalidate();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(host.mouseInFrame) {
+		if(Main.gridPane.mouseInFrame) {
 			
-			if(host.focusedTile == host.startTile) {
-				host.startTile = -1;
-				host.host.robotPane.setRobotVisible(false);
+			if(Main.gridPane.focusedTile == Main.gridPane.startTile) {
+				Main.gridPane.startTile = -1;
 			}
-			if(host.focusedTile == host.flagTile) host.flagTile = -1;
+			if(Main.gridPane.focusedTile == Main.gridPane.flagTile) Main.gridPane.flagTile = -1;
 			
-			if(putTile == Tile.START && host.startTile != -1) host.tiles[host.startTile] = Tile.EMPTY;
+			if(putTile == Tile.START && Main.gridPane.startTile != -1) Main.gridPane.tiles[Main.gridPane.startTile] = Tile.EMPTY;
 			if(putTile == Tile.START) {
-				host.startTile = host.focusedTile;
-				host.host.robotPane.moveTo(host.focusedTile);
-				host.host.robotPane.setRobotVisible(true);
+				Main.gridPane.startTile = Main.gridPane.focusedTile;
 			}
-			if(putTile == Tile.FLAG && host.flagTile != -1) host.tiles[host.flagTile] = Tile.EMPTY;
-			if(putTile == Tile.FLAG) host.flagTile = host.focusedTile;
+			if(putTile == Tile.FLAG && Main.gridPane.flagTile != -1) Main.gridPane.tiles[Main.gridPane.flagTile] = Tile.EMPTY;
+			if(putTile == Tile.FLAG) Main.gridPane.flagTile = Main.gridPane.focusedTile;
 			
-			host.tiles[host.focusedTile] = putTile;
-			host.repaint();
-			host.host.robotPane.repaint();
+			Main.gridPane.tiles[Main.gridPane.focusedTile] = putTile;
+			Main.gridPane.repaint();
 		}
 	}
 }

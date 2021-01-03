@@ -2,24 +2,20 @@ import java.awt.image.BufferedImage;
 
 public class Slot extends CardObject {
 
-	Link link;
-	StageFrame host;
 	
 	boolean isEditor = false;
 	private int index;
 	
-	public Slot(BufferedImage emptyImgIn, StageFrame host) {	//TODO update to Slot(BufferedImage emptyImgIn, StageFrame host)
-		super(emptyImgIn);
-		
-		this.host = host;
+	public Slot() {	//TODO update to Slot(BufferedImage emptyImgIn, StageFrame host)
+		super();
+
 		state = State.EMPTY;
 	}
 	
-	public Slot(BufferedImage emptyImgIn, StageFrame host, int index) {
-		super(emptyImgIn);
+	public Slot(int index) {
+		super();
 		isEditor = true;
-
-		this.host = host;
+		
 		this.index = index;
 		
 		state = State.EMPTY;
@@ -30,26 +26,26 @@ public class Slot extends CardObject {
 		type = typeIn;
 		switch(typeIn) {
 		case BACKCARD:
-			img = host.backCard;
+			img = Main.backCard;
 			break;
 		case FORWARDCARD:
-			img = host.forwardCard;
+			img = Main.forwardCard;
 			break;
 		case FASTFORWARDCARD:
-			img = host.fastForwardCard;
+			img = Main.fastForwardCard;
 			break;
 		case RTURNCARD:
-			img = host.rTurnCard;
+			img = Main.rTurnCard;
 			break;
 		case LTURNCARD:
-			img = host.lTurnCard;
+			img = Main.lTurnCard;
 			break;
 		case UTURNCARD:
-			img = host.uTurnCard;
+			img = Main.uTurnCard;
 			break;
 			
 		case EMPTY:		//called by isEditor == true CardPanel
-			img = host.cardSlot;
+			img = Main.cardSlot;
 			break;
 			
 		default:	//should not be called
@@ -57,16 +53,14 @@ public class Slot extends CardObject {
 		}
 		state = State.SET;
 		
-		if(link == Link.MASTER) host.slotPane.slotList.get(link.getLinkedTo(link)).update(typeIn);
 	}
 	
 	public void makeCard(int loops) {
 		type = Card.RCARD;
-		img = host.rCard;
+		img = Main.rCard;
 		rLoops = loops;
 		state = State.SET;
 		
-		if(link == Link.MASTER) host.slotPane.slotList.get(link.getLinkedTo(link)).update(loops);
 	}
 	
 	private void update(Card typeIn) {
@@ -81,13 +75,5 @@ public class Slot extends CardObject {
 
 	public void clear() {
 		state = State.EMPTY;
-	}
-	
-	public void linkToCard(int linkTo) {
-		link = Link.SLAVE;
-		link.linkTo(linkTo);
-		
-		host.cardPane.cardList.get(linkTo).link = Link.MASTER;
-		host.cardPane.cardList.get(linkTo).link.linkTo(index);
 	}
 }

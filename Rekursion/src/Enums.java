@@ -1,5 +1,6 @@
+import java.awt.image.BufferedImage;
 
-public enum CommandMain {
+public enum Enums {
 	QuarterTurnRight(Rotation.EAST, 0), HalfTurn(Rotation.SOUTH), QuarterTurnLeft(Rotation.WEST), Step(1),
 	DoubleStep(2), StepBack(-1);
 
@@ -13,17 +14,17 @@ public enum CommandMain {
 	 * @param steps
 	 */
 	@Deprecated
-	private CommandMain(Rotation rot, int steps) {
+	private Enums(Rotation rot, int steps) {
 		this.rot = rot;
 		this.steps = steps;
 	}
 
-	private CommandMain(int steps) {
+	private Enums(int steps) {
 		rot = Rotation.NORTH;
 		this.steps = steps;
 	}
 
-	private CommandMain(Rotation rot) {
+	private Enums(Rotation rot) {
 		this.rot = rot;
 		steps = 0;
 	}
@@ -105,6 +106,29 @@ enum Card {
 
 		return values()[newPos];  
 	}
+	
+	public BufferedImage getImg() {
+		
+		switch(this) {
+		case BACKCARD:
+			return Main.backCard;
+		case FORWARDCARD:
+			return Main.forwardCard;
+		case FASTFORWARDCARD:
+			return Main.fastForwardCard;
+		case LTURNCARD:
+			return Main.lTurnCard;
+		case RTURNCARD:
+			return Main.rTurnCard;
+		case UTURNCARD:
+			return Main.uTurnCard;
+		case EMPTY:
+			return Main.cardSlot;
+		case RCARD:
+			return Main.rCard;
+		}
+		return null;
+	}
 }
 
 enum Command {
@@ -123,23 +147,5 @@ enum Tile {
 		newPos = (newPos + 5) % 5;
 
 		return values()[newPos];     
-	}
-}
-
-enum Link {
-	MASTER(-1), SLAVE(-1);
-
-	private int linkedTo;
-	
-	Link(int linkedTo) {
-		this.linkedTo = linkedTo;
-	}
-	
-	public void linkTo(int linkTo) {
-		linkedTo = linkTo;
-	}
-	
-	public int getLinkedTo(Link link) {
-		return linkedTo;
 	}
 }

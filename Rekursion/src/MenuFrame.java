@@ -73,7 +73,7 @@ public class MenuFrame extends JFrame {
 		Component verticalStrut_1 = Box.createVerticalStrut(100);
 		contentPane.add(verticalStrut_1);
 		
-		JButton btnExit = new CloseButton("Exit\r\n", this);
+		JButton btnExit = new CloseButton("Exit", this);
 		btnExit.setToolTipText("Just stay");
 		btnExit.setBackground(Color.WHITE);
 		btnExit.setVerticalAlignment(SwingConstants.BOTTOM);

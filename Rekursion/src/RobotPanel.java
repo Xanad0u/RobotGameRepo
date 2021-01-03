@@ -11,17 +11,10 @@ import javax.swing.Timer;
 public class RobotPanel extends JPanel implements ActionListener {
 
 	Robot robot;
-	JFrame frame;
-	RobotPanel panel = this;
-	StageFrame host;
 	
 	Timer timer;
 	
-	int moveTime;
-	int pauseTime;
 	int pauseCounter = 0;
-	
-	int ss;
 	
 	int x = 0;
 	int y = 0;
@@ -36,35 +29,26 @@ public class RobotPanel extends JPanel implements ActionListener {
 	int executionElement = 0;
 	boolean executionReady = true;
 	
-	public RobotPanel(int ssIn, int moveTimeIn, int pauseTimeIn, BufferedImage imgIn, JFrame frameIn, StageFrame hostIn, byte[] initLoc, Rotation initRot) {
-		robot = new Robot(ssIn, moveTimeIn, imgIn);
+	public RobotPanel(byte[] initLoc, Rotation initRot) {
+		robot = new Robot(Main.substeps, Main.moveTime, Main.robotImg);
 		robot.setLoc(initLoc);
 		robot.setRot(initRot);
-		frame = frameIn;
 		
-		host = hostIn;
-		
-		ss = ssIn;
-		moveTime = moveTimeIn;
-		pauseTime = pauseTimeIn;
-		
-		timer = new Timer(moveTimeIn / ss, this);
+		timer = new Timer(Main.moveTime / Main.substeps, this);
 		timer.start();
 	}
 	
-	public RobotPanel(BufferedImage imgIn, JFrame frameIn, StageFrame hostIn) {
-		robot = new Robot(imgIn);
-		frame = frameIn;
-		
-		host = hostIn;
+	public RobotPanel() {
+		robot = new Robot(Main.robotImg);
 	}
 	
+	
 	public void moveToWithRotation(int tile, Rotation rot) {
-		robot.set(host.fileManager.tileIndexToPos(tile), rot);
+		robot.set(Main.fileManager.tileIndexToPos(tile), rot);
 	}
 	
 	public void moveTo(int tile) {
-		robot.setLoc(host.fileManager.tileIndexToPos(tile));
+		robot.setLoc(Main.fileManager.tileIndexToPos(tile));
 	}
 	
 	public void turn(Turn turn) {
@@ -116,13 +100,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		this.setBounds(host.xNull + host.gap, host.yNull + host.gap, host.fullSize - host.gap * 2, host.fullSize - host.gap * 2);
+		this.setBounds(Main.xNull + Main.gap, Main.yNull + Main.gap, Main.fullSize - Main.gap * 2, Main.fullSize - Main.gap * 2);
 		
 		robot.af.setToIdentity();
 		
 		
-		robot.af.translate(robot.pos[0] * (host.size + host.gap) + robot.subPos[0], robot.pos[1] * (host.size + host.gap) + robot.subPos[1]);
-		robot.af.scale(host.size / (double) robot.img.getHeight(), host.size / (double) robot.img.getHeight());
+		robot.af.translate(robot.pos[0] * (Main.size + Main.gap) + robot.subPos[0], robot.pos[1] * (Main.size + Main.gap) + robot.subPos[1]);
+		robot.af.scale(Main.size / (double) robot.img.getHeight(), Main.size / (double) robot.img.getHeight());
 		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
@@ -134,13 +118,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 		if(callMove > 0) {
 
-			robot.subPos[0] += (x * ((host.size + host.gap) / ss)) * moveStep;
-			robot.subPos[1] += (y * ((host.size + host.gap) / ss)) * moveStep;
+			robot.subPos[0] += (x * ((Main.size + Main.gap) / Main.substeps)) * moveStep;
+			robot.subPos[1] += (y * ((Main.size + Main.gap) / Main.substeps)) * moveStep;
 			
 
 			callMove++;
 			
-			if(callMove > ss + 1) {
+			if(callMove > Main.substeps + 1) {
 				callMove = 0;
 				
 				robot.subPos[0] = 0;
@@ -154,18 +138,18 @@ public class RobotPanel extends JPanel implements ActionListener {
 				System.out.println();
 				System.out.println();
 				
-				pauseCounter = pauseTime;
+				pauseCounter = Main.pauseTime;
 				executionReady = true;
 			}
 		}
 		
 		if(Math.abs(callTurn) > 0) {
-			robot.subRot += 90 / ss * Math.signum(callTurn);
+			robot.subRot += 90 / Main.substeps * Math.signum(callTurn);
 			
 			callTurn += Math.signum(callTurn);
 			
 			
-			if(Math.abs(callTurn) > ss + 1) {
+			if(Math.abs(callTurn) > Main.substeps + 1) {
 				robot.turn(callTurnFull);
 				
 				callTurn = 0;
@@ -173,7 +157,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				robot.subRot = 0;
 				
 
-				pauseCounter = pauseTime;
+				pauseCounter = Main.pauseTime;
 				executionReady = true;
 			}
 		}
@@ -182,19 +166,19 @@ public class RobotPanel extends JPanel implements ActionListener {
 			executionReady = false;
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
-				if(host.tiles[host.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
+				if(Main.frame.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
 					moveAnimated(Move.FORWARD);
 				else {
-					pauseCounter = pauseTime;
+					pauseCounter = Main.pauseTime;
 					executionReady = true;
 				}
 				break;
 				
 			case MOVEBACKWARD:
-				if(host.tiles[host.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
+				if(Main.frame.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
 					moveAnimated(Move.BACKWARD);
 				else {
-					pauseCounter = pauseTime;
+					pauseCounter = Main.pauseTime;
 					executionReady = true;
 				}
 				break;

@@ -15,22 +15,22 @@ public class CardObject {
 	
 	public State state = State.SET;
 	
-	public CardObject(BufferedImage imgIn, BufferedImage emptyImgIn, Card typeIn) {
-		img = imgIn;
+	public CardObject(Card typeIn) {
+		img = typeIn.getImg();
 		type = typeIn;
-		emptyImg = emptyImgIn;
+		emptyImg = Main.cardSlot;
 	}
 	
-	public CardObject(BufferedImage imgIn, BufferedImage emptyImgIn, Card typeIn, int rLoopsIn) {
-		img = imgIn;
+	public CardObject(Card typeIn, int rLoopsIn) {
+		img = Main.rCard;
 		type = typeIn;
-		emptyImg = emptyImgIn;
+		emptyImg = Main.cardSlot;
 		rLoops = rLoopsIn;
 	}
 	
-	public CardObject(BufferedImage emptyImgIn) {
+	public CardObject() {
 		type = Card.EMPTY;
-		emptyImg = emptyImgIn;
+		emptyImg = Main.cardSlot;
 		state = State.EMPTY;
 	}
 	
@@ -43,44 +43,44 @@ public class CardObject {
 		else return 0;
 	}
 	
-	public void draw(Graphics g, int x, int y, int size) {
+	public void draw(Graphics g, int x, int y) {
 		
 		switch(state) {
 		case SET:
-			g.drawImage(img, x, y, size, (int) (size * cardRatio), null);
+			g.drawImage(img, x, y, Main.size, (int) (Main.size * cardRatio), null);
 			
 			if(type == Card.RCARD) {
-				int fontSize = size / 4;
+				int fontSize = Main.size / 4;
 				
 				g.setFont(new Font("Consolas", Font.PLAIN, fontSize));
 				g.setColor(new Color(126, 192, 228, 255));
 				
 				char[] rLoopLabel = new char[1];
 				rLoopLabel[0] = Integer.toString(rLoops).charAt(0);
-				g.drawChars(rLoopLabel, 0, 1, x + (int) (size / 1.7), y + fontSize + (int) (size / 55));
+				g.drawChars(rLoopLabel, 0, 1, x + (int) (Main.size / 1.7), y + fontSize + (int) (Main.size / 55));
 			}
 			break;
 			
 		case SELECTED:
 			g.setColor(new Color(200, 50, 50));
-			g.fillRoundRect(x - lineSize, y - lineSize, size + 2 * lineSize, (int) (size * cardRatio + 2 * lineSize), size / 4, size / 4);
+			g.fillRoundRect(x - lineSize, y - lineSize, Main.size + 2 * lineSize, (int) (Main.size * cardRatio + 2 * lineSize), Main.size / 4, Main.size / 4);
 			
-			g.drawImage(img, x, y, size, (int) (size * cardRatio), null);
+			g.drawImage(img, x, y, Main.size, (int) (Main.size * cardRatio), null);
 			
 			if(type == Card.RCARD) {
-				int fontSize = size / 4;
+				int fontSize = Main.size / 4;
 				
 				g.setFont(new Font("Consolas", Font.PLAIN, fontSize));
 				g.setColor(new Color(126, 192, 228, 255));
 				
 				char[] rLoopLabel = new char[1];
 				rLoopLabel[0] = Integer.toString(rLoops).charAt(0);
-				g.drawChars(rLoopLabel, 0, 1, x + (int) (size / 1.7), y + fontSize + (int) (size / 55));
+				g.drawChars(rLoopLabel, 0, 1, x + (int) (Main.size / 1.7), y + fontSize + (int) (Main.size / 55));
 			}
 			break;
 			
 		case EMPTY:
-			g.drawImage(emptyImg, x, y, size, (int) (size * cardRatio), null);
+			g.drawImage(emptyImg, x, y, Main.size, (int) (Main.size * cardRatio), null);
 			break;
 		}
 	}
