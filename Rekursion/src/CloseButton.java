@@ -14,7 +14,8 @@ public class CloseButton extends JButton implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		frame.dispose();	
+		frame.dispose();
+		System.exit(0);
 	}
 
 }

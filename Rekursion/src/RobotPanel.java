@@ -166,7 +166,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			executionReady = false;
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
-				if(Main.frame.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
+				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
 					moveAnimated(Move.FORWARD);
 				else {
 					pauseCounter = Main.pauseTime;
@@ -175,7 +175,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				break;
 				
 			case MOVEBACKWARD:
-				if(Main.frame.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
+				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
 					moveAnimated(Move.BACKWARD);
 				else {
 					pauseCounter = Main.pauseTime;

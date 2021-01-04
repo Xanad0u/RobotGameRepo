@@ -1,3 +1,4 @@
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class Main {		//main caller
 	public static int gap = 2;				//Size of the gap between tiles in pixels
 	public static double ratio = 1.625;		//Optimal ratio of the playing field
 	public static double cardRatio = 1.57;	//Ratio of the card images
+	public static int lineSize = 4;
 	public static int nTiles = 8;			//Number of tiles in a row or column, hard coded as 8 !DO NOT CHANGE!
 	
 	public static int substeps = 20;		//Animation substeps of the robot
@@ -41,13 +43,27 @@ public class Main {		//main caller
 	public static BufferedImage backCard;			//Holds the back card image
 	public static BufferedImage rCard;				//Holds the R card image
 	public static BufferedImage cardSlot;			//Holds the card slot image
+	public static BufferedImage icon;
 	
-	public static StageFrame frame = null;						//Holds the frame
+	public static StageFrame stageFrame = null;				//Holds the stage frame
+	public static StageEditorFrame stageEditorFrame = null;	//Holds the level editor frame
 	public static RobotPanel robotPane = null;				//Holds the pane containing the robot
 	public static GridPanel gridPane = null;				//Holds the pane containing the board
 	public static MenuPanel menu = null;					//Holds the popup menu
 	public static CardPanel cardPane = null;				//Holds the pane containing the usable cards
 	public static SlotPanel slotPane = null;				//Holds the pane containing the slot and the cards placed in them
+	
+	public static Tile[] tiles;								//Holds the tiles of the stage
+	public static byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
+	public static byte cardAmount;							//Holds the amount of cards in the stage
+	public static byte slotAmount;							//Holds the amount of slots in the stage
+	public static Card[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
+	public static Card[] cards;
+	
+	public static byte[] initPos;		//Holds the initial position of the robot
+	public static Rotation initRot;		//Holds the initial rotation of the robot
+	
+	public static int stage;			//Holds the stage index
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -67,6 +83,8 @@ public class Main {		//main caller
 		rCard = ImageIO.read(new File("./img/Card_R.png"));
 
 		cardSlot = ImageIO.read(new File("./img/Card_Empty.png"));
+		
+		icon = ImageIO.read(new File("./img/Icon.png"));
 		
 		
 		MenuFrame menu = new MenuFrame();

@@ -19,14 +19,14 @@ public class PutTileAction extends AbstractAction {
 			}
 			if(Main.gridPane.focusedTile == Main.gridPane.flagTile) Main.gridPane.flagTile = -1;
 			
-			if(putTile == Tile.START && Main.gridPane.startTile != -1) Main.gridPane.tiles[Main.gridPane.startTile] = Tile.EMPTY;
+			if(putTile == Tile.START && Main.gridPane.startTile != -1) Main.tiles[Main.gridPane.startTile] = Tile.EMPTY;
 			if(putTile == Tile.START) {
 				Main.gridPane.startTile = Main.gridPane.focusedTile;
 			}
-			if(putTile == Tile.FLAG && Main.gridPane.flagTile != -1) Main.gridPane.tiles[Main.gridPane.flagTile] = Tile.EMPTY;
+			if(putTile == Tile.FLAG && Main.gridPane.flagTile != -1) Main.tiles[Main.gridPane.flagTile] = Tile.EMPTY;
 			if(putTile == Tile.FLAG) Main.gridPane.flagTile = Main.gridPane.focusedTile;
 			
-			Main.gridPane.tiles[Main.gridPane.focusedTile] = putTile;
+			Main.tiles[Main.gridPane.focusedTile] = putTile;
 			Main.gridPane.repaint();
 		}
 	}

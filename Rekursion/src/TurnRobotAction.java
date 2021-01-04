@@ -18,10 +18,10 @@ public class TurnRobotAction extends AbstractAction {
 		if(Main.gridPane.mouseInFrame) {
 			
 			System.out.println("condition passed");
-			System.out.println(Main.gridPane.rot);
+			System.out.println(Main.initRot);
 			
-			Main.gridPane.rot = Main.gridPane.rot.add(turn);
-			System.out.println(Main.gridPane.rot);
+			Main.initRot = Main.initRot.add(turn);
+			System.out.println(Main.initRot);
 			Main.gridPane.repaint();
 		}
 	}

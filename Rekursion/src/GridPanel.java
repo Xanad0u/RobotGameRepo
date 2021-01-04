@@ -17,9 +17,6 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	public int[] mousePos = new int[2];
 	public int focusedTile;
-			
-	public Tile[] tiles;
-	public Rotation rot = Rotation.EAST;
 	
 	private boolean isEditor = false;
 	boolean mouseInFrame = false;
@@ -27,63 +24,66 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	int flagTile = -1;
 	public AffineTransform af = new AffineTransform();
 
-	public GridPanel(Tile[] tilesIn) {
+	public GridPanel(boolean isEditor) {
 		
-		tiles = tilesIn;
-		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
-		getActionMap().put("trigger", new PopAction());
-	}
-	
-	public GridPanel() {
-		isEditor = true;
-		
-		tiles = new Tile[64];
-		
-		for (int i = 0; i < 64; i++) {
-			tiles[i] = Tile.EMPTY;
+		if(!isEditor) {
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
+			getActionMap().put("trigger", new PopAction());
 		}
-		
-		addMouseListener(this);
-		addMouseWheelListener(this);
-		addMouseMotionListener(this);
-		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
-		getActionMap().put("trigger", new PopAction());
-		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "turnRobotClockwise");
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F"), "turnRobotCounterclockwise");
-		getActionMap().put("turnRobotClockwise", new TurnRobotAction(Turn.CLOCKWISE));
-		getActionMap().put("turnRobotCounterclockwise", new TurnRobotAction(Turn.COUNTERCLOCKWISE));
-		
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("1"), "putEmpty");
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("2"), "putBlock");
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("3"), "putHole");
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("4"), "putStart");
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("5"), "putFlag");
-		getActionMap().put("putEmpty", new PutTileAction(Tile.EMPTY));
-		getActionMap().put("putBlock", new PutTileAction(Tile.BLOCK));
-		getActionMap().put("putHole", new PutTileAction(Tile.HOLE));
-		getActionMap().put("putStart", new PutTileAction(Tile.START));
-		getActionMap().put("putFlag", new PutTileAction(Tile.FLAG));
+	
+		else {
+			this.isEditor = true;
+			
+			Main.initRot = Rotation.NORTH;
+			
+			Main.tiles = new Tile[64];
+			
+			for (int i = 0; i < 64; i++) {
+				Main.tiles[i] = Tile.EMPTY;
+			}
+			
+			addMouseListener(this);
+			addMouseWheelListener(this);
+			addMouseMotionListener(this);
+			
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "trigger");
+			getActionMap().put("trigger", new PopAction());
+			
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("D"), "turnRobotClockwise");
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F"), "turnRobotCounterclockwise");
+			getActionMap().put("turnRobotClockwise", new TurnRobotAction(Turn.CLOCKWISE));
+			getActionMap().put("turnRobotCounterclockwise", new TurnRobotAction(Turn.COUNTERCLOCKWISE));
+			
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("1"), "putEmpty");
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("2"), "putBlock");
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("3"), "putHole");
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("4"), "putStart");
+			getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("5"), "putFlag");
+			getActionMap().put("putEmpty", new PutTileAction(Tile.EMPTY));
+			getActionMap().put("putBlock", new PutTileAction(Tile.BLOCK));
+			getActionMap().put("putHole", new PutTileAction(Tile.HOLE));
+			getActionMap().put("putStart", new PutTileAction(Tile.START));
+			getActionMap().put("putFlag", new PutTileAction(Tile.FLAG));
+		}
 	}
 
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		af.setToIdentity();
-			
-		af.translate(Main.fileManager.tileIndexToPos(startTile)[0] * (Main.size + Main.gap) + Main.gap, Main.fileManager.tileIndexToPos(startTile)[1] * (Main.size + Main.gap) + Main.gap);
-		af.scale(Main.size / (double) Main.robotImg.getHeight(), Main.size / (double) Main.robotImg.getHeight());
-		af.rotate(Math.toRadians(rot.ordinal() - 1) * 90, Main.robotImg.getWidth() / 2, Main.robotImg.getHeight() / 2);
 
-		System.out.println(Main.frame.getContentPane().getWidth());
+		int w;
+		int h;
 		
-		int w = Main.frame.getContentPane().getWidth();
-		int h = Main.frame.getContentPane().getHeight();
-
+		if(!isEditor) {
+			w = Main.stageFrame.getContentPane().getWidth();
+			h = Main.stageFrame.getContentPane().getHeight();
+		}
+		else {
+			w = Main.stageEditorFrame.getContentPane().getWidth();
+			h = Main.stageEditorFrame.getContentPane().getHeight();
+		}
+		
 		int xPos;
 		int yPos;
 
@@ -123,7 +123,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 				yPos = (j + 1) * Main.gap + j * Main.size;
 
 				if(!isEditor) {
-					switch (tiles[tileIndex]) {
+					switch (Main.tiles[tileIndex]) {
 	
 					case EMPTY:
 						g.fillRect(xPos, yPos, Main.size, Main.size);
@@ -150,7 +150,13 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 				
 				else {
 					
-					switch (tiles[tileIndex]) {
+					af.setToIdentity();
+					
+					af.translate(Main.fileManager.tileIndexToPos(startTile)[0] * (Main.size + Main.gap) + Main.gap, Main.fileManager.tileIndexToPos(startTile)[1] * (Main.size + Main.gap) + Main.gap);
+					af.scale(Main.size / (double) Main.robotImg.getHeight(), Main.size / (double) Main.robotImg.getHeight());
+					af.rotate(Math.toRadians(Main.initRot.ordinal() - 1) * 90, Main.robotImg.getWidth() / 2, Main.robotImg.getHeight() / 2);
+					
+					switch (Main.tiles[tileIndex]) {
 					
 					case EMPTY:
 						g.fillRect(xPos, yPos, Main.size, Main.size);
@@ -184,36 +190,36 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
-		switch (tiles[focusedTile]) {
+		switch (Main.tiles[focusedTile]) {
 		
 		case EMPTY:
-			tiles[focusedTile] = Tile.BLOCK;
+			Main.tiles[focusedTile] = Tile.BLOCK;
 			break;
 
 		case BLOCK:
-			tiles[focusedTile] = Tile.HOLE;
+			Main.tiles[focusedTile] = Tile.HOLE;
 			break;
 
 		case HOLE:
-			if(startTile != -1) tiles[startTile] = Tile.EMPTY;
+			if(startTile != -1) Main.tiles[startTile] = Tile.EMPTY;
 			startTile = focusedTile;
 			
-			tiles[focusedTile] = Tile.START;
+			Main.tiles[focusedTile] = Tile.START;
 			break;
 
 		case START:
 			startTile = -1;
 			
-			if(flagTile != -1) tiles[flagTile] = Tile.EMPTY;
+			if(flagTile != -1) Main.tiles[flagTile] = Tile.EMPTY;
 			flagTile = focusedTile;
 			
-			tiles[focusedTile] = Tile.FLAG;
+			Main.tiles[focusedTile] = Tile.FLAG;
 			break;
 			
 		case FLAG:
 			flagTile = -1;
 			
-			tiles[focusedTile] = Tile.EMPTY;
+			Main.tiles[focusedTile] = Tile.EMPTY;
 			break;
 		}
 		
@@ -247,20 +253,20 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
 		
-		tiles[focusedTile] = tiles[focusedTile].change(e.getWheelRotation());
+		Main.tiles[focusedTile] = Main.tiles[focusedTile].change(e.getWheelRotation());
 		
 		if(focusedTile == startTile) {
 			startTile = -1;
 		}
 		if(focusedTile == flagTile) flagTile = -1;
 		
-		if(tiles[focusedTile] == Tile.START && startTile != -1) tiles[startTile] = Tile.EMPTY;
-		if(tiles[focusedTile] == Tile.START) {
+		if(Main.tiles[focusedTile] == Tile.START && startTile != -1) Main.tiles[startTile] = Tile.EMPTY;
+		if(Main.tiles[focusedTile] == Tile.START) {
 			startTile = focusedTile;
 		}
 		
-		if(tiles[focusedTile] == Tile.FLAG && flagTile != -1) tiles[flagTile] = Tile.EMPTY;
-		if(tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
+		if(Main.tiles[focusedTile] == Tile.FLAG && flagTile != -1) Main.tiles[flagTile] = Tile.EMPTY;
+		if(Main.tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
 		
 		repaint();
 	}

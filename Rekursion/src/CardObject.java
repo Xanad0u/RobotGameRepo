@@ -4,10 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class CardObject {
-	
-	private final double cardRatio = 1.57;
-	private final int lineSize = 4;
-	
+
 	protected BufferedImage img;
 	private BufferedImage emptyImg;
 	Card type;
@@ -47,7 +44,7 @@ public class CardObject {
 		
 		switch(state) {
 		case SET:
-			g.drawImage(img, x, y, Main.size, (int) (Main.size * cardRatio), null);
+			g.drawImage(img, x, y, Main.size, (int) (Main.size * Main.cardRatio), null);
 			
 			if(type == Card.RCARD) {
 				int fontSize = Main.size / 4;
@@ -63,9 +60,9 @@ public class CardObject {
 			
 		case SELECTED:
 			g.setColor(new Color(200, 50, 50));
-			g.fillRoundRect(x - lineSize, y - lineSize, Main.size + 2 * lineSize, (int) (Main.size * cardRatio + 2 * lineSize), Main.size / 4, Main.size / 4);
+			g.fillRoundRect(x - Main.lineSize, y - Main.lineSize, Main.size + 2 * Main.lineSize, (int) (Main.size * Main.cardRatio + 2 * Main.lineSize), Main.size / 4, Main.size / 4);
 			
-			g.drawImage(img, x, y, Main.size, (int) (Main.size * cardRatio), null);
+			g.drawImage(img, x, y, Main.size, (int) (Main.size * Main.cardRatio), null);
 			
 			if(type == Card.RCARD) {
 				int fontSize = Main.size / 4;
@@ -80,7 +77,7 @@ public class CardObject {
 			break;
 			
 		case EMPTY:
-			g.drawImage(emptyImg, x, y, Main.size, (int) (Main.size * cardRatio), null);
+			g.drawImage(emptyImg, x, y, Main.size, (int) (Main.size * Main.cardRatio), null);
 			break;
 		}
 	}
