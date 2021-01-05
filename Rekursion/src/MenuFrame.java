@@ -62,7 +62,7 @@ public class MenuFrame extends JFrame {
 		Component verticalStrut = Box.createVerticalStrut(60);
 		contentPane.add(verticalStrut);
 		
-		JButton btnLevelEditor = new CallButton("Level Editor", this, 5);
+		JButton btnLevelEditor = new CallButton("Level Editor", this, "SEF");
 		btnLevelEditor.setToolTipText("Edit and create levels");
 		btnLevelEditor.setBackground(Color.WHITE);
 		btnLevelEditor.setVerticalAlignment(SwingConstants.BOTTOM);
@@ -73,7 +73,7 @@ public class MenuFrame extends JFrame {
 		Component verticalStrut_1 = Box.createVerticalStrut(100);
 		contentPane.add(verticalStrut_1);
 		
-		JButton btnExit = new CloseButton("Exit\r\n", this);
+		JButton btnExit = new CloseButton("Exit", this);
 		btnExit.setToolTipText("Just stay");
 		btnExit.setBackground(Color.WHITE);
 		btnExit.setVerticalAlignment(SwingConstants.BOTTOM);

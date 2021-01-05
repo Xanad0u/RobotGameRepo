@@ -5,11 +5,9 @@ import javax.swing.JPanel;
 
 public class PopAction extends AbstractAction {
 
-	JPanel pMenu;
 	CallButton[] buttons = null;
 	
-	public PopAction(JPanel pMenuIn, CallButton[] buttonsIn) {
-		pMenu = pMenuIn;
+	public PopAction(CallButton[] buttonsIn) {
 		buttons = new CallButton[buttonsIn.length];
 		buttons = buttonsIn;
 		
@@ -17,22 +15,21 @@ public class PopAction extends AbstractAction {
 		System.out.println(buttons == buttonsIn);
 	}
 	
-	public PopAction(JPanel pMenuIn) {
-		pMenu = pMenuIn;
+	public PopAction() {
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("PopAction performed");
-		if(pMenu.isVisible() == false) {
+		if(Main.menu.isVisible() == false) {
 			System.out.println("Invisible");
 			if(buttons != null) {
 				for(int i = 0; i < buttons.length; i++) {
 					buttons[i].setVisible(false);
 				}
 			}
-			pMenu.setVisible(true);
-			pMenu.repaint();
+			Main.menu.setVisible(true);
+			Main.menu.repaint();
 		} 
 		else {
 			System.out.println("Visible");
@@ -41,7 +38,7 @@ public class PopAction extends AbstractAction {
 					buttons[i].setVisible(true);
 				}
 			}
-			pMenu.setVisible(false);
+			Main.menu.setVisible(false);
 		}
 		
 	}

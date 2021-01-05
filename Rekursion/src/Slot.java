@@ -2,47 +2,77 @@ import java.awt.image.BufferedImage;
 
 public class Slot extends CardObject {
 
-	public Slot(BufferedImage emptyImgIn) {
-		super(emptyImgIn);
+	
+	boolean isEditor = false;
+	private int index;
+	
+	public Slot() {	//TODO update to Slot(BufferedImage emptyImgIn, StageFrame host)
+		super();
 
 		state = State.EMPTY;
 	}
 	
-	public void makeCard(Card typeIn, StageFrame host) {
+	public Slot(int index) {
+		super();
+		isEditor = true;
+		
+		this.index = index;
+		
+		state = State.EMPTY;
+	}
+	
+
+	public void makeCard(Card typeIn, State setToState) {
 		type = typeIn;
 		switch(typeIn) {
 		case BACKCARD:
-			img = host.backCard;
+			img = Main.backCard;
 			break;
 		case FORWARDCARD:
-			img = host.forwardCard;
+			img = Main.forwardCard;
 			break;
 		case FASTFORWARDCARD:
-			img = host.fastForwardCard;
+			img = Main.fastForwardCard;
 			break;
 		case RTURNCARD:
-			img = host.rTurnCard;
+			img = Main.rTurnCard;
 			break;
 		case LTURNCARD:
-			img = host.lTurnCard;
+			img = Main.lTurnCard;
 			break;
 		case UTURNCARD:
-			img = host.uTurnCard;
+			img = Main.uTurnCard;
+			break;
+			
+		case EMPTY:		//called by isEditor == true CardPanel
+			img = Main.cardSlot;
 			break;
 			
 		default:	//should not be called
 			break;
 		}
-		state = State.SET;
+		state = setToState;
+		
 	}
 	
-	public void makeCard(StageFrame host, int loops) {
+	public void makeCard(int loops, State setToState) {
 		type = Card.RCARD;
-		img = host.rCard;
+		img = Main.rCard;
 		rLoops = loops;
-		state = State.SET;
+		state = setToState;
+		
 	}
 	
+	private void update(Card typeIn) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void update(int loops) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void clear() {
 		state = State.EMPTY;
 	}
