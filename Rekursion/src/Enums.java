@@ -137,7 +137,7 @@ enum Command {
 }
 
 enum State {
-	SET, SELECTED, EMPTY;
+	SET, SELECTED, EMPTY, SELECTEDEMPTY, LINKED;
 }
 
 enum Tile {

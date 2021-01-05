@@ -101,7 +101,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 
 		Main.fullSize = (Main.nTiles + 1) * Main.gap + Main.nTiles * Main.size;
 
-		this.setBounds(Main.xNull, Main.yNull, Main.fullSize, Main.fullSize);
+		setBounds(Main.xNull, Main.yNull, Main.fullSize, Main.fullSize);
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, Main.fullSize, Main.fullSize);
@@ -180,10 +180,12 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 						g.drawImage(Main.flagTile, xPos, yPos, Main.size, Main.size, null);
 						break;
 					}
+					
 				}
 			}
 		}
 		
+		if(isEditor) Main.stageEditorFrame.calculatePath();
 		Main.menu.repaint();	//Draws the menu over the grid
 	}
 

@@ -60,7 +60,7 @@ public class Main {		//main caller
 	public static Card[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
 	public static Card[] cards;
 	
-	public static byte[] initPos;		//Holds the initial position of the robot
+	public static byte[] initPos = {0, 0};		//Holds the initial position of the robot
 	public static Rotation initRot;		//Holds the initial rotation of the robot
 	
 	public static int stage;			//Holds the stage index
@@ -91,83 +91,93 @@ public class Main {		//main caller
 	}
 	
 	static Command[] makeCommandsReal(Card[] cardsInSlots, int[] loops) {
-		Command[] cmd;			//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
-		int realCmd = 0;	//Stores the length of the split command string
-		int[] adjLoops;		//Stores the R loops adjusted for split cards
+		//try {
+			Command[] cmd;		//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
+			int realCmd = 0;	//Stores the length of the split command string
+			int[] adjLoops;		//Stores the R loops adjusted for split cards
 
-		for(int i = 0; i < cardsInSlots.length; i++) {	//Calculates the length of the split command string
-			if(cardsInSlots[i] == Card.FASTFORWARDCARD || cardsInSlots[i] == Card.UTURNCARD) realCmd += 2;
-			else realCmd++;
-		}
-
-
-		cmd = new Command[realCmd];			//Initialize cmd
-		adjLoops = new int[realCmd];	//Initialize adjLoops
-		
-		int shift = 0;		//Setting up a shift counter (inital -> 0)
-		
-		for(int i = 0; i < cardsInSlots.length; i++) {	//Converting command string with to without double cards, adjusting loops
-			switch(cardsInSlots[i]) {
-				case BACKCARD:
-					cmd[i + shift] = Command.MOVEBACKWARD;		//backward
-					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
-					break;
-				case FORWARDCARD:	
-					cmd[i + shift] = Command.MOVEFORWARD;		//forward
-					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
-					break;
-				case FASTFORWARDCARD:
-					cmd[i + shift] = Command.MOVEFORWARD;		//fastforward
-					adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
-					shift++;									//double card -> shift++;
-					cmd[i + shift] = Command.MOVEFORWARD;
-					adjLoops[i + shift] = 0;
-					break;
-				case RTURNCARD:
-					cmd[i + shift] = Command.TURNRIGHT;			//right turn
-					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
-					break;
-				case LTURNCARD:
-					cmd[i + shift] = Command.TURNLEFT;			//left turn
-					adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
-					break;
-				case UTURNCARD:
-					cmd[i + shift] = Command.TURNRIGHT;			//u turn
-					adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
-					shift++;									//double card -> shift++;
-					cmd[i + shift] = Command.TURNRIGHT;
-					adjLoops[i + shift] = 0;
-					break;
-				case RCARD:
-					cmd[i + shift] = Command.INSERTRECUSION;	//R card
-					adjLoops[i + shift] = loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
-					break;
-					
-				default:	//should not be called
-					System.out.println("ERROR - Could not convert card to command");
-					break;
-					
-					//TODO Visualize current executing card
-					//TODO Debugging command output
+			for(int i = 0; i < cardsInSlots.length; i++) {	//Calculates the length of the split command string
+				if(cardsInSlots[i] != Card.EMPTY) {
+					if(cardsInSlots[i] == Card.FASTFORWARDCARD || cardsInSlots[i] == Card.UTURNCARD) realCmd += 2;
+					else realCmd++;
+				}
 			}
-		}
 
-		ArrayList<Command> commandList = new ArrayList<>();		//Initialize List to hold commands
-		
-		for(int i = 0; i < cmd.length; i++) {	//Set List to be equal to the cmd array
-			commandList.add(cmd[i]);
-		}
-		
-		ArrayList<Command> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
-		
-		Command[] executionBuffer;	//Temporary storage holding the execution commands
-		
-		executionBuffer = new Command[outputList.size()];	//Initialize Command array of the length of the List
 
-		for(int i = 0; i < outputList.size(); i++) {
-			executionBuffer[i] = outputList.get(i);		//copy List to the executionBuffer Command array
-		}
-		return executionBuffer;
+			cmd = new Command[realCmd];			//Initialize cmd
+			adjLoops = new int[realCmd];	//Initialize adjLoops
+			
+			int shift = 0;		//Setting up a shift counter (inital -> 0)
+			
+			for(int i = 0; i < cardsInSlots.length; i++) {	//Converting command string with to without double cards, adjusting loops
+				switch(cardsInSlots[i]) {
+					case BACKCARD:
+						cmd[i + shift] = Command.MOVEBACKWARD;		//backward
+						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						break;
+					case FORWARDCARD:	
+						cmd[i + shift] = Command.MOVEFORWARD;		//forward
+						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						break;
+					case FASTFORWARDCARD:
+						cmd[i + shift] = Command.MOVEFORWARD;		//fastforward
+						adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+						shift++;									//double card -> shift++;
+						cmd[i + shift] = Command.MOVEFORWARD;
+						adjLoops[i + shift] = 0;
+						break;
+					case RTURNCARD:
+						cmd[i + shift] = Command.TURNRIGHT;			//right turn
+						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						break;
+					case LTURNCARD:
+						cmd[i + shift] = Command.TURNLEFT;			//left turn
+						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						break;
+					case UTURNCARD:
+						cmd[i + shift] = Command.TURNRIGHT;			//u turn
+						adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+						shift++;									//double card -> shift++;
+						cmd[i + shift] = Command.TURNRIGHT;
+						adjLoops[i + shift] = 0;
+						break;
+					case RCARD:
+						cmd[i + shift] = Command.INSERTRECUSION;	//R card
+						adjLoops[i + shift] = loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
+						break;
+						
+					case EMPTY:
+						break;
+						
+					default:	//should not be called
+						System.out.println("ERROR - Could not convert card to command");
+						break;
+						
+						//TODO Visualize current executing card
+						//TODO Debugging command output
+				}
+			}
+
+			ArrayList<Command> commandList = new ArrayList<>();		//Initialize List to hold commands
+			
+			for(int i = 0; i < cmd.length; i++) {	//Set List to be equal to the cmd array
+				commandList.add(cmd[i]);
+			}
+			
+			ArrayList<Command> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
+			
+			Command[] executionBuffer;	//Temporary storage holding the execution commands
+			
+			executionBuffer = new Command[outputList.size()];	//Initialize Command array of the length of the List
+
+			for(int i = 0; i < outputList.size(); i++) {
+				executionBuffer[i] = outputList.get(i);		//copy List to the executionBuffer Command array
+			}
+			return executionBuffer;
+		//} catch (Exception e) {
+		//	System.out.println("cannot make cards real");
+		//}
+		//return null;
 	}
 
 

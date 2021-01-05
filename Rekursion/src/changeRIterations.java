@@ -23,10 +23,11 @@ public class changeRIterations extends AbstractAction {
 			System.out.println("change: " + change);
 			System.out.println("updated loops " + (loops + change));
 			
-			if(loops + change < 0) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(9);
-			else if (loops + change > 9) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(0);
-			else Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(loops + change);
+			if(loops + change < 0) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(9, State.SET);
+			else if (loops + change > 9) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(0, State.SET);
+			else Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(loops + change, State.SET);
 			Main.cardPane.repaint();
+			Main.slotPane.updateLinked();
 		}
 	}
 

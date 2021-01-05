@@ -22,7 +22,7 @@ public class Slot extends CardObject {
 	}
 	
 
-	public void makeCard(Card typeIn) {
+	public void makeCard(Card typeIn, State setToState) {
 		type = typeIn;
 		switch(typeIn) {
 		case BACKCARD:
@@ -51,15 +51,15 @@ public class Slot extends CardObject {
 		default:	//should not be called
 			break;
 		}
-		state = State.SET;
+		state = setToState;
 		
 	}
 	
-	public void makeCard(int loops) {
+	public void makeCard(int loops, State setToState) {
 		type = Card.RCARD;
 		img = Main.rCard;
 		rLoops = loops;
-		state = State.SET;
+		state = setToState;
 		
 	}
 	

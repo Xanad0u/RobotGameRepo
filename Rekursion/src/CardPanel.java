@@ -12,10 +12,8 @@ import javax.swing.KeyStroke;
 
 public class CardPanel extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener {
 
-	private final int lineSize = 4;
-	
 	int cardAmount;
-	CardObject[] cards;
+	public CardObject[] cards;
 	
 	private boolean isEditor = false;
 	
@@ -29,7 +27,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 
 	private int mousePos;
 
-	int focusedCard;
+	public int focusedCard;
 	
 	public CardPanel(Card[] cardArray, int cardAmountIn) {
 		cardAmount = cardAmountIn;
@@ -117,7 +115,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		this.setBounds(Main.xNull - lineSize, Main.yNull - 2 * Main.size - lineSize, Main.fullSize + 2 * lineSize, (int) (Main.size * Main.cardRatio) + 2 * lineSize);
+		this.setBounds(Main.xNull - Main.lineSize, Main.yNull - 2 * Main.size - Main.lineSize, Main.fullSize + 2 * Main.lineSize, (int) (Main.size * Main.cardRatio) + 2 * Main.lineSize);
 		
 		int xPos;
 		
@@ -128,7 +126,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 				
 				xPos = (cardGap * (i + 1) + Main.size * i);
 				
-				cards[i].draw(g, xPos, lineSize);
+				cards[i].draw(g, xPos, Main.lineSize, -1);
 	
 			}
 		}
@@ -140,10 +138,12 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 				
 				xPos = (cardGap * (i + 1) + Main.size * i);
 
-				cardList.get(i).draw(g, xPos, lineSize);
-			}
+				cardList.get(i).draw(g, xPos, Main.lineSize, -1);
+				
+				Main.slotPane.updateLinked();}
 		}
 	}
+	
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -160,12 +160,21 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 			}
 		}
 		else {
-			if(focusedCard <= cardList.size()) {
-				if(cardList.get(focusedCard).type.change(1) != Card.RCARD) cardList.get(focusedCard).makeCard(cardList.get(focusedCard).type.change(1));
-				else cardList.get(focusedCard).makeCard(0);
+			if(Main.slotPane.selectedSlot == -1) {
+				if(focusedCard <= cardList.size()) {
+					if(cardList.get(focusedCard).type.change(1) != Card.RCARD) cardList.get(focusedCard).makeCard(cardList.get(focusedCard).type.change(1), State.SET);
+					else cardList.get(focusedCard).makeCard(0, State.SET);
+				}
 			}
-		}
+			else {
+				Main.slotPane.slotLinks.set(Main.slotPane.selectedSlot, focusedCard);
+				Main.slotPane.slotList.get(Main.slotPane.selectedSlot).state = State.LINKED;
+				Main.slotPane.selectedSlot = -1;
+			}
+			
 		repaint();
+		Main.slotPane.updateLinked();
+		}
 	}
 
 	@Override
@@ -200,6 +209,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 		Main.slotPane.cutSlotsTo(cardList.size());
 		
 		repaint();
+		Main.slotPane.updateLinked();
 	}
 
 	@Override

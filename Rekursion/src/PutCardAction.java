@@ -19,9 +19,10 @@ public class PutCardAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(Main.cardPane.mouseInFrame) {
-			if(loops == -1) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(putCard);
-			else Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(loops);
+			if(loops == -1) Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(putCard, State.SET);
+			else Main.cardPane.cardList.get(Main.cardPane.focusedCard).makeCard(loops, State.SET);
 			Main.cardPane.repaint();
+			Main.slotPane.updateLinked();
 		}
 	}
 
