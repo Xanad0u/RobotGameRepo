@@ -19,7 +19,7 @@ public class Main {		//main caller
 	public static int nTiles = 8;			//Number of tiles in a row or column, hard coded as 8 !DO NOT CHANGE!
 	
 	public static int substeps = 20;		//Animation substeps of the robot
-	public static int moveTime = 20;		//Time it takes the robot to do one action
+	public static int moveTime = 170;		//Time it takes the robot to do one action
 	public static int pauseTime = 50;		//Pause time between two actions of the robot
 	
 	public static int fullSize;				//Holds the size of the board

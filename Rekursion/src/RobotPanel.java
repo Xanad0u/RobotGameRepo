@@ -114,7 +114,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {	//TODO: test for win/lose condition at the end of the move
 
 		if(callMove > 0) {
 

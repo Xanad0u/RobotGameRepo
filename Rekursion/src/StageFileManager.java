@@ -126,6 +126,10 @@ public class StageFileManager {
 			case 7:
 				cardsData[i] = Card.RCARD;
 				break;
+				
+			default:
+				cardsData[i] = Card.NUll;
+				break;
 			}
 		}
 		
