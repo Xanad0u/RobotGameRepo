@@ -19,7 +19,7 @@ public class Main {		//main caller
 	public static int nTiles = 8;			//Number of tiles in a row or column, hard coded as 8 !DO NOT CHANGE!
 	
 	public static int substeps = 20;		//Animation substeps of the robot
-	public static int moveTime = 100;		//Time it takes the robot to do one action
+	public static int moveTime = 20;		//Time it takes the robot to do one action
 	public static int pauseTime = 50;		//Pause time between two actions of the robot
 	
 	public static int fullSize;				//Holds the size of the board
@@ -52,6 +52,7 @@ public class Main {		//main caller
 	public static MenuPanel menu = null;					//Holds the popup menu
 	public static CardPanel cardPane = null;				//Holds the pane containing the usable cards
 	public static SlotPanel slotPane = null;				//Holds the pane containing the slot and the cards placed in them
+	public static StageSelectionFrame StageSelectionFrame = null;
 	
 	public static Tile[] tiles;								//Holds the tiles of the stage
 	public static byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
@@ -64,6 +65,7 @@ public class Main {		//main caller
 	public static Rotation initRot;		//Holds the initial rotation of the robot
 	
 	public static int stage;			//Holds the stage index
+	
 	
 	public static void main(String[] args) throws IOException {
 		

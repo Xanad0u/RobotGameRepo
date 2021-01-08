@@ -18,16 +18,26 @@ public class CallButton extends JButton implements ActionListener {
 		addActionListener(this);
 	}
 
-	public CallButton(String s, JFrame frame, int levelIn) {
-		super(s);
+	public CallButton(JFrame frame, int levelIn) {
+		super(String.valueOf(levelIn));
 		this.frame = frame;
 		call = ButtonAction.STAGEFRAME;
 		level = levelIn;
 		addActionListener(this);
 	}
+	
+	public void changeCallStage(int levelIn) {
+		setText(String.valueOf(levelIn));
+		call = ButtonAction.STAGEFRAME;
+		level = levelIn;
+		addActionListener(this);
+		repaint();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		boolean dispose = true;
+		
 		switch (call) {
 		case STAGEEDITORFRAME:
 			try {
@@ -39,7 +49,7 @@ public class CallButton extends JButton implements ActionListener {
 			break;
 			
 		case STAGESELECTIONFRAME:
-			StageSelectionFrame SSF = new StageSelectionFrame();			
+			Main.StageSelectionFrame = new StageSelectionFrame();			
 			break;
 
 		case MENUFRAME:
@@ -62,10 +72,22 @@ public class CallButton extends JButton implements ActionListener {
 			MenuFrame MF2 = new MenuFrame();
 			break;
 			
+		case NEXTPAGE:
+			Main.StageSelectionFrame.goToPage(Main.StageSelectionFrame.currentPage + 1);
+			dispose = false;
+			break;
+			
+		case PREVIOUSPAGE:
+			if(Main.StageSelectionFrame.currentPage != 0) Main.StageSelectionFrame.goToPage(Main.StageSelectionFrame.currentPage - 1);
+			dispose = false;
+			break;
+			
 		default:
 			break;
+			
+		
 		}
-		frame.dispose();
+		if(dispose) frame.dispose();
 	}
 
 }

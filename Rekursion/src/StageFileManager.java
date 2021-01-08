@@ -136,13 +136,13 @@ public class StageFileManager {
 		System.out.println("called getRealCards");
 		Card[] allCards = getCards(n);
 		Card[] data = new Card[getCardAmount(n)];
-		int shift = 1;
+		int shift = 0;
 		
 		if(getCardAmount(n) != 0) {
 		data[0] = allCards[0];
 		
 		if(allCards.length > 1) {
-			for(int i = 1; i < getCardAmount(n) + 1; i++) {
+			for(int i = 1; i < getCardAmount(n) - 1; i++) {
 				if(allCards[i - 1] != Card.RCARD) data[i - shift] = allCards[i];
 				else shift++;
 				
@@ -338,20 +338,23 @@ public class StageFileManager {
 	public StageStatus getStageStatus(int n) {
 		try
 		{
-			File stageFile = new File("Stage_0.txt");
-			Scanner reader = new Scanner(stageFile);
-			String data = reader.nextLine();
-
-			reader.close();
-			
-			if(data.toCharArray()[n] == 1) return StageStatus.COMPLETE;
-			else return StageStatus.NOTCOMPLETE;
+			if(getStageAmount() >= n) {
+				File stageFile = new File("Stage_0.txt");
+				Scanner reader = new Scanner(stageFile);
+				String data = reader.nextLine();
+	
+				reader.close();
+				
+				if(data.toCharArray()[n] == '1') return StageStatus.COMPLETE;
+				else return StageStatus.NOTCOMPLETE;
+			}
+			else return StageStatus.NULL;
 		}	
 		catch(FileNotFoundException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
-		return null;
+		return StageStatus.NULL;
 	}
 	
 	public void setStageStatus(int n, StageStatus status) {

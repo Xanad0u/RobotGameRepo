@@ -12,16 +12,26 @@ import javax.swing.SpringLayout;
 import java.awt.Color;
 
 import java.awt.Component;
+import java.awt.Container;
+
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 
 public class StageSelectionFrame extends JFrame{
 	
+	private final double standartSizeSmall = 0.01;
+	private final double standartSizeBig = 0.02;
 	private final int buttonAmount = 12;
 	private JPanel contentPane;
 	public CallButton[] buttonArray = new CallButton[buttonAmount];
+	private JButton btnNewButton_9;
+	private JButton btnNewButton_10;
+	private JButton btnNewButton_11;
+	
+	public int currentPage = 0;
 	
 	public StageSelectionFrame() {
 		File file = new File("./img/Icon.png");
@@ -49,7 +59,31 @@ public class StageSelectionFrame extends JFrame{
 
 		contentPane.setLayout(sl_contentPane);
 		
-		JPanel levelPanel = new JPanel();
+		JPanel levelPanel = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponents(g);
+				for (int i = 0; i < buttonArray.length; i++) {
+					buttonArray[i].setFont(new Font("Tahoma", Font.PLAIN, (int) (contentPane.getWidth() * standartSizeBig)));
+					
+					switch(Main.fileManager.getStageStatus(i + 1 + currentPage * buttonAmount)) {
+					case COMPLETE:
+						buttonArray[i].setForeground(Color.BLACK);
+						buttonArray[i].setBackground(Color.GREEN);
+						break;
+					case NOTCOMPLETE:
+						buttonArray[i].setForeground(Color.BLACK);
+						buttonArray[i].setBackground(Color.WHITE);
+						break;
+					case NULL:
+						buttonArray[i].setForeground(new Color(191, 191, 191));
+						buttonArray[i].setBackground(new Color(212, 212, 212));
+						break;
+					
+					}
+				}
+			}
+		};
 		levelPanel.setBackground(Color.WHITE);
 		levelPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
@@ -76,16 +110,37 @@ public class StageSelectionFrame extends JFrame{
 		
 		
 		for(int i = 0; i < buttonAmount; i++) {
-			CallButton btnNewButton = new CallButton(Integer.toString(i + 1), this, i + 1);
-			btnNewButton.setForeground(Color.BLACK);
-			btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 32));
-			btnNewButton.setBackground(Color.WHITE);
-			levelPanel.add(btnNewButton);
+			buttonArray[i] = new CallButton(this, i + 1);
+			buttonArray[i].setFont(new Font("Tahoma", Font.PLAIN, 1));
+			switch(Main.fileManager.getStageStatus(i + 1)) {
+			case COMPLETE:
+				buttonArray[i].setForeground(Color.BLACK);
+				buttonArray[i].setBackground(Color.GREEN);
+				break;
+			case NOTCOMPLETE:
+				buttonArray[i].setForeground(Color.BLACK);
+				buttonArray[i].setBackground(Color.WHITE);
+				break;
+			case NULL:
+				buttonArray[i].setForeground(new Color(191, 191, 191));
+				buttonArray[i].setBackground(new Color(212, 212, 212));
+				break;
 			
-			buttonArray[i] = btnNewButton;
+			}
+			
+			
+			levelPanel.add(buttonArray[i]);
 		}
 		
-		JPanel controlPanel = new JPanel();
+		JPanel controlPanel = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponents(g);
+				btnNewButton_9.setFont(new Font("Tahoma", Font.PLAIN, (int) (contentPane.getWidth() * standartSizeSmall)));
+				btnNewButton_10.setFont(new Font("Tahoma", Font.PLAIN, (int) (contentPane.getWidth() * standartSizeSmall)));
+				btnNewButton_11.setFont(new Font("Tahoma", Font.PLAIN, (int) (contentPane.getWidth() * standartSizeSmall)));
+			}
+		};
 		sl_mainPanel.putConstraint(SpringLayout.SOUTH, levelPanel, -30, SpringLayout.NORTH, controlPanel);
 		sl_mainPanel.putConstraint(SpringLayout.NORTH, controlPanel, -50, SpringLayout.SOUTH, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.WEST, controlPanel, 0, SpringLayout.WEST, mainPanel);
@@ -101,80 +156,37 @@ public class StageSelectionFrame extends JFrame{
 		FlowLayout fl_panel_1 = new FlowLayout(FlowLayout.CENTER, 10, 0);
 		controlPanel.setLayout(fl_panel_1);
 		
-		JButton btnNewButton_9 = new JButton("<<");
-		btnNewButton_9.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		btnNewButton_9 = new CallButton("<<", this, ButtonAction.PREVIOUSPAGE);
+		btnNewButton_9.setFont(new Font("Tahoma", Font.PLAIN, 1));
 		btnNewButton_9.setHorizontalAlignment(SwingConstants.LEFT);
 		btnNewButton_9.setBackground(Color.LIGHT_GRAY);
 		controlPanel.add(btnNewButton_9);
 		
-		JButton btnNewButton_11 = new CallButton("return to menu", this, ButtonAction.MENUFRAME);
-		btnNewButton_11.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		btnNewButton_11 = new CallButton("return to menu", this, ButtonAction.MENUFRAME);
+		btnNewButton_11.setFont(new Font("Tahoma", Font.PLAIN, 1));
 		btnNewButton_11.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnNewButton_11.setBackground(Color.LIGHT_GRAY);
 		controlPanel.add(btnNewButton_11);
 		
-		JButton btnNewButton_10 = new JButton(">>");
-		btnNewButton_10.setFont(new Font("Tahoma", Font.PLAIN, 32));
+		btnNewButton_10 = new CallButton(">>", this, ButtonAction.NEXTPAGE);
+		btnNewButton_10.setFont(new Font("Tahoma", Font.PLAIN, 1));
 		btnNewButton_10.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnNewButton_10.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		btnNewButton_10.setBackground(Color.LIGHT_GRAY);
 		controlPanel.add(btnNewButton_10);
+
 		
-		/*
-		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(Color.LIGHT_GRAY);
-		sl_contentPane.putConstraint(SpringLayout.NORTH, panel_2, 300, SpringLayout.NORTH, contentPane);
-		sl_contentPane.putConstraint(SpringLayout.WEST, panel_2, 900, SpringLayout.WEST, contentPane);
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, panel_2, 600, SpringLayout.NORTH, contentPane);
-		sl_contentPane.putConstraint(SpringLayout.EAST, panel_2, -900, SpringLayout.EAST, contentPane);
-		contentPane.add(panel_2);
-		
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
-		
-		levelPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "move up");
-		levelPanel.getActionMap().put("move up", new PopAction(panel_2, buttonArray));
-		panel_2.setVisible(false);
-		
-		contentPane.setComponentZOrder(mainPanel, 1);
-		contentPane.setComponentZOrder(panel_2, 0);
-		
-		Component verticalStrut = Box.createVerticalStrut(20);
-		panel_2.add(verticalStrut);
-		
-		JLabel lblPauseMenu = new JLabel("Pause menu");
-		lblPauseMenu.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		lblPauseMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_2.add(lblPauseMenu);
-		
-		Component verticalStrut_1 = Box.createVerticalStrut(20);
-		panel_2.add(verticalStrut_1);
-		
-		JButton btnResume = new JButton("Resume");
-		btnResume.setBackground(Color.WHITE);
-		btnResume.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnResume.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_2.add(btnResume);
-		
-		Component verticalStrut_2 = Box.createVerticalStrut(20);
-		panel_2.add(verticalStrut_2);
-		
-		JButton btnLevels = new JButton("Levels");
-		btnLevels.setBackground(Color.WHITE);
-		btnLevels.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnLevels.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_2.add(btnLevels);
-		
-		Component verticalStrut_3 = Box.createVerticalStrut(20);
-		panel_2.add(verticalStrut_3);
-		
-		JButton btnMenu = new JButton("Menu");
-		btnMenu.setBackground(Color.WHITE);
-		btnMenu.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_2.add(btnMenu);
-		*/
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setVisible(true);
+		revalidate();
+	}
+	
+	public void goToPage(int page) {
+		for (int i = 0; i < buttonArray.length; i++) {
+			buttonArray[i].changeCallStage(buttonArray[i].level + (page - currentPage) * buttonAmount);
+		}
+		repaint();
+		currentPage = page;
 	}
 }
 
