@@ -27,6 +27,8 @@ public class PutTileAction extends AbstractAction {
 			if(putTile == Tile.FLAG) Main.gridPane.flagTile = Main.gridPane.focusedTile;
 			
 			Main.tiles[Main.gridPane.focusedTile] = putTile;
+			
+			Main.stageEditorFrame.calculatePath();
 			Main.gridPane.repaint();
 		}
 	}

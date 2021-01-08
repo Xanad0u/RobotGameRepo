@@ -2,7 +2,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import org.graalvm.compiler.java.LargeLocalLiveness;
 
 public class StageFileManager {
 
@@ -133,21 +136,24 @@ public class StageFileManager {
 		System.out.println("called getRealCards");
 		Card[] allCards = getCards(n);
 		Card[] data = new Card[getCardAmount(n)];
-		int shift = 0;
+		int shift = 1;
 		
 		if(getCardAmount(n) != 0) {
 		data[0] = allCards[0];
 		
-		for(int i = 1; i < getCardAmount(n) + 1; i++) {
-			if(allCards[i - 1] != Card.RCARD) data[i - shift] = allCards[i];
-			else shift++;
-			
-			if(allCards[i - 1] != Card.RCARD) System.out.println(allCards[i]);
-			else System.out.println("shift: " + shift);
+		if(allCards.length > 1) {
+			for(int i = 1; i < getCardAmount(n) + 1; i++) {
+				if(allCards[i - 1] != Card.RCARD) data[i - shift] = allCards[i];
+				else shift++;
+				
+				if(allCards[i - 1] != Card.RCARD) System.out.println(allCards[i]);
+				else System.out.println("shift: " + shift);
+			}
+			return data;
+			}
+			else return null;
 		}
-		return data;
-		}
-		else return null;
+		else return data;
 	}
 	
 	public byte getCardAmount(int n) {
@@ -197,7 +203,7 @@ public class StageFileManager {
 	public Rotation getInitRot(int n) {
 		byte[] data = Read(n);
 
-		switch ((data[0] + 1) % 4) {
+		switch (data[0]) {
 		case 0:
 			return Rotation.NORTH;
 		case 1:
@@ -254,5 +260,121 @@ public class StageFileManager {
 		byte[] data = Read(n);
 
 		return data[data.length - 1];
+	}
+	
+	public int getStageAmount() {
+		int stageAmount = 0;
+		try
+		{
+			File stageFile = new File("Stage_0.txt");
+			Scanner reader = new Scanner(stageFile);
+			String data = reader.nextLine();
+
+			reader.close();
+			
+			char stageAmountChar = data.toCharArray()[0];
+			stageAmount = Integer.parseInt( String.valueOf(stageAmountChar));
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+		
+		return stageAmount;
+	}
+	
+	public void addStageToHolder() {
+		try
+		{
+			File stageFile = new File("Stage_0.txt");
+			Scanner reader = new Scanner(stageFile);
+			String data = reader.nextLine();
+
+			reader.close();
+			
+			char[] dataCharArray = data.toCharArray();
+			int stageAmount = getStageAmount();
+			byte[] modifiedDataArray = new byte[dataCharArray.length + 1];
+			
+			int largestIndex = modifiedDataArray.length - 1;
+			
+			for (int i = 0; i < modifiedDataArray.length; i++) {
+				if(i == 0) modifiedDataArray[i] = (byte) (stageAmount + 1);
+				else if(i == largestIndex) modifiedDataArray[i] = 0;
+				else  modifiedDataArray[i] = (byte) Integer.parseInt( String.valueOf(dataCharArray[i]));
+			}
+			Write(0, modifiedDataArray);
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+	}
+
+	public void saveStage() {
+		int stageIndex = getStageAmount() + 1;
+		Create(stageIndex);
+		ArrayList<Integer> data = new ArrayList<Integer>();
+		data.add(Main.initRot.ordinal());
+		for (int i = 0; i < Main.stageEditorFrame.tiles.length; i++) {
+			data.add(Main.stageEditorFrame.tiles[i].ordinal());
+		}
+		for (int i = 0; i < Main.cardPane.cardList.size(); i++) {
+			data.add(Main.cardPane.cardList.get(i).type.ordinal() + 1);
+			if(Main.cardPane.cardList.get(i).type == Card.RCARD) data.add(Main.cardPane.cardList.get(i).rLoops);
+		}
+		data.add(Main.slotPane.slotList.size());
+		
+		byte[] byteData = new byte[data.size()];
+		
+		for (int i = 0; i < byteData.length; i++) {
+			byteData[i] = data.get(i).byteValue();
+		}
+		
+		Write(stageIndex, byteData);
+		addStageToHolder();
+	}
+	
+	public StageStatus getStageStatus(int n) {
+		try
+		{
+			File stageFile = new File("Stage_0.txt");
+			Scanner reader = new Scanner(stageFile);
+			String data = reader.nextLine();
+
+			reader.close();
+			
+			if(data.toCharArray()[n] == 1) return StageStatus.COMPLETE;
+			else return StageStatus.NOTCOMPLETE;
+		}	
+		catch(FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void setStageStatus(int n, StageStatus status) {
+		try
+		{
+			File stageFile = new File("Stage_0.txt");
+			Scanner reader = new Scanner(stageFile);
+			String data = reader.nextLine();
+
+			reader.close();
+			
+			char[] dataCharArray = data.toCharArray();
+			byte[] modifiedDataArray = new byte[dataCharArray.length];
+			
+			for (int i = 0; i < modifiedDataArray.length; i++) {
+				if(i == n) modifiedDataArray[i] = (byte) (status.ordinal());
+				else  modifiedDataArray[i] = (byte) Integer.parseInt( String.valueOf(dataCharArray[i]));
+			}
+			Write(0, modifiedDataArray);
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
 	}
 }

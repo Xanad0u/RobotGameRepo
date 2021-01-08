@@ -147,6 +147,7 @@ public class Main {		//main caller
 						break;
 						
 					case EMPTY:
+						shift--;
 						break;
 						
 					default:	//should not be called

@@ -6,14 +6,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public class CallButton extends JButton implements ActionListener {
-	private String call;
+	private ButtonAction call;
 	private final JFrame frame;
 	int level;
 
-	public CallButton(String s, JFrame frame, String callIn) {
+	public CallButton(String s, JFrame frame, ButtonAction call) {
 		super(s);
 		this.frame = frame;
-		call = callIn;
+		this.call = call;
 		level = 0;
 		addActionListener(this);
 	}
@@ -21,7 +21,7 @@ public class CallButton extends JButton implements ActionListener {
 	public CallButton(String s, JFrame frame, int levelIn) {
 		super(s);
 		this.frame = frame;
-		call = "PF";
+		call = ButtonAction.STAGEFRAME;
 		level = levelIn;
 		addActionListener(this);
 	}
@@ -29,7 +29,7 @@ public class CallButton extends JButton implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (call) {
-		case "SEF":
+		case STAGEEDITORFRAME:
 			try {
 				Main.stageEditorFrame = new StageEditorFrame();
 			} catch (IOException e2) {
@@ -38,15 +38,15 @@ public class CallButton extends JButton implements ActionListener {
 			}
 			break;
 			
-		case "SSF":
+		case STAGESELECTIONFRAME:
 			StageSelectionFrame SSF = new StageSelectionFrame();			
 			break;
 
-		case "MF":
+		case MENUFRAME:
 			MenuFrame MF = new MenuFrame();
 			break;
 
-		case "PF":
+		case STAGEFRAME:
 			if (level != 0) {
 				try {
 					Main.stageFrame = new StageFrame(level);
@@ -55,6 +55,14 @@ public class CallButton extends JButton implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
+			break;
+			
+		case SAVE:
+			Main.fileManager.saveStage();
+			MenuFrame MF2 = new MenuFrame();
+			break;
+			
+		default:
 			break;
 		}
 		frame.dispose();

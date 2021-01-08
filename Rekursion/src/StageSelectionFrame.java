@@ -107,7 +107,7 @@ public class StageSelectionFrame extends JFrame{
 		btnNewButton_9.setBackground(Color.LIGHT_GRAY);
 		controlPanel.add(btnNewButton_9);
 		
-		JButton btnNewButton_11 = new CallButton("return to menu", this, "MF");
+		JButton btnNewButton_11 = new CallButton("return to menu", this, ButtonAction.MENUFRAME);
 		btnNewButton_11.setFont(new Font("Tahoma", Font.PLAIN, 32));
 		btnNewButton_11.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnNewButton_11.setBackground(Color.LIGHT_GRAY);

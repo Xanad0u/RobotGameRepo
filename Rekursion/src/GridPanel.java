@@ -179,16 +179,48 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 					case FLAG:
 						g.drawImage(Main.flagTile, xPos, yPos, Main.size, Main.size, null);
 						break;
-					}
+						}
+						
+						
+					
 					
 				}
 			}
 		}
 		
-		if(isEditor) Main.stageEditorFrame.calculatePath();
+		if(isEditor) {
+			
+			
+			int[] pos1 = new int[2];
+			int[] pos2 = new int[2];
+			
+			g.setColor(Color.GREEN);
+			
+			
+			if(Main.stageEditorFrame.positions != null) {
+				for (int i = 0; i < Main.stageEditorFrame.positions.size() - 1; i++) {
+					
+					if(i == Main.stageEditorFrame.pointOfDeath) g.setColor(Color.RED);
+					
+					pos1[0] = scalePos(Main.stageEditorFrame.positions.get(i)[0]);
+					pos1[1] = scalePos(Main.stageEditorFrame.positions.get(i)[1]);
+					pos2[0] = scalePos(Main.stageEditorFrame.positions.get(i + 1)[0]);
+					pos2[1] = scalePos(Main.stageEditorFrame.positions.get(i + 1)[1]);
+					
+					g.drawLine(pos1[0], pos1[1], pos2[0], pos2[1]);
+					System.out.println("drew Line from (" + pos1[0] + ", " + pos1[1] + ") to (" + pos2[0] + ", " + pos2[1] + ")");
+				}
+			}
+		}
+		
 		Main.menu.repaint();	//Draws the menu over the grid
 	}
 
+	
+	private int scalePos(byte pos) {
+		return (int) ((pos + 1) * Main.gap + (pos + 0.5) * Main.size);
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
@@ -224,7 +256,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 			Main.tiles[focusedTile] = Tile.EMPTY;
 			break;
 		}
-		
+		Main.stageEditorFrame.calculatePath();
 		repaint();
 	}
 
@@ -270,6 +302,7 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		if(Main.tiles[focusedTile] == Tile.FLAG && flagTile != -1) Main.tiles[flagTile] = Tile.EMPTY;
 		if(Main.tiles[focusedTile] == Tile.FLAG) flagTile = focusedTile;
 		
+		Main.stageEditorFrame.calculatePath();
 		repaint();
 	}
 

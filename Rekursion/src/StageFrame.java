@@ -29,7 +29,7 @@ public class StageFrame extends JFrame {
 		setVisible(true);		//make frame visible
 
 		
-		Main.menu = new MenuPanel(this)  {	//Create popup menu
+		Main.menu = new MenuPanel(this, false)  {	//Create popup menu
 			
 			@Override
 			public void paintComponent(Graphics g) {

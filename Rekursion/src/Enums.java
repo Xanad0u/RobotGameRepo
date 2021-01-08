@@ -150,3 +150,11 @@ enum Tile {
 		return values()[newPos];     
 	}
 }
+
+enum ButtonAction {
+	MENUFRAME, STAGESELECTIONFRAME, STAGEEDITORFRAME, STAGEFRAME, SAVE;
+}
+
+enum StageStatus {
+	NOTCOMPLETE, COMPLETE;
+}
