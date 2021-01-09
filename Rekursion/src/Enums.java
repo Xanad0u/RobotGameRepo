@@ -162,3 +162,7 @@ enum ButtonAction {
 enum StageStatus {
 	NOTCOMPLETE, COMPLETE, NULL;
 }
+
+enum Condition{
+	WON, LOST, NULL;
+}

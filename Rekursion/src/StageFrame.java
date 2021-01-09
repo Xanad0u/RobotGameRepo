@@ -1,19 +1,12 @@
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
-import java.io.File;
 import java.io.IOException;
 
 
 public class StageFrame extends JFrame {
-
-	private static final long serialVersionUID = 1L;
 
 	public StageFrame(int stageIn) throws IOException {
 		Main.stage = stageIn;
@@ -66,11 +59,11 @@ public class StageFrame extends JFrame {
 		Main.slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
 		
-		add(Main.menu);		//Add menu to frame
-		add(Main.cardPane);
-		add(Main.slotPane);
+		add(Main.menu);			//Add popup menu to frame
+		add(Main.cardPane);		//Add card pane to frame
+		add(Main.slotPane);		//Add slot pane to frame
 		add(Main.robotPane);	//Add robot pane to frame
-		add(Main.gridPane);	//Add board pane to frame
+		add(Main.gridPane);		//Add board pane to frame
 	}
 
 	

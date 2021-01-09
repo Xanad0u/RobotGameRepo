@@ -25,6 +25,11 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	int moveStep = 0;
 	
+	boolean falling = false;
+	int fallingStep;
+	
+	Condition condition = Condition.WON;
+	
 	Command[] executionOrder = null;
 	int executionElement = 0;
 	boolean executionReady = true;
@@ -97,6 +102,11 @@ public class RobotPanel extends JPanel implements ActionListener {
 		callTurnFull = dir;
 	}
 	
+	public void fallAnimated() {
+		fallingStep = 0;
+		falling = true;
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -105,8 +115,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 		robot.af.setToIdentity();
 		
 		
-		robot.af.translate(robot.pos[0] * (Main.size + Main.gap) + robot.subPos[0], robot.pos[1] * (Main.size + Main.gap) + robot.subPos[1]);
-		robot.af.scale(Main.size / (double) robot.img.getHeight(), Main.size / (double) robot.img.getHeight());
+		robot.af.translate(robot.pos[0] * (Main.size + Main.gap) + robot.subPos[0] + (1 - robot.scale) * Main.size * 0.5, robot.pos[1] * (Main.size + Main.gap) + robot.subPos[1] + (1 - robot.scale) * Main.size * 0.5);
+		robot.af.scale((Main.size / (double) robot.img.getHeight()) * robot.scale, (Main.size / (double) robot.img.getHeight()) * robot.scale);
 		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
@@ -138,8 +148,14 @@ public class RobotPanel extends JPanel implements ActionListener {
 				System.out.println();
 				System.out.println();
 				
-				pauseCounter = Main.pauseTime;
-				executionReady = true;
+
+				if(Main.tiles[Main.fileManager.posToTile(robot.pos) - 1] == Tile.HOLE) {
+					holeDrop();
+				}
+				else {
+					pauseCounter = Main.pauseTime;
+					executionReady = true;
+				}
 			}
 		}
 		
@@ -162,25 +178,40 @@ public class RobotPanel extends JPanel implements ActionListener {
 			}
 		}
 		
+		if(falling) {
+			if(fallingStep < Main.fallSteps) {
+				if(robot.scale > 0) {
+					robot.scale = 1 - (1.0 / (Main.fallSteps * Main.fallSteps)) * fallingStep * fallingStep;
+					fallingStep++;
+				}
+			}
+			else {
+				falling = false;
+				setVisible(false);
+			}
+		}
+		
 		if(executionOrder != null && executionReady && pauseCounter == 0) {
 			executionReady = false;
+			
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
-				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
-					moveAnimated(Move.FORWARD);
-				else {
-					pauseCounter = Main.pauseTime;
-					executionReady = true;
-				}
+				
+					if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
+						moveAnimated(Move.FORWARD);
+					else {
+						pauseCounter = Main.pauseTime;
+						executionReady = true;
+					}
 				break;
 				
 			case MOVEBACKWARD:
-				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
-					moveAnimated(Move.BACKWARD);
-				else {
-					pauseCounter = Main.pauseTime;
-					executionReady = true;
-				}
+					if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
+						moveAnimated(Move.BACKWARD);
+					else {
+						pauseCounter = Main.pauseTime;
+						executionReady = true;
+					}
 				break;
 				
 			case TURNRIGHT:
@@ -197,7 +228,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 			}
 			executionElement++;
 			
-			if(executionElement == executionOrder.length) executionOrder = null;
+			if(executionElement == executionOrder.length) {
+				executionOrder = null;
+				testCondition();
+			}
 		}
 		
 		if(pauseCounter > 0) pauseCounter--;
@@ -208,5 +242,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 	public void execute(Command[] executionBuffer) {
 		
 		executionOrder = executionBuffer;
+	}
+	
+	public Condition testCondition() {
+		return null;
+	}
+	
+	public void holeDrop() {
+		fallAnimated();
 	}
 }
