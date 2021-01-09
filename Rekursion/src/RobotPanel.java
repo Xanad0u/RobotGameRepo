@@ -33,6 +33,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 	Command[] executionOrder = null;
 	int executionElement = 0;
 	boolean executionReady = true;
+
+	private int exitTimer = -1;
 	
 	public RobotPanel(byte[] initLoc, Rotation initRot) {
 		robot = new Robot(Main.substeps, Main.moveTime, Main.robotImg);
@@ -126,6 +128,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {	//TODO: test for win/lose condition at the end of the move
 
+		if(exitTimer == 0) {
+			exitTimer = -1;
+			Main.StageSelectionFrame = new StageSelectionFrame();
+			Main.stageFrame.dispose();
+		}
+		if(exitTimer > 0) exitTimer--;
+		
 		if(callMove > 0) {
 
 			robot.subPos[0] += (x * ((Main.size + Main.gap) / Main.substeps)) * moveStep;
@@ -149,7 +158,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				System.out.println();
 				
 
-				if(Main.tiles[Main.fileManager.posToTile(robot.pos) - 1] == Tile.HOLE) {
+				if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] == Tile.HOLE) {
 					holeDrop();
 				}
 				else {
@@ -188,6 +197,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			else {
 				falling = false;
 				setVisible(false);
+				testCondition();
 			}
 		}
 		
@@ -197,7 +207,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
 				
-					if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
+					if(Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.FORWARD))] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
 						moveAnimated(Move.FORWARD);
 					else {
 						pauseCounter = Main.pauseTime;
@@ -206,7 +216,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				break;
 				
 			case MOVEBACKWARD:
-					if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
+					if(Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.BACKWARD))] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
 						moveAnimated(Move.BACKWARD);
 					else {
 						pauseCounter = Main.pauseTime;
@@ -244,11 +254,22 @@ public class RobotPanel extends JPanel implements ActionListener {
 		executionOrder = executionBuffer;
 	}
 	
-	public Condition testCondition() {
-		return null;
+	public void testCondition() {
+		if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] != Tile.FLAG) condition = Condition.LOST;
+		System.out.println(condition);
+		
+		if(condition == Condition.WON) {
+
+			Main.fileManager.setStageStatus(Main.stage, StageStatus.COMPLETE);
+			exitTimer = Main.exitTime;
+		}
+		else {
+			//TODO: Failing a stage
+		}
 	}
 	
 	public void holeDrop() {
 		fallAnimated();
+		condition = Condition.LOST;
 	}
 }

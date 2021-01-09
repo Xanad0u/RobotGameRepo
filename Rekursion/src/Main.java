@@ -19,6 +19,7 @@ public class Main {		//main caller
 	public static int moveTime = 170;		//Time it takes the robot to do one action - indirectly affecting falling
 	public static int pauseTime = 50;		//Pause time between two actions of the robot
 	public static int fallSteps = 100;		//adjusted falling steps botched timer interference
+	public static int exitTime = 200;		//adjusted exit time after successfully finishing a stage (botched stored as steps)
 	
 	public static int fullSize;				//Holds the size of the board
 	
