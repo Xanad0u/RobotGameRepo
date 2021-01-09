@@ -3,6 +3,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -163,6 +164,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				}
 				else {
 					pauseCounter = Main.pauseTime;
+					testCondition();
 					executionReady = true;
 				}
 			}
@@ -183,6 +185,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 				
 
 				pauseCounter = Main.pauseTime;
+				testCondition();
 				executionReady = true;
 			}
 		}
@@ -211,6 +214,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 						moveAnimated(Move.FORWARD);
 					else {
 						pauseCounter = Main.pauseTime;
+						if(executionElement == executionOrder.length - 1) {
+							executionOrder = null;
+						}
+						testCondition();
 						executionReady = true;
 					}
 				break;
@@ -220,6 +227,10 @@ public class RobotPanel extends JPanel implements ActionListener {
 						moveAnimated(Move.BACKWARD);
 					else {
 						pauseCounter = Main.pauseTime;
+						if(executionElement == executionOrder.length - 1) {
+							executionOrder = null;
+						}
+						testCondition();
 						executionReady = true;
 					}
 				break;
@@ -238,9 +249,13 @@ public class RobotPanel extends JPanel implements ActionListener {
 			}
 			executionElement++;
 			
-			if(executionElement == executionOrder.length) {
-				executionOrder = null;
-				testCondition();
+			try {
+				if(executionElement == executionOrder.length) {
+					executionOrder = null;
+				}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 		
@@ -255,21 +270,31 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 	
 	public void testCondition() {
-		if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] != Tile.FLAG) condition = Condition.LOST;
-		System.out.println(condition);
-		
-		if(condition == Condition.WON) {
-
-			Main.fileManager.setStageStatus(Main.stage, StageStatus.COMPLETE);
-			exitTimer = Main.exitTime;
-		}
-		else {
-			//TODO: Failing a stage
+		if(executionOrder == null) {
+			if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] != Tile.FLAG) condition = Condition.LOST;
+			System.out.println(condition);
+			
+			if(condition == Condition.WON) {
+	
+				Main.fileManager.setStageStatus(Main.stage, StageStatus.COMPLETE);
+				exitTimer = Main.exitTime;
+			}
+			else {
+				try {
+					Main.stageFrame.dispose();
+					Main.stageFrame = new StageFrame(Main.stage);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 		}
 	}
 	
 	public void holeDrop() {
 		fallAnimated();
+		executionOrder = null;
 		condition = Condition.LOST;
 	}
 }
