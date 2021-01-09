@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 public class Robot {
 	public byte[] pos = {0, 0};
 	public Rotation rot = Rotation.NORTH;
+	public double scale = 1;
 	
 	public double[] subPos = {0, 0};
 	public double subRot = 0;

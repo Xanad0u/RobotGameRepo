@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.io.IOException;
@@ -8,6 +9,8 @@ import javax.swing.WindowConstants;
 
 public class StageEditorFrame extends JFrame {
 
+	public int editedStage;
+	
 	public Tile[] tiles;
 	public Card[] cards;
 	public int[] loops;
@@ -19,7 +22,7 @@ public class StageEditorFrame extends JFrame {
 	public int pointOfDeath;
 	public ArrayList<byte[]> positions;
 	
-	pathPanel pathPane;
+	PathPanel pathPane;
 	
 	public StageEditorFrame() throws IOException {	//constructor used by StageEditorFrame
 		
@@ -31,7 +34,7 @@ public class StageEditorFrame extends JFrame {
 	setTitle("Stage");		//Set title to Stage
 	setVisible(true);		//make frame visible
 
-	Main.menu = new MenuPanel(this)  {	//Create popup menu
+	Main.menu = new MenuPanel(this, true)  {	//Create popup menu
 		
 		@Override
 		public void paintComponent(Graphics g) {
@@ -49,11 +52,12 @@ public class StageEditorFrame extends JFrame {
 	
 	Main.gridPane.setBounds(0, 0, 1, 1);		//Setting board size to more then zero, making it rescalable
 
-	pathPane = new pathPanel();
+	//pathPane = new PathPanel();
 	
-	pathPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
-	
-	Main.menu.setBounds((int) (getContentPane().getWidth() / 2 - Main.menuWidth / 2), (int) (getContentPane().getHeight() / 2 - Main.menuHeight / 2), Main.menuWidth, Main.menuHeight);
+	//pathPane.setBackground(new Color(0,0,0,0));	//Making robot pane background transparent
+	//pathPane.setOpaque(false);						//Making robot pane transparent
+	//pathPane.setVisible(true);				//Setting robot pane to visible
+	//pathPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 
 	
 	Main.cardPane = new CardPanel();
@@ -66,15 +70,16 @@ public class StageEditorFrame extends JFrame {
 	
 	
 	add(Main.menu);		//Add menu to frame
+	//add(pathPane);
 	add(Main.cardPane);
 	add(Main.slotPane);
 	add(Main.gridPane);	//Add board pane to frame
-	//add(pathPane);
+	 
 	}
 		
 		
 	public void calculatePath() {
-		//try {
+		if(Main.gridPane.startTile != -1) {
 			updateToDependencies();
 			
 			pointOfDeath = -1;
@@ -97,7 +102,7 @@ public class StageEditorFrame extends JFrame {
 						break;
 					case HOLE:
 						positions.add(getNextPos(Move.BACKWARD));
-						if(pointOfDeath != -1) pointOfDeath = positions.size() - 1;
+						if(pointOfDeath == -1) pointOfDeath = positions.size() - 1;
 						break;
 					default:	//EMPTY, START or FLAG
 						positions.add(getNextPos(Move.BACKWARD));
@@ -110,7 +115,7 @@ public class StageEditorFrame extends JFrame {
 						break;
 					case HOLE:
 						positions.add(getNextPos(Move.FORWARD));
-						if(pointOfDeath != -1) pointOfDeath = positions.size() - 1;
+						if(pointOfDeath == -1) pointOfDeath = positions.size() - 1;
 						break;
 					default:	//EMPTY, START or FLAG
 						positions.add(getNextPos(Move.FORWARD));
@@ -118,21 +123,23 @@ public class StageEditorFrame extends JFrame {
 					}
 					break;
 				case TURNLEFT:
-					robotRot.add(Turn.COUNTERCLOCKWISE);
+					robotRot = robotRot.add(Turn.COUNTERCLOCKWISE);
 					break;
 				case TURNRIGHT:
-					robotRot.add(Turn.CLOCKWISE);
+					System.out.println(robotRot);
+					robotRot = robotRot.add(Turn.CLOCKWISE);
+					System.out.println(robotRot);
 					break;
 				default:
 					break;
 				}
 			}
-			
-			pathPane.repaint();
-			
-		//} catch (Exception e) {
-		//	System.out.println("cannot calculate path");
-		//}
+		}
+		else {
+			positions = null;
+
+		}
+		Main.gridPane.repaint();
 	}
 	
 	public Tile getNextTile(Move step) {
@@ -160,7 +167,8 @@ public class StageEditorFrame extends JFrame {
 			break;
 		}
 		
-		return tiles[Main.fileManager.posToTileIndex(pos)];
+		if(pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) return Tile.BLOCK;
+		else return tiles[Main.fileManager.posToTileIndex(pos)];
 	}
 	
 	private byte[] getNextPos(Move step) {
