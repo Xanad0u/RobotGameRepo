@@ -149,7 +149,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 		}
 		
-		else {
+		else {							//TODO fix click clearing slots
 			if(selectedSlot != pos) {
 				selectedSlot = pos;
 				

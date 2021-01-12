@@ -210,7 +210,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
 				
-					if(Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.FORWARD))] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
+					if(robot.getMovePosNotOutOfGrid(Move.FORWARD) && Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.FORWARD))] != Tile.BLOCK) 
 						moveAnimated(Move.FORWARD);
 					else {
 						pauseCounter = Main.pauseTime;
