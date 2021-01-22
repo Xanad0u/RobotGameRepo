@@ -6,8 +6,10 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import Audio.AudioPlayer;
 
 public class Main {		//main caller
+	
 	
 	public static int menuWidth = 200;		//Width of the popup menu
 	public static int menuHeight = 300;		//Height of the popup menu
@@ -64,6 +66,7 @@ public class Main {		//main caller
 	public static Rotation initRot;		//Holds the initial rotation of the robot
 	
 	public static int stage;			//Holds the stage index
+
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -88,6 +91,11 @@ public class Main {		//main caller
 		
 		
 		MenuFrame menu = new MenuFrame();
+		
+		AudioPlayer music = new AudioPlayer("./Music/[ONTIVA.COM] Andreas B. - The Road (Full Version)-HQ.wav");
+		music.play();
+		
+		
 	}
 	
 	static Command[] makeCommandsReal(Card[] cardsInSlots, int[] loops) {
@@ -202,5 +210,6 @@ public class Main {		//main caller
 		}
 		return commandsOut;		//return the local output List
 	}
+	
 }
 

@@ -1,6 +1,8 @@
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import Audio.AudioPlayer;
 
 
 public class Robot {
@@ -22,12 +24,21 @@ public class Robot {
 	private boolean isEditor = false;
 	public boolean isVisible = true;
 	
+	private HashMap<String, AudioPlayer> sfx;
+	
+	
 	public Robot(int ss, long bt, BufferedImage imgIn) {
 		substeps = ss;
 		breakTime = bt;
 		img = imgIn;
 		
 		af = new AffineTransform();
+		
+		sfx = new HashMap<String, AudioPlayer> ();
+		sfx.put ("move", new AudioPlayer(".(/Music/mixkit-unlock-game-notification-253.wav"));
+		sfx.put ("win",new AudioPlayer(""));
+		
+		sfx.get("move").play(); //????
 	}
 	
 	public Robot(BufferedImage imgIn) {
@@ -69,6 +80,9 @@ public class Robot {
 			pos[0] -= step;
 			break;
 		}
+		
+		
+		
 	}
 	
 	public byte[] getMovePos(Move step) {
@@ -78,6 +92,7 @@ public class Robot {
 		localPos[1] = pos[1];
 		
 		switch(rot) {
+		
 		case NORTH:
 			localPos[1] -= step.step();
 			break;
@@ -94,6 +109,7 @@ public class Robot {
 			localPos[0] -= step.step();
 			break;
 		}
+
 		
 		return localPos;
 	}

@@ -2,19 +2,26 @@ import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
+
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.Component;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+
 import javax.swing.Box;
 
 public class PopMenu extends JInternalFrame {
 
 	/**
 	 * Launch the application.
+	 * 
+	 *
 	 */
+	Sound sound = new Sound();
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -51,6 +58,7 @@ public class PopMenu extends JInternalFrame {
 		
 		JButton btnResume = new JButton("Resume");
 		btnResume.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnResume.addActionListener(sound);
 		panel.add(btnResume);
 		
 		Component verticalStrut_1 = Box.createVerticalStrut(20);
@@ -67,8 +75,11 @@ public class PopMenu extends JInternalFrame {
 		btnMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(btnMenu);
 		
+		
 		setVisible(true);
 
 	}
+	
+	
 
 }
