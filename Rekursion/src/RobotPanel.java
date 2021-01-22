@@ -78,7 +78,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 	public void moveAnimated(Move move) {
 
-		Main.sfx.get("win").play(); 
+		Main.sfx.get("move").play(); 
 		
 		x = 0;
 		y = 0;
@@ -103,11 +103,15 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 	
 	public void turnAnimated(Turn dir) {
+		
+		Main.sfx.get("move").play(); 
 		callTurn = dir.dir();
 		callTurnFull = dir;
 	}
 	
 	public void fallAnimated() {
+		
+		Main.sfx.get("fall").play(); 
 		fallingStep = 0;
 		falling = true;
 	}
@@ -277,7 +281,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 			System.out.println(condition);
 			
 			if(condition == Condition.WON) {
-	
+				Main.sfx.get("win").play(); 
 				Main.fileManager.setStageStatus(Main.stage, StageStatus.COMPLETE);
 				exitTimer = Main.exitTime;
 			}

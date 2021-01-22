@@ -73,8 +73,9 @@ public class Main {		//main caller
 	public static void main(String[] args) throws IOException {
 		
 		sfx = new HashMap<String, AudioPlayer> ();
-	//	sfx.put ("move", new AudioPlayer(".(/Music/mixkit-unlock-game-notification-253.wav"));
-		sfx.put ("win",new AudioPlayer("./Music/Test.wav"));
+		sfx.put ("win", new AudioPlayer("./Music/victory.wav"));
+		sfx.put ("move",new AudioPlayer("./Music/Move.wav"));
+		sfx.put ("fall",new AudioPlayer("./Music/Fall.wav"));
 		
 //		sfx.get("move").play(); 
 		
