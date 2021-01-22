@@ -51,7 +51,7 @@ public class MenuFrame extends JFrame {
 		Component verticalStrut_2 = Box.createVerticalStrut(200);
 		contentPane.add(verticalStrut_2);
 		
-		JButton btnStageSelection = new CallButton("Stage Selection", this, "SSF");
+		JButton btnStageSelection = new CallButton("Stage Selection", this, ButtonAction.STAGESELECTIONFRAME);
 		btnStageSelection.setToolTipText("Select a stage to play");
 		btnStageSelection.setBackground(Color.WHITE);
 		btnStageSelection.setVerticalAlignment(SwingConstants.BOTTOM);
@@ -62,7 +62,7 @@ public class MenuFrame extends JFrame {
 		Component verticalStrut = Box.createVerticalStrut(60);
 		contentPane.add(verticalStrut);
 		
-		JButton btnLevelEditor = new CallButton("Level Editor", this, "SEF");
+		JButton btnLevelEditor = new CallButton("Level Editor", this, ButtonAction.STAGEEDITORFRAME);
 		btnLevelEditor.setToolTipText("Edit and create levels");
 		btnLevelEditor.setBackground(Color.WHITE);
 		btnLevelEditor.setVerticalAlignment(SwingConstants.BOTTOM);

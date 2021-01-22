@@ -99,7 +99,7 @@ enum Move {
 }
 
 enum Card {
-	BACKCARD, FORWARDCARD, FASTFORWARDCARD, RTURNCARD, LTURNCARD, UTURNCARD, RCARD, EMPTY;
+	BACKCARD, FORWARDCARD, FASTFORWARDCARD, RTURNCARD, LTURNCARD, UTURNCARD, RCARD, EMPTY, NUll;
 	
 	public Card change(int dir) {
 		int newPos = ordinal() + dir;
@@ -127,6 +127,10 @@ enum Card {
 			return Main.cardSlot;
 		case RCARD:
 			return Main.rCard;
+			
+		default:	//Should not be called
+			System.out.println("<ERROR> likely cause: card is of type null");
+			break;
 		}
 		return null;
 	}
@@ -149,4 +153,16 @@ enum Tile {
 
 		return values()[newPos];     
 	}
+}
+
+enum ButtonAction {
+	MENUFRAME, STAGESELECTIONFRAME, STAGEEDITORFRAME, STAGEFRAME, SAVE, PREVIOUSPAGE, NEXTPAGE;
+}
+
+enum StageStatus {
+	NOTCOMPLETE, COMPLETE, NULL;
+}
+
+enum Condition{
+	WON, LOST, NULL;
 }

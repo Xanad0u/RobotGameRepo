@@ -3,6 +3,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,9 +26,16 @@ public class RobotPanel extends JPanel implements ActionListener {
 	
 	int moveStep = 0;
 	
+	boolean falling = false;
+	int fallingStep;
+	
+	Condition condition = Condition.WON;
+	
 	Command[] executionOrder = null;
 	int executionElement = 0;
 	boolean executionReady = true;
+
+	private int exitTimer = -1;
 	
 	public RobotPanel(byte[] initLoc, Rotation initRot) {
 		robot = new Robot(Main.substeps, Main.moveTime, Main.robotImg);
@@ -70,6 +78,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 	public void moveAnimated(Move move) {
 
+		Main.sfx.get("win").play(); 
+		
 		x = 0;
 		y = 0;
 		
@@ -97,6 +107,11 @@ public class RobotPanel extends JPanel implements ActionListener {
 		callTurnFull = dir;
 	}
 	
+	public void fallAnimated() {
+		fallingStep = 0;
+		falling = true;
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -105,8 +120,8 @@ public class RobotPanel extends JPanel implements ActionListener {
 		robot.af.setToIdentity();
 		
 		
-		robot.af.translate(robot.pos[0] * (Main.size + Main.gap) + robot.subPos[0], robot.pos[1] * (Main.size + Main.gap) + robot.subPos[1]);
-		robot.af.scale(Main.size / (double) robot.img.getHeight(), Main.size / (double) robot.img.getHeight());
+		robot.af.translate(robot.pos[0] * (Main.size + Main.gap) + robot.subPos[0] + (1 - robot.scale) * Main.size * 0.5, robot.pos[1] * (Main.size + Main.gap) + robot.subPos[1] + (1 - robot.scale) * Main.size * 0.5);
+		robot.af.scale((Main.size / (double) robot.img.getHeight()) * robot.scale, (Main.size / (double) robot.img.getHeight()) * robot.scale);
 		robot.af.rotate(Math.toRadians(robot.subRot + (robot.rot.ordinal() - 1) * 90), robot.img.getWidth() / 2, robot.img.getHeight() / 2);
 		
 		
@@ -114,8 +129,15 @@ public class RobotPanel extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {	//TODO: test for win/lose condition at the end of the move
 
+		if(exitTimer == 0) {
+			exitTimer = -1;
+			Main.StageSelectionFrame = new StageSelectionFrame();
+			Main.stageFrame.dispose();
+		}
+		if(exitTimer > 0) exitTimer--;
+		
 		if(callMove > 0) {
 
 			robot.subPos[0] += (x * ((Main.size + Main.gap) / Main.substeps)) * moveStep;
@@ -138,8 +160,15 @@ public class RobotPanel extends JPanel implements ActionListener {
 				System.out.println();
 				System.out.println();
 				
-				pauseCounter = Main.pauseTime;
-				executionReady = true;
+
+				if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] == Tile.HOLE) {
+					holeDrop();
+				}
+				else {
+					pauseCounter = Main.pauseTime;
+					testCondition();
+					executionReady = true;
+				}
 			}
 		}
 		
@@ -158,29 +187,54 @@ public class RobotPanel extends JPanel implements ActionListener {
 				
 
 				pauseCounter = Main.pauseTime;
+				testCondition();
 				executionReady = true;
+			}
+		}
+		
+		if(falling) {
+			if(fallingStep < Main.fallSteps) {
+				if(robot.scale > 0) {
+					robot.scale = 1 - (1.0 / (Main.fallSteps * Main.fallSteps)) * fallingStep * fallingStep;
+					fallingStep++;
+				}
+			}
+			else {
+				falling = false;
+				setVisible(false);
+				testCondition();
 			}
 		}
 		
 		if(executionOrder != null && executionReady && pauseCounter == 0) {
 			executionReady = false;
+			
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
-				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.FORWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.FORWARD)) 
-					moveAnimated(Move.FORWARD);
-				else {
-					pauseCounter = Main.pauseTime;
-					executionReady = true;
-				}
+				
+					if(robot.getMovePosNotOutOfGrid(Move.FORWARD) && Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.FORWARD))] != Tile.BLOCK) 
+						moveAnimated(Move.FORWARD);
+					else {
+						pauseCounter = Main.pauseTime;
+						if(executionElement == executionOrder.length - 1) {
+							executionOrder = null;
+						}
+						testCondition();
+						executionReady = true;
+					}
 				break;
 				
 			case MOVEBACKWARD:
-				if(Main.tiles[Main.fileManager.posToTile(robot.getMovePos(Move.BACKWARD)) - 1] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
-					moveAnimated(Move.BACKWARD);
-				else {
-					pauseCounter = Main.pauseTime;
-					executionReady = true;
-				}
+					if(Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.BACKWARD))] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
+						moveAnimated(Move.BACKWARD);
+					else {
+						pauseCounter = Main.pauseTime;
+						if(executionElement == executionOrder.length - 1) {
+							executionOrder = null;
+						}
+						testCondition();
+						executionReady = true;
+					}
 				break;
 				
 			case TURNRIGHT:
@@ -197,7 +251,14 @@ public class RobotPanel extends JPanel implements ActionListener {
 			}
 			executionElement++;
 			
-			if(executionElement == executionOrder.length) executionOrder = null;
+			try {
+				if(executionElement == executionOrder.length) {
+					executionOrder = null;
+				}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
 		if(pauseCounter > 0) pauseCounter--;
@@ -208,5 +269,34 @@ public class RobotPanel extends JPanel implements ActionListener {
 	public void execute(Command[] executionBuffer) {
 		
 		executionOrder = executionBuffer;
+	}
+	
+	public void testCondition() {
+		if(executionOrder == null) {
+			if(Main.tiles[Main.fileManager.posToTileIndex(robot.pos)] != Tile.FLAG) condition = Condition.LOST;
+			System.out.println(condition);
+			
+			if(condition == Condition.WON) {
+	
+				Main.fileManager.setStageStatus(Main.stage, StageStatus.COMPLETE);
+				exitTimer = Main.exitTime;
+			}
+			else {
+				try {
+					Main.stageFrame.dispose();
+					Main.stageFrame = new StageFrame(Main.stage);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+	}
+	
+	public void holeDrop() {
+		fallAnimated();
+		executionOrder = null;
+		condition = Condition.LOST;
 	}
 }

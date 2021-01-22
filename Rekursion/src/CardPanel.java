@@ -157,6 +157,7 @@ public class CardPanel extends JPanel implements MouseListener, MouseWheelListen
 					if(selected == focusedCard) selected = -1;
 					else selected = focusedCard;
 				}
+				repaint();
 			}
 		}
 		else {

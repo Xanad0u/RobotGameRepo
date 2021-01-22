@@ -2,12 +2,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import Audio.AudioPlayer;
 
 
 public class Robot {
 	public byte[] pos = {0, 0};
 	public Rotation rot = Rotation.NORTH;
+	public double scale = 1;
 	
 	public double[] subPos = {0, 0};
 	public double subRot = 0;
@@ -34,11 +34,7 @@ public class Robot {
 		
 		af = new AffineTransform();
 		
-		sfx = new HashMap<String, AudioPlayer> ();
-		sfx.put ("move", new AudioPlayer(".(/Music/mixkit-unlock-game-notification-253.wav"));
-		sfx.put ("win",new AudioPlayer(""));
-		
-		sfx.get("move").play(); //????
+	
 	}
 	
 	public Robot(BufferedImage imgIn) {

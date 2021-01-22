@@ -20,7 +20,6 @@ public class PopMenu extends JInternalFrame {
 	 * 
 	 *
 	 */
-	Sound sound = new Sound();
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -58,7 +57,6 @@ public class PopMenu extends JInternalFrame {
 		
 		JButton btnResume = new JButton("Resume");
 		btnResume.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnResume.addActionListener(sound);
 		panel.add(btnResume);
 		
 		Component verticalStrut_1 = Box.createVerticalStrut(20);

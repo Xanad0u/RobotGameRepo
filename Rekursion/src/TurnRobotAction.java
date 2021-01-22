@@ -22,7 +22,8 @@ public class TurnRobotAction extends AbstractAction {
 			
 			Main.initRot = Main.initRot.add(turn);
 			System.out.println(Main.initRot);
-			Main.gridPane.repaint();
+			
+			Main.stageEditorFrame.calculatePath();
 		}
 	}
 }

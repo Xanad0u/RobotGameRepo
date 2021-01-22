@@ -1,12 +1,10 @@
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import Audio.AudioPlayer;
 
 public class Main {		//main caller
 	
@@ -17,12 +15,14 @@ public class Main {		//main caller
 	public static int gap = 2;				//Size of the gap between tiles in pixels
 	public static double ratio = 1.625;		//Optimal ratio of the playing field
 	public static double cardRatio = 1.57;	//Ratio of the card images
-	public static int lineSize = 4;
+	public static int lineSize = 4;			//Thickness of the red selection indicating boarder of cards and slots
 	public static int nTiles = 8;			//Number of tiles in a row or column, hard coded as 8 !DO NOT CHANGE!
 	
-	public static int substeps = 20;		//Animation substeps of the robot
-	public static int moveTime = 100;		//Time it takes the robot to do one action
+	public static int substeps = 20;		//Animation substeps of robot moves and rotations
+	public static int moveTime = 170;		//Time it takes the robot to do one action - indirectly affecting falling
 	public static int pauseTime = 50;		//Pause time between two actions of the robot
+	public static int fallSteps = 100;		//adjusted falling steps botched timer interference
+	public static int exitTime = 200;		//adjusted exit time after successfully finishing a stage (botched stored as steps)
 	
 	public static int fullSize;				//Holds the size of the board
 	
@@ -31,7 +31,8 @@ public class Main {		//main caller
 	
 	public static StageFileManager fileManager = new StageFileManager();	//Creates a new StageFileManager for the stage
 
-	public static int size;
+	public static int size;							//Holds the size of a tile
+	
 	public static BufferedImage blockTile;			//Holds the block tile image
 	public static BufferedImage holeTile;			//Holds the hole tile image
 	public static BufferedImage startTile;			//Holds the start tile image
@@ -45,30 +46,37 @@ public class Main {		//main caller
 	public static BufferedImage backCard;			//Holds the back card image
 	public static BufferedImage rCard;				//Holds the R card image
 	public static BufferedImage cardSlot;			//Holds the card slot image
-	public static BufferedImage icon;
+	public static BufferedImage icon;				//Holds the frame icon image
 	
-	public static StageFrame stageFrame = null;				//Holds the stage frame
-	public static StageEditorFrame stageEditorFrame = null;	//Holds the level editor frame
-	public static RobotPanel robotPane = null;				//Holds the pane containing the robot
-	public static GridPanel gridPane = null;				//Holds the pane containing the board
-	public static MenuPanel menu = null;					//Holds the popup menu
-	public static CardPanel cardPane = null;				//Holds the pane containing the usable cards
-	public static SlotPanel slotPane = null;				//Holds the pane containing the slot and the cards placed in them
+	public static StageFrame stageFrame = null;						//Holds the stage frame
+	public static StageSelectionFrame StageSelectionFrame = null;	//Holds the stage slection frame
+	public static StageEditorFrame stageEditorFrame = null;			//Holds the level editor frame
+	public static RobotPanel robotPane = null;						//Holds the pane containing the robot
+	public static GridPanel gridPane = null;						//Holds the pane containing the board
+	public static MenuPanel menu = null;							//Holds the popup menu
+	public static CardPanel cardPane = null;						//Holds the pane containing the usable cards
+	public static SlotPanel slotPane = null;						//Holds the pane containing the slot and the cards placed in them
 	
-	public static Tile[] tiles;								//Holds the tiles of the stage
+	public static Tile[] tiles;									//Holds the tiles of the stage
 	public static byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
-	public static byte cardAmount;							//Holds the amount of cards in the stage
-	public static byte slotAmount;							//Holds the amount of slots in the stage
-	public static Card[] realCards;							//Holds the real cards in the stage, not the loop index of R cards
-	public static Card[] cards;
+	public static byte cardAmount;								//Holds the amount of cards in the stage
+	public static byte slotAmount;								//Holds the amount of slots in the stage
+	public static Card[] realCards;								//Holds the real cards in the stage, not the loop index of R cards
+	public static Card[] cards;									//Holds all cards including virtual card storing the index of R cards - be careful when using!
 	
-	public static byte[] initPos = {0, 0};		//Holds the initial position of the robot
-	public static Rotation initRot;		//Holds the initial rotation of the robot
+	public static byte[] initPos = {0, 0};	//Holds the initial position of the robot
+	public static Rotation initRot;			//Holds the initial rotation of the robot
 	
-	public static int stage;			//Holds the stage index
+	public static int stage;	//Holds the stage index of the currently active
+	public static HashMap <String, AudioPlayer> sfx;
 
-	
 	public static void main(String[] args) throws IOException {
+		
+		sfx = new HashMap<String, AudioPlayer> ();
+	//	sfx.put ("move", new AudioPlayer(".(/Music/mixkit-unlock-game-notification-253.wav"));
+		sfx.put ("win",new AudioPlayer("./Music/Test.wav"));
+		
+//		sfx.get("move").play(); 
 		
 		blockTile = ImageIO.read(new File("./img/Block.png"));	//Loading the images from storage
 		holeTile = ImageIO.read(new File("./img/Hole.png"));
@@ -89,8 +97,7 @@ public class Main {		//main caller
 		
 		icon = ImageIO.read(new File("./img/Icon.png"));
 		
-		
-		MenuFrame menu = new MenuFrame();
+		MenuFrame menu = new MenuFrame();	//Starting the game by creating a main menu frame
 		
 		AudioPlayer music = new AudioPlayer("./Music/[ONTIVA.COM] Andreas B. - The Road (Full Version)-HQ.wav");
 		music.play();
@@ -98,7 +105,7 @@ public class Main {		//main caller
 		
 	}
 	
-	static Command[] makeCommandsReal(Card[] cardsInSlots, int[] loops) {
+	static Command[] makeCommandsReal(Card[] cardsInSlots, int[] loops) {	//Method to convert cards into commands
 		//try {
 			Command[] cmd;		//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
 			int realCmd = 0;	//Stores the length of the split command string
@@ -151,10 +158,11 @@ public class Main {		//main caller
 						break;
 					case RCARD:
 						cmd[i + shift] = Command.INSERTRECUSION;	//R card
-						adjLoops[i + shift] = loops[i];	//single card -> adjLoops (+1), adjLoops copies loops
+						adjLoops[i + shift] = loops[i];				//single card -> adjLoops (+1), adjLoops copies loops
 						break;
 						
-					case EMPTY:
+					case EMPTY:		//Empty slot, used in the stage editor (shift--;) ignores card
+						shift--;
 						break;
 						
 					default:	//should not be called
@@ -182,10 +190,6 @@ public class Main {		//main caller
 				executionBuffer[i] = outputList.get(i);		//copy List to the executionBuffer Command array
 			}
 			return executionBuffer;
-		//} catch (Exception e) {
-		//	System.out.println("cannot make cards real");
-		//}
-		//return null;
 	}
 
 
