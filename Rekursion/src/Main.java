@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-public class Main {		//main caller
+public class Main {		//main caller of the game
 	
 	
 	public static int menuWidth = 200;		//Width of the popup menu
