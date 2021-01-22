@@ -2,9 +2,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 public class Main {		//main caller
+	
 	
 	public static int menuWidth = 200;		//Width of the popup menu
 	public static int menuHeight = 300;		//Height of the popup menu
@@ -66,7 +68,6 @@ public class Main {		//main caller
 	
 	public static int stage;	//Holds the stage index of the currently active
 	
-	
 	public static void main(String[] args) throws IOException {
 		
 		blockTile = ImageIO.read(new File("./img/Block.png"));	//Loading the images from storage
@@ -89,6 +90,11 @@ public class Main {		//main caller
 		icon = ImageIO.read(new File("./img/Icon.png"));
 		
 		MenuFrame menu = new MenuFrame();	//Starting the game by creating a main menu frame
+		
+		AudioPlayer music = new AudioPlayer("./Music/[ONTIVA.COM] Andreas B. - The Road (Full Version)-HQ.wav");
+		music.play();
+		
+		
 	}
 	
 	static Command[] makeCommandsReal(Card[] cardsInSlots, int[] loops) {	//Method to convert cards into commands
@@ -200,5 +206,6 @@ public class Main {		//main caller
 		}
 		return commandsOut;		//return the local output List
 	}
+	
 }
 
