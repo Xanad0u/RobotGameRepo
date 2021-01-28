@@ -94,7 +94,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 
 	public void moveAnimated(Move move) {
 
-		Main.sfx.get("move").play(); 
+		Main.sfx.get("move").play();
 		
 		x = 0;
 		y = 0;
@@ -229,12 +229,17 @@ public class RobotPanel extends JPanel implements ActionListener {
 		if(executionOrder != null && executionReady && pauseCounter == 0) {
 			executionReady = false;
 			
+			Main.orderPane.position = Main.secondaryOrigins.get(executionElement);
+			Main.orderPane.setVisible(true);
+			Main.orderPane.repaint();
+			
 			switch(executionOrder[executionElement]) {
 			case MOVEFORWARD:
 				
 					if(robot.getMovePosNotOutOfGrid(Move.FORWARD) && Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.FORWARD))] != Tile.BLOCK) 
 						moveAnimated(Move.FORWARD);
 					else {
+						Main.sfx.get("collision").play(); 
 						pauseCounter = Main.pauseTime;
 						if(executionElement == executionOrder.length - 1) {
 							executionOrder = null;
@@ -248,6 +253,7 @@ public class RobotPanel extends JPanel implements ActionListener {
 					if(Main.tiles[Main.fileManager.posToTileIndex(robot.getMovePos(Move.BACKWARD))] != Tile.BLOCK && robot.getMovePosNotOutOfGrid(Move.BACKWARD)) 
 						moveAnimated(Move.BACKWARD);
 					else {
+						Main.sfx.get("collision").play(); 
 						pauseCounter = Main.pauseTime;
 						if(executionElement == executionOrder.length - 1) {
 							executionOrder = null;

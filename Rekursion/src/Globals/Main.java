@@ -7,19 +7,9 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import Enums.Card;
-import Enums.Command;
-import Enums.Rotation;
-import Enums.Tile;
-import Frames.MenuFrame;
-import Frames.StageEditorFrame;
-import Frames.StageFrame;
-import Frames.StageSelectionFrame;
-import Panels.CardPanel;
-import Panels.GridPanel;
-import Panels.MenuPanel;
-import Panels.RobotPanel;
-import Panels.SlotPanel;
+import Enums.*;
+import Frames.*;
+import Panels.*;
 
 public class Main {		//main caller
 	
@@ -35,9 +25,9 @@ public class Main {		//main caller
 	
 	public static int substeps = 20;		//Animation substeps of robot moves and rotations
 	public static int moveTime = 170;		//Time it takes the robot to do one action - indirectly affecting falling
-	public static int pauseTime = 50;		//Pause time between two actions of the robot
+	public static int pauseTime = 100;		//Pause time between two actions of the robot
 	public static int fallSteps = 100;		//adjusted falling steps botched timer interference
-	public static int exitTime = 200;		//adjusted exit time after successfully finishing a stage (botched stored as steps)
+	public static int exitTime = 75;		//adjusted exit time after successfully finishing a stage (botched stored as steps)
 	
 	public static int fullSize;				//Holds the size of the board
 	
@@ -64,13 +54,14 @@ public class Main {		//main caller
 	public static BufferedImage icon;				//Holds the frame icon image
 	
 	public static StageFrame stageFrame = null;						//Holds the stage frame
-	public static StageSelectionFrame StageSelectionFrame = null;	//Holds the stage slection frame
+	public static StageSelectionFrame StageSelectionFrame = null;	//Holds the stage selection frame
 	public static StageEditorFrame stageEditorFrame = null;			//Holds the level editor frame
 	public static RobotPanel robotPane = null;						//Holds the pane containing the robot
 	public static GridPanel gridPane = null;						//Holds the pane containing the board
 	public static MenuPanel menu = null;							//Holds the popup menu
 	public static CardPanel cardPane = null;						//Holds the pane containing the usable cards
 	public static SlotPanel slotPane = null;						//Holds the pane containing the slot and the cards placed in them
+	public static OrderPanel orderPane = null;
 	
 	public static Tile[] tiles;									//Holds the tiles of the stage
 	public static byte[] tileSelectionStatus = new byte[64];	//Holds the selection status of the tiles
@@ -84,6 +75,8 @@ public class Main {		//main caller
 	
 	public static int stage;	//Holds the stage index of the currently active
 	public static HashMap <String, AudioPlayer> sfx;
+	
+	public static ArrayList<Integer> secondaryOrigins;
 
 	public static void main(String[] args) throws IOException {
 		
@@ -91,6 +84,7 @@ public class Main {		//main caller
 		sfx.put ("win", new AudioPlayer("./Music/victory.wav"));	//Loading sound files from storage
 		sfx.put ("move",new AudioPlayer("./Music/Move.wav"));
 		sfx.put ("fall",new AudioPlayer("./Music/Fall.wav"));
+		sfx.put ("collision",new AudioPlayer("./Music/Collision.wav"));
 		
 		blockTile = ImageIO.read(new File("./img/Block.png"));	//Loading the images from storage
 		holeTile = ImageIO.read(new File("./img/Hole.png"));
@@ -119,6 +113,7 @@ public class Main {		//main caller
 			Command[] cmd;		//Stores the "real" commands, meaning 0 for R cards and split up double cards (fastforward and u-turn)
 			int realCmd = 0;	//Stores the length of the split command string
 			int[] adjLoops;		//Stores the R loops adjusted for split cards
+			int[] origins;		//Stores the card from which a given command originates
 
 			for(int i = 0; i < cardsInSlots.length; i++) {	//Calculates the length of the split command string
 				if(cardsInSlots[i] != Card.EMPTY) {
@@ -129,6 +124,7 @@ public class Main {		//main caller
 
 			cmd = new Command[realCmd];		//Initialize cmd
 			adjLoops = new int[realCmd];	//Initialize adjLoops
+			origins = new int[realCmd];
 			
 			int shift = 0;					//Setting up a shift counter (inital -> 0)
 			
@@ -137,36 +133,45 @@ public class Main {		//main caller
 					case BACKCARD:
 						cmd[i + shift] = Command.MOVEBACKWARD;		//backward
 						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						origins[i + shift] = i;
 						break;
 					case FORWARDCARD:	
 						cmd[i + shift] = Command.MOVEFORWARD;		//forward
 						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						origins[i + shift] = i;
 						break;
 					case FASTFORWARDCARD:
 						cmd[i + shift] = Command.MOVEFORWARD;		//fastforward
 						adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+						origins[i + shift] = i;
 						shift++;									//double card -> shift++;
 						cmd[i + shift] = Command.MOVEFORWARD;
 						adjLoops[i + shift] = 0;
+						origins[i + shift] = i;
 						break;
 					case RTURNCARD:
 						cmd[i + shift] = Command.TURNRIGHT;			//right turn
 						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						origins[i + shift] = i;
 						break;
 					case LTURNCARD:
 						cmd[i + shift] = Command.TURNLEFT;			//left turn
 						adjLoops[i + shift] = 0;					//single card -> ajdLoops (+1)
+						origins[i + shift] = i;
 						break;
 					case UTURNCARD:
 						cmd[i + shift] = Command.TURNRIGHT;			//u turn
 						adjLoops[i + shift] = 0;					//double card -> ajdLoops (+2)
+						origins[i + shift] = i;
 						shift++;									//double card -> shift++;
 						cmd[i + shift] = Command.TURNRIGHT;
 						adjLoops[i + shift] = 0;
+						origins[i + shift] = i;
 						break;
 					case RCARD:
 						cmd[i + shift] = Command.INSERTRECUSION;	//R card
 						adjLoops[i + shift] = loops[i];				//single card -> adjLoops (+1), adjLoops copies loops
+						origins[i + shift] = i;
 						break;
 						
 					case EMPTY:		//Empty slot, used in the stage editor (shift--;) ignores card
@@ -188,7 +193,8 @@ public class Main {		//main caller
 				commandList.add(cmd[i]);
 			}
 			
-			ArrayList<Command> outputList = recursion(commandList, adjLoops);	//Run recursion on the List, making R cards real cards
+			secondaryOrigins = new ArrayList<>();
+			ArrayList<Command> outputList = recursion(commandList, adjLoops, origins);	//Run recursion on the List, making R cards real cards
 			
 			Command[] executionBuffer;											//Temporary storage holding the execution commands
 			
@@ -201,13 +207,15 @@ public class Main {		//main caller
 	}
 
 
-	static ArrayList<Command> recursion(ArrayList<Command> commandList, int[] loops) {	//Method to make R cards real cards
+	static ArrayList<Command> recursion(ArrayList<Command> commandList, int[] loops, int[] primaryOrigins) {	//Method to make R cards real cards
 		
 		ArrayList<Command> commandsOut = new ArrayList<>();								//Create new local List containing the commands to be returned
+		
 		
 		for(int i = 0; i < commandList.size(); i++) {									//Loop over the input List
 			if(commandList.get(i) != Command.INSERTRECUSION) {
 				commandsOut.add(commandList.get(i));									//Add the command of the input List to the output List, if it isn't a R command
+				secondaryOrigins.add(primaryOrigins[i]);
 			}
 			
 			else {
@@ -217,7 +225,7 @@ public class Main {		//main caller
 							if(loops[j] > 0) loopsExe[j] = loops[j] - 1;	//If the iterations left is greater then zero decrease it by one
 						}
 					
-					commandsOut.addAll(recursion(commandList, loopsExe));	//Run recursion with the input List and the decreased loop array
+					commandsOut.addAll(recursion(commandList, loopsExe, primaryOrigins));	//Run recursion with the input List and the decreased loop array
 				}
 			}
 		}

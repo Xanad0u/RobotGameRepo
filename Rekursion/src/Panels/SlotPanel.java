@@ -27,7 +27,7 @@ public class SlotPanel extends JPanel implements MouseListener, MouseMotionListe
 	int[] origin;
 	
 	
-	private int slotGap;
+	public int slotGap;
 	
 	private boolean isEditor = false;
 	

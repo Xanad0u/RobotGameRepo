@@ -56,6 +56,28 @@ public class StageFileManager {
 	    
 	    return error;
 	}
+	
+public boolean Write(int n, char[] data) {
+		
+		boolean error = false;
+		
+	    try {
+	        FileWriter writer = new FileWriter("Stage_" + n + ".txt");
+	        for (int i = 0; i < data.length; i++) {
+	        	writer.write(Character.toString(data[i]));
+	        }
+	        
+	        writer.close();
+	        System.out.println("Successfully wrote to the file.");
+	      } 
+	    catch (IOException e) {
+	        System.out.println("An error occurred.");
+	        e.printStackTrace();
+	        error = true;
+	      }
+	    
+	    return error;
+	}
 
 	public byte[] Read(int n) {
 		byte[] dataArray = {};
@@ -280,8 +302,11 @@ public class StageFileManager {
 
 			reader.close();
 			
-			char stageAmountChar = data.toCharArray()[0];
-			stageAmount = Integer.parseInt( String.valueOf(stageAmountChar));
+			int amountCounterLength = data.lastIndexOf('x');
+			char[] stageAmountCharArray = new char[amountCounterLength];
+			data.getChars(0, amountCounterLength, stageAmountCharArray, 0);			
+			
+			stageAmount = Integer.parseInt(String.valueOf(stageAmountCharArray));
 		}
 		catch(FileNotFoundException e) {
 			System.out.println("An error occurred.");
@@ -302,14 +327,17 @@ public class StageFileManager {
 			
 			char[] dataCharArray = data.toCharArray();
 			int stageAmount = getStageAmount();
-			byte[] modifiedDataArray = new byte[dataCharArray.length + 1];
+			char[] modifiedDataArray = new char[dataCharArray.length + 1 + Integer.toString(stageAmount + 1).length() - Integer.toString(stageAmount).length()];
 			
 			int largestIndex = modifiedDataArray.length - 1;
 			
+			
+			
 			for (int i = 0; i < modifiedDataArray.length; i++) {
-				if(i == 0) modifiedDataArray[i] = (byte) (stageAmount + 1);
-				else if(i == largestIndex) modifiedDataArray[i] = 0;
-				else  modifiedDataArray[i] = (byte) Integer.parseInt( String.valueOf(dataCharArray[i]));
+				if(i < Integer.toString(stageAmount + 1).length()) modifiedDataArray[i] = Integer.toString(stageAmount + 1).charAt(i);
+				else if (i == Integer.toString(stageAmount + 1).length()) modifiedDataArray[i] = 'x';
+				else if(i == largestIndex) modifiedDataArray[i] = '0';
+				else  modifiedDataArray[i] = dataCharArray[i - Integer.toString(stageAmount + 1).length() + Integer.toString(stageAmount).length()];
 			}
 			Write(0, modifiedDataArray);
 		}
@@ -353,7 +381,7 @@ public class StageFileManager {
 	
 				reader.close();
 				
-				if(data.toCharArray()[n] == '1') return StageStatus.COMPLETE;
+				if(data.toCharArray()[n + Integer.toString(getStageAmount()).length()] == '1') return StageStatus.COMPLETE;
 				else return StageStatus.NOTCOMPLETE;
 			}
 			else return StageStatus.NULL;
@@ -375,11 +403,11 @@ public class StageFileManager {
 			reader.close();
 			
 			char[] dataCharArray = data.toCharArray();
-			byte[] modifiedDataArray = new byte[dataCharArray.length];
+			char[] modifiedDataArray = new char[dataCharArray.length];
 			
 			for (int i = 0; i < modifiedDataArray.length; i++) {
-				if(i == n) modifiedDataArray[i] = (byte) (status.ordinal());
-				else  modifiedDataArray[i] = (byte) Integer.parseInt( String.valueOf(dataCharArray[i]));
+				if(i == n + Integer.toString(getStageAmount()).length()) modifiedDataArray[i] = Integer.toString(status.ordinal()).charAt(0);
+				else modifiedDataArray[i] = dataCharArray[i];
 			}
 			Write(0, modifiedDataArray);
 		}

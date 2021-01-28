@@ -35,7 +35,7 @@ public class AudioPlayer {
 			clip.open(dais);
 			FloatControl gainControl = 
 				    (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-				gainControl.setValue(-30.0f); 
+				gainControl.setValue(-10.0f); 
 			
 			
 		}

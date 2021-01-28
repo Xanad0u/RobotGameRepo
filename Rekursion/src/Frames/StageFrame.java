@@ -3,11 +3,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import Globals.Main;
-import Panels.CardPanel;
-import Panels.GridPanel;
-import Panels.MenuPanel;
-import Panels.RobotPanel;
-import Panels.SlotPanel;
+import Panels.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -73,6 +69,11 @@ public class StageFrame extends JFrame {
 		
 		Main.cardPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
 		
+		Main.orderPane = new OrderPanel();
+		Main.orderPane.setVisible(false);
+		
+		Main.orderPane.setBounds(0, 0, 1, 1);
+		
 		Main.slotPane = new SlotPanel(Main.slotAmount);
 		
 		Main.slotPane.setBounds(0, 0, 1, 1);		//Setting testCardPanel size to more then zero, making it rescalable
@@ -81,6 +82,7 @@ public class StageFrame extends JFrame {
 		add(Main.menu);			//Add popup menu to frame
 		add(Main.cardPane);		//Add card pane to frame
 		add(Main.slotPane);		//Add slot pane to frame
+		add(Main.orderPane);
 		add(Main.robotPane);	//Add robot pane to frame
 		add(Main.gridPane);		//Add board pane to frame
 	}
