@@ -43,7 +43,6 @@ public class CallButton extends JButton implements ActionListener {
 		setText(String.valueOf(levelIn));
 		call = ButtonAction.STAGEFRAME;
 		level = levelIn;
-		addActionListener(this);
 		repaint();
 	}
 
